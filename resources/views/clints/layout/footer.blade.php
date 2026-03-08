@@ -1,4 +1,4 @@
- <footer class="footer" id="footer">
+  <footer class="footer" id="footer">
     <div class="container">
       <div class="footer__grid">
         <div class="footer__brand">
@@ -55,7 +55,3 @@
   <button class="back-to-top" id="backToTop" aria-label="العودة للأعلى"><i class="fas fa-chevron-up"></i></button>
 
   <script src="{{asset('assets/clints/js/app.js')}}"></script>
-  <script src="{{asset('assets/clints/js/homepage.js')}}"></script>
-</body>
-
-</html>

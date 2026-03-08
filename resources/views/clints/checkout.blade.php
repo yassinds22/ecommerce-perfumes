@@ -14,19 +14,7 @@
 <body>
 
     <!-- التنقل المبسط -->
-    <nav class="navbar checkout-nav" id="navbar">
-        <div class="container">
-            <a href="{{ route('home') }}" class="nav-logo">لوكس <span>بارفيوم</span></a>
-            <div class="checkout-steps-indicator">
-                <div class="step-dot active" data-step="1"><span>1</span> الشحن</div>
-                <div class="step-line active"></div>
-                <div class="step-dot" data-step="2"><span>2</span> الدفع</div>
-                <div class="step-line"></div>
-                <div class="step-dot" data-step="3"><span>3</span> المراجعة</div>
-            </div>
-            <a href="{{ route('cart') }}" class="checkout-back"><i class="fas fa-arrow-right"></i> العودة للسلة</a>
-        </div>
-    </nav>
+    @include('clints.layout.nav')
 
     <div class="page-spacer"></div>
 

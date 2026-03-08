@@ -17,39 +17,7 @@
   <!-- ========== شريط التنقل ========== -->
   @include('clints.layout.nav')
 
-  <!-- القائمة المتنقلة -->
-  <div class="mobile-nav" id="mobileNav">
-    <a href="{{ route('home') }}">الرئيسية</a>
-    <a href="{{ route('shop') }}">المتجر</a>
-    <a href="{{ route('shop', ['cat' => 'men']) }}">للرجال</a>
-    <a href="{{ route('shop', ['cat' => 'women']) }}">للنساء</a>
-    <a href="{{ route('product') }}">المجموعات</a>
-    <a href="#footer">من نحن</a>
-  </div>
-  <div class="nav-overlay" id="navOverlay"></div>
-
-  <!-- ========== سلة التسوق المصغرة ========== -->
-  <div class="cart-overlay" id="cartOverlay"></div>
-  <aside class="mini-cart" id="miniCart">
-    <div class="mini-cart__header">
-      <h3>حقيبة التسوق</h3>
-      <button class="mini-cart__close" id="miniCartClose"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="mini-cart__items" id="miniCartItems">
-      <div class="mini-cart__empty" id="miniCartEmpty">
-        <i class="fas fa-shopping-bag"></i>
-        <p>حقيبتك فارغة</p>
-        <a href="{{ route('shop') }}" class="btn btn-primary">تسوق الآن</a>
-      </div>
-    </div>
-    <div class="mini-cart__footer" id="miniCartFooter" style="display:none;">
-      <div class="mini-cart__total">
-        <span>المجموع</span>
-        <span id="miniCartTotal">$0.00</span>
-      </div>
-      <a href="{{ route('cart') }}" class="btn btn-primary">عرض السلة</a>
-    </div>
-  </aside>
+ 
 
   <!-- ========== قسم البطل ========== -->
   <section class="hero" id="hero">
@@ -638,3 +606,7 @@
 
   <!-- ========== التذييل ========== -->
   @include('clints.layout.footer')
+  <script src="{{asset('assets/clints/js/homepage.js')}}"></script>
+</body>
+
+</html>

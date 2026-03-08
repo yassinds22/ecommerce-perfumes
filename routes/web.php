@@ -21,3 +21,8 @@ Route::get('/cart', function () {
 Route::get('/checkout', function () {
     return view('clints.checkout');
 })->name('checkout');
+
+Route::get('/admin', function () {
+    return view('admin.index');
+})->name('admin.index');
+
