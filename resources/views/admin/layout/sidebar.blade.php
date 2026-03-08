@@ -10,10 +10,19 @@
         <a href="{{ route('admin.index') }}" class="sidebar__link {{ request()->routeIs('admin.index') ? 'active' : '' }}" data-section="overview">
             <i class="fas fa-th-large"></i> نظرة عامة
         </a>
-        <a href="#" class="sidebar__link" data-section="products">
-            <i class="fas fa-box-open"></i> المنتجات
-            <span class="badge">9</span>
+        <a href="{{ route('admin.categories.index') }}" class="sidebar__link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+            <i class="fas fa-tags"></i> الأقسام
         </a>
+        <a href="{{ route('admin.brands.index') }}" class="sidebar__link {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}">
+            <i class="fas fa-certificate"></i> الماركات
+        </a>
+        <a href="{{ route('admin.products.index') }}" class="sidebar__link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+            <i class="fas fa-box-open"></i> المنتجات
+        </a>
+        <a href="{{ route('admin.fragrance-notes.index') }}" class="sidebar__link {{ request()->routeIs('admin.fragrance-notes.*') ? 'active' : '' }}">
+            <i class="fas fa-wind"></i> مكونات العطر
+        </a>
+
         <a href="#" class="sidebar__link" data-section="orders">
             <i class="fas fa-shopping-cart"></i> الطلبات
             <span class="badge">3</span>
@@ -24,9 +33,10 @@
         <a href="#" class="sidebar__link" data-section="reviews">
             <i class="fas fa-star"></i> التقييمات
         </a>
-        <a href="#" class="sidebar__link" data-section="offers">
+        <a href="{{ route('admin.coupons.index') }}" class="sidebar__link {{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
             <i class="fas fa-tags"></i> العروض
         </a>
+
 
         <div class="sidebar__label" style="margin-top:16px">الإعدادات</div>
         <a href="#" class="sidebar__link">

@@ -24,7 +24,7 @@
         <div class="breadcrumb">
             <a href="{{ route('home') }}">الرئيسية</a><span class="separator">/</span>
             <a href="{{ route('shop') }}">المتجر</a><span class="separator">/</span>
-            <span class="current">عنبر عود ملكي</span>
+            <span class="current">{{ $product->name }}</span>
         </div>
     </div>
 
@@ -35,30 +35,25 @@
                 <!-- المعرض -->
                 <div class="product-gallery">
                     <div class="product-gallery__main" id="mainImage">
-                        <img src="{{ asset('assets/clints/images/arabic-perfume.png') }}" alt="عنبر عود ملكي" id="galleryMain">
+                        <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/arabic-perfume.png') }}" alt="{{ $product->name }}" id="galleryMain">
                         <div class="product-gallery__zoom-hint"><i class="fas fa-search-plus"></i> مرر للتكبير</div>
                     </div>
                     <div class="product-gallery__thumbs">
-                        <button class="thumb active" onclick="changeImage(this, '{{ asset('assets/clints/images/arabic-perfume.png') }}')">
-                            <img src="{{ asset('assets/clints/images/arabic-perfume.png') }}" alt="عرض 1">
+                        @foreach($product->getMedia('gallery') as $media)
+                        <button class="thumb {{ $loop->first ? 'active' : '' }}" onclick="changeImage(this, '{{ $media->getUrl() }}')">
+                            <img src="{{ $media->getUrl() }}" alt="عرض {{ $loop->iteration }}">
                         </button>
-                        <button class="thumb" onclick="changeImage(this, '{{ asset('assets/clints/images/mens-perfume.png') }}')">
-                            <img src="{{ asset('assets/clints/images/mens-perfume.png') }}" alt="عرض 2">
-                        </button>
-                        <button class="thumb" onclick="changeImage(this, '{{ asset('assets/clints/images/unisex-perfume.png') }}')">
-                            <img src="{{ asset('assets/clints/images/unisex-perfume.png') }}" alt="عرض 3">
-                        </button>
-                        <button class="thumb" onclick="changeImage(this, '{{ asset('assets/clints/images/gift-set.png') }}')">
-                            <img src="{{ asset('assets/clints/images/gift-set.png') }}" alt="عرض 4">
-                        </button>
+                        @endforeach
                     </div>
                 </div>
 
                 <!-- المعلومات -->
                 <div class="product-info">
+                    @if($product->is_bestseller)
                     <span class="product-info__badge">الأكثر مبيعاً</span>
-                    <p class="product-info__brand">لوكس بارفيوم — المجموعة المميزة</p>
-                    <h1 class="product-info__name">عنبر عود ملكي</h1>
+                    @endif
+                    <p class="product-info__brand">{{ $product->brand->name ?? 'لوكس بارفيوم' }}</p>
+                    <h1 class="product-info__name">{{ $product->name }}</h1>
 
                     <div class="product-info__rating">
                         <div class="stars">
@@ -69,55 +64,67 @@
                     </div>
 
                     <div class="product-info__price">
-                        <span class="price-current">$340.00</span>
-                        <span class="price-original">$400.00</span>
-                        <span class="price-tag">خصم 15%</span>
+                        <span class="price-current">${{ $product->sale_price ?: $product->price }}</span>
+                        @if($product->sale_price)
+                        <span class="price-original">${{ $product->price }}</span>
+                        <span class="price-tag">خصم {{ round((($product->price - $product->sale_price) / $product->price) * 100) }}%</span>
+                        @endif
                     </div>
 
                     <p class="product-info__desc">
-                        مزيج فخم من العود الكمبودي النادر والعنبر الدافئ، معزز بخيوط الزعفران وورد الطائف المطلق. هذا
-                        العطر الفاخر يجسد جوهر الترف الشرقي، ويترك أثراً من الغموض والرقي يدوم طوال اليوم.
+                        {{ $product->description }}
                     </p>
 
                     <!-- طبقات العطر -->
+                    @if($product->fragranceNotes->count() > 0)
                     <div class="fragrance-notes">
                         <h4>طبقات العطر</h4>
                         <div class="fragrance-notes__pyramid">
+                            @if($product->topNotes->count() > 0)
                             <div class="note-row">
                                 <div class="note-level">
                                     <span class="note-label">المقدمة</span>
                                     <div class="note-bar top"></div>
                                 </div>
                                 <div class="note-items">
-                                    <span>زعفران</span>
-                                    <span>برغموت</span>
-                                    <span>فلفل وردي</span>
+                                    @foreach($product->topNotes as $note)
+                                    <span>{{ $note->name }}</span>
+                                    @endforeach
                                 </div>
                             </div>
+                            @endif
+
+                            @if($product->heartNotes->count() > 0)
                             <div class="note-row">
                                 <div class="note-level">
                                     <span class="note-label">القلب</span>
                                     <div class="note-bar heart"></div>
                                 </div>
                                 <div class="note-items">
-                                    <span>ورد مطلق</span>
-                                    <span>ياسمين</span>
-                                    <span>عود</span>
+                                    @foreach($product->heartNotes as $note)
+                                    <span>{{ $note->name }}</span>
+                                    @endforeach
                                 </div>
                             </div>
+                            @endif
+
+                            @if($product->baseNotes->count() > 0)
                             <div class="note-row">
                                 <div class="note-level">
                                     <span class="note-label">القاعدة</span>
                                     <div class="note-bar base"></div>
                                 </div>
                                 <div class="note-items">
-                                    <span>عنبر</span>
-                                    <span>خشب صندل</span>
-                                    <span>مسك</span>
+                                    @foreach($product->baseNotes as $note)
+                                    <span>{{ $note->name }}</span>
+                                    @endforeach
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
+                    @endif
+
 
                     <!-- الحجم -->
                     <div class="product-info__sizes">
@@ -267,7 +274,7 @@
                     data-img="{{ asset('assets/clints/images/mens-perfume.png') }}">
                     <div class="product-card__image"><img src="{{ asset('assets/clints/images/mens-perfume.png') }}" alt="نوار إيليغانس">
                         <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                                onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                                onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
                     </div>
                     <div class="product-card__info">
                         <p class="product-card__brand">لوكس بارفيوم</p>
@@ -284,7 +291,7 @@
                     data-img="{{ asset('assets/clints/images/unisex-perfume.png') }}">
                     <div class="product-card__image"><img src="{{ asset('assets/clints/images/unisex-perfume.png') }}" alt="فيلفيت سانتال">
                         <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                                onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                                onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
                     </div>
                     <div class="product-card__info">
                         <p class="product-card__brand">لوكس بارفيوم</p>
@@ -301,7 +308,7 @@
                     data-img="{{ asset('assets/clints/images/womens-perfume.png') }}">
                     <div class="product-card__image"><img src="{{ asset('assets/clints/images/womens-perfume.png') }}" alt="روز ميستيك">
                         <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                                onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                                onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
                     </div>
                     <div class="product-card__info">
                         <p class="product-card__brand">لوكس بارفيوم</p>
@@ -317,7 +324,7 @@
                     data-img="{{ asset('assets/clints/images/mens-perfume.png') }}">
                     <div class="product-card__image"><img src="{{ asset('assets/clints/images/mens-perfume.png') }}" alt="ميدنايت ليذر">
                         <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                                onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                                onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
                     </div>
                     <div class="product-card__info">
                         <p class="product-card__brand">لوكس بارفيوم</p>

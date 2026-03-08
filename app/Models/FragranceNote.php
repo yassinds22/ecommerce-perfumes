@@ -10,12 +10,15 @@ class FragranceNote extends Model
 {
     use HasTranslations;
 
-    protected $fillable = ['product_id', 'type', 'note'];
+    protected $fillable = ['name', 'description'];
 
-    public $translatable = ['note'];
+    public $translatable = ['name', 'description'];
 
-    public function product()
+    public function products()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsToMany(Product::class, 'product_fragrance_note')
+                    ->withPivot('type')
+                    ->withTimestamps();
     }
+
 }

@@ -51,48 +51,15 @@
         <div class="divider"></div>
       </div>
       <div class="categories__grid reveal">
-        <a href="{{ route('shop', ['cat' => 'men']) }}" class="category-card">
+        @foreach($categories as $category)
+        <a href="{{ route('shop', ['cat' => $category->id]) }}" class="category-card">
           <div class="category-card__circle">
-            <img src="{{asset('assets/clints/images/mens-perfume.png')}}" alt="عطور رجالية">
+            <img src="{{ $category->getFirstMediaUrl('images') ?: asset('assets/clints/images/perfume-collection.png') }}" alt="{{ $category->name }}">
           </div>
-          <h4 class="category-card__name">عطور رجالية</h4>
-          <span class="category-card__count">24 منتج</span>
+          <h4 class="category-card__name">{{ $category->name }}</h4>
+          <span class="category-card__count">{{ $category->products_count }} منتج</span>
         </a>
-        <a href="{{ route('shop', ['cat' => 'women']) }}" class="category-card">
-          <div class="category-card__circle">
-            <img src="{{asset('assets/clints/images/womens-perfume.png')}}" alt="عطور نسائية">
-          </div>
-          <h4 class="category-card__name">عطور نسائية</h4>
-          <span class="category-card__count">32 منتج</span>
-        </a>
-        <a href="{{ route('shop', ['cat' => 'unisex']) }}" class="category-card">
-          <div class="category-card__circle">
-            <img src="{{asset('assets/clints/images/unisex-perfume.png')}}" alt="عطور مشتركة">
-          </div>
-          <h4 class="category-card__name">عطور مشتركة</h4>
-          <span class="category-card__count">18 منتج</span>
-        </a>
-        <a href="{{ route('shop', ['cat' => 'arabic']) }}" class="category-card">
-          <div class="category-card__circle">
-            <img src="{{asset('assets/clints/images/arabic-perfume.png')}}" alt="عطور عربية">
-          </div>
-          <h4 class="category-card__name">عطور عربية</h4>
-          <span class="category-card__count">15 منتج</span>
-        </a>
-        <a href="{{ route('shop', ['cat' => 'gifts']) }}" class="category-card">
-          <div class="category-card__circle">
-            <img src="{{asset('assets/clints/images/gift-set.png')}}" alt="أطقم هدايا">
-          </div>
-          <h4 class="category-card__name">أطقم هدايا</h4>
-          <span class="category-card__count">10 منتج</span>
-        </a>
-        <a href="{{ route('shop', ['cat' => 'new']) }}" class="category-card">
-          <div class="category-card__circle">
-            <img src="{{asset('assets/clints/images/perfume-collection.png')}}" alt="وصل حديثاً">
-          </div>
-          <h4 class="category-card__name">وصل حديثاً</h4>
-          <span class="category-card__count">8 منتج</span>
-        </a>
+        @endforeach
       </div>
     </div>
   </section>
@@ -143,147 +110,37 @@
         <div class="divider"></div>
       </div>
       <div class="featured__grid reveal" id="featuredGrid">
-        <!-- منتج 1 -->
-        <div class="product-card" data-id="1" data-name="نوار إيليغانس" data-price="185"
-          data-img="{{asset('assets/clints/images/mens-perfume.png')}}">
+        @foreach($featuredProducts as $product)
+        <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+          data-img="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}">
           <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/mens-perfume.png')}}" alt="نوار إيليغانس">
-            <span class="product-card__badge">جديد</span>
+            <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $product->name }}">
+            @if($product->created_at->gt(now()->subDays(7)))
+              <span class="product-card__badge">جديد</span>
+            @endif
             <div class="product-card__actions">
               <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
+              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product', $product->id) }}'"><i
                   class="far fa-eye"></i></button>
             </div>
           </div>
           <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">نوار إيليغانس</h4>
+            <p class="product-card__brand">{{ $product->brand->name ?? 'لوكس بارفيوم' }}</p>
+            <h4 class="product-card__name">{{ $product->name }}</h4>
             <div class="product-card__rating">
               <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
                 class="fas fa-star star"></i><i class="fas fa-star-half-alt star"></i>
               <span>(128)</span>
             </div>
-            <p class="product-card__price">$185.00</p>
+            @if($product->sale_price)
+              <p class="product-card__price"><span style="text-decoration: line-through; opacity: 0.6; font-size: 0.8em; margin-left: 8px">${{ $product->price }}</span> ${{ $product->sale_price }}</p>
+            @else
+              <p class="product-card__price">${{ $product->price }}</p>
+            @endif
             <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
           </div>
         </div>
-        <!-- منتج 2 -->
-        <div class="product-card" data-id="2" data-name="روز ميستيك" data-price="220"
-          data-img="{{asset('assets/clints/images/womens-perfume.png')}}">
-          <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/womens-perfume.png')}}" alt="روز ميستيك">
-            <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
-                  class="far fa-eye"></i></button>
-            </div>
-          </div>
-          <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">روز ميستيك</h4>
-            <div class="product-card__rating">
-              <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
-                class="fas fa-star star"></i><i class="fas fa-star star"></i>
-              <span>(256)</span>
-            </div>
-            <p class="product-card__price">$220.00</p>
-            <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
-          </div>
-        </div>
-        <!-- منتج 3 -->
-        <div class="product-card" data-id="3" data-name="عنبر عود ملكي" data-price="340"
-          data-img="{{asset('assets/clints/images/arabic-perfume.png')}}">
-          <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/arabic-perfume.png')}}" alt="عنبر عود ملكي">
-            <span class="product-card__badge">الأكثر مبيعاً</span>
-            <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
-                  class="far fa-eye"></i></button>
-            </div>
-          </div>
-          <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">عنبر عود ملكي</h4>
-            <div class="product-card__rating">
-              <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
-                class="fas fa-star star"></i><i class="fas fa-star star"></i>
-              <span>(312)</span>
-            </div>
-            <p class="product-card__price">$340.00</p>
-            <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
-          </div>
-        </div>
-        <!-- منتج 4 -->
-        <div class="product-card" data-id="4" data-name="فيلفيت سانتال" data-price="195"
-          data-img="{{asset('assets/clints/images/unisex-perfume.png')}}">
-          <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/unisex-perfume.png')}}" alt="فيلفيت سانتال">
-            <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
-                  class="far fa-eye"></i></button>
-            </div>
-          </div>
-          <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">فيلفيت سانتال</h4>
-            <div class="product-card__rating">
-              <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
-                class="fas fa-star star"></i><i class="far fa-star star empty"></i>
-              <span>(89)</span>
-            </div>
-            <p class="product-card__price">$195.00</p>
-            <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
-          </div>
-        </div>
-        <!-- منتج 5 -->
-        <div class="product-card" data-id="5" data-name="ياسمين ذهبي" data-price="275"
-          data-img="{{asset('assets/clints/images/womens-perfume.png')}}">
-          <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/womens-perfume.png')}}" alt="ياسمين ذهبي">
-            <span class="product-card__badge">محدود</span>
-            <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
-                  class="far fa-eye"></i></button>
-            </div>
-          </div>
-          <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">ياسمين ذهبي</h4>
-            <div class="product-card__rating">
-              <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
-                class="fas fa-star star"></i><i class="fas fa-star-half-alt star"></i>
-              <span>(167)</span>
-            </div>
-            <p class="product-card__price">$275.00</p>
-            <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
-          </div>
-        </div>
-        <!-- منتج 6 -->
-        <div class="product-card" data-id="6" data-name="ميدنايت ليذر" data-price="210"
-          data-img="{{asset('assets/clints/images/mens-perfume.png')}}">
-          <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/mens-perfume.png')}}" alt="ميدنايت ليذر">
-            <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
-                  class="far fa-eye"></i></button>
-            </div>
-          </div>
-          <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">ميدنايت ليذر</h4>
-            <div class="product-card__rating">
-              <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
-                class="fas fa-star star"></i><i class="far fa-star star empty"></i>
-              <span>(94)</span>
-            </div>
-            <p class="product-card__price">$210.00</p>
-            <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
-          </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </section>
@@ -299,69 +156,27 @@
       </div>
       <div class="bestsellers__slider reveal">
         <div class="bestsellers__track" id="bestsellersTrack">
-          <!-- الأكثر مبيعاً 1 -->
+          @foreach($bestsellerProducts as $product)
           <div class="bestseller-card">
             <div class="bestseller-card__image">
-              <img src="{{asset('assets/clints/images/arabic-perfume.png')}}" alt="عنبر عود ملكي">
+              <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/arabic-perfume.png') }}" alt="{{ $product->name }}">
             </div>
             <div class="bestseller-card__info">
-              <span class="section-label">المجموعة المميزة</span>
-              <h3>عنبر عود ملكي</h3>
-              <p>مزيج فخم من العود الكمبودي النادر والعنبر الدافئ، معزز بالزعفران وورد الطائف المطلق. هذا العطر الفاخر
-                يجسد جوهر الترف الشرقي.</p>
+              <span class="section-label">{{ $product->category->name ?? 'المجموعة المميزة' }}</span>
+              <h3>{{ $product->name }}</h3>
+              <p>{{ $product->short_description }}</p>
               <div class="bestseller-card__meta">
-                <span class="bestseller-card__price">$340.00</span>
+                <span class="bestseller-card__price">${{ $product->sale_price ?: $product->price }}</span>
                 <div class="bestseller-card__rating">
                   <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
                     class="fas fa-star"></i><i class="fas fa-star"></i>
                   <span>5.0</span>
                 </div>
               </div>
-              <a href="product.html" class="btn btn-outline-gold">اكتشف <i class="fas fa-arrow-left"></i></a>
+              <a href="{{ route('product', $product->id) }}" class="btn btn-outline-gold">اكتشف <i class="fas fa-arrow-left"></i></a>
             </div>
           </div>
-          <!-- الأكثر مبيعاً 2 -->
-          <div class="bestseller-card">
-            <div class="bestseller-card__image">
-              <img src="{{asset('assets/clints/images/womens-perfume.png')}}" alt="روز ميستيك">
-            </div>
-            <div class="bestseller-card__info">
-              <span class="section-label">مجموعة الأزهار</span>
-              <h3>روز ميستيك</h3>
-              <p>باقة ساحرة من ورد الدمشقي والفاوانيا والمسك الأبيض. هذا العطر الأنثوي الخالد يأسر جمال حديقة سرية عند
-                الفجر.</p>
-              <div class="bestseller-card__meta">
-                <span class="bestseller-card__price">$220.00</span>
-                <div class="bestseller-card__rating">
-                  <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                    class="fas fa-star"></i><i class="fas fa-star"></i>
-                  <span>5.0</span>
-                </div>
-              </div>
-              <a href="{{ route('product') }}" class="btn btn-outline-gold">اكتشف <i class="fas fa-arrow-left"></i></a>
-            </div>
-          </div>
-          <!-- الأكثر مبيعاً 3 -->
-          <div class="bestseller-card">
-            <div class="bestseller-card__image">
-              <img src="{{asset('assets/clints/images/mens-perfume.png')}}" alt="نوار إيليغانس">
-            </div>
-            <div class="bestseller-card__info">
-              <span class="section-label">المجموعة الرجالية</span>
-              <h3>نوار إيليغانس</h3>
-              <p>تركيبة جريئة من البرغموت الإيطالي والفلفل الأسود والفيتيفر الغني. مع لمسة من الجلد المدخن والأرز، عطر
-                يفرض حضوره وأناقته.</p>
-              <div class="bestseller-card__meta">
-                <span class="bestseller-card__price">$185.00</span>
-                <div class="bestseller-card__rating">
-                  <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                    class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-                  <span>4.5</span>
-                </div>
-              </div>
-              <a href="{{ route('product') }}" class="btn btn-outline-gold">اكتشف <i class="fas fa-arrow-left"></i></a>
-            </div>
-          </div>
+          @endforeach
         </div>
         <div class="bestsellers__nav">
           <button class="bestsellers__btn" id="bsPrev"><i class="fas fa-arrow-right"></i></button>
@@ -386,100 +201,35 @@
         <div class="divider"></div>
       </div>
       <div class="favorites__grid reveal">
-        <!-- عطر مفضل 1 -->
-        <div class="product-card" data-id="7" data-name="باتشولي ماجيك" data-price="190"
-          data-img="{{asset('assets/clints/images/mens-perfume.png')}}">
+        @foreach($favoriteProducts as $product)
+        <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+          data-img="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}">
           <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/mens-perfume.png')}}" alt="باتشولي ماجيك">
-            <span class="product-card__badge">الأعلى تقييماً</span>
-            <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
-                  class="far fa-eye"></i></button>
-            </div>
-          </div>
-          <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">باتشولي ماجيك</h4>
-            <div class="product-card__rating">
-              <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
-                class="fas fa-star star"></i><i class="fas fa-star star"></i>
-              <span>(210)</span>
-            </div>
-            <p class="product-card__price">$190.00</p>
-            <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
-          </div>
-        </div>
-        <!-- عطر مفضل 2 -->
-        <div class="product-card" data-id="8" data-name="لافندر سكاي" data-price="165"
-          data-img="{{asset('assets/clints/images/unisex-perfume.png')}}">
-          <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/unisex-perfume.png')}}" alt="لافندر سكاي">
-            <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
-                  class="far fa-eye"></i></button>
-            </div>
-          </div>
-          <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">لافندر سكاي</h4>
-            <div class="product-card__rating">
-              <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
-                class="fas fa-star star"></i><i class="fas fa-star-half-alt star"></i>
-              <span>(145)</span>
-            </div>
-            <p class="product-card__price">$165.00</p>
-            <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
-          </div>
-        </div>
-        <!-- عطر مفضل 3 -->
-        <div class="product-card" data-id="9" data-name="فانيلا غلو" data-price="215"
-          data-img="{{asset('assets/clints/images/womens-perfume.png')}}">
-          <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/womens-perfume.png')}}" alt="فانيلا غلو">
+            <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $product->name }}">
             <span class="product-card__badge">موصى به</span>
             <div class="product-card__actions">
               <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
+              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product', $product->id) }}'"><i
                   class="far fa-eye"></i></button>
             </div>
           </div>
           <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">فانيلا غلو</h4>
+            <p class="product-card__brand">{{ $product->brand->name ?? 'لوكس بارفيوم' }}</p>
+            <h4 class="product-card__name">{{ $product->name }}</h4>
             <div class="product-card__rating">
               <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
                 class="fas fa-star star"></i><i class="fas fa-star star"></i>
               <span>(182)</span>
             </div>
-            <p class="product-card__price">$215.00</p>
+            @if($product->sale_price)
+              <p class="product-card__price"><span style="text-decoration: line-through; opacity: 0.6; font-size: 0.8em; margin-left: 8px">${{ $product->price }}</span> ${{ $product->sale_price }}</p>
+            @else
+              <p class="product-card__price">${{ $product->price }}</p>
+            @endif
             <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
           </div>
         </div>
-        <!-- عطر مفضل 4 -->
-        <div class="product-card" data-id="10" data-name="أوشن بريز" data-price="175"
-          data-img="{{asset('assets/clints/images/mens-perfume.png')}}">
-          <div class="product-card__image">
-            <img src="{{asset('assets/clints/images/mens-perfume.png')}}" alt="أوشن بريز">
-            <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product') }}'"><i
-                  class="far fa-eye"></i></button>
-            </div>
-          </div>
-          <div class="product-card__info">
-            <p class="product-card__brand">لوكس بارفيوم</p>
-            <h4 class="product-card__name">أوشن بريز</h4>
-            <div class="product-card__rating">
-              <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
-                class="fas fa-star star"></i><i class="far fa-star star empty"></i>
-              <span>(67)</span>
-            </div>
-            <p class="product-card__price">$175.00</p>
-            <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
-          </div>
-        </div>
+        @endforeach
       </div>
       <div class="section-footer reveal" style="text-align: center; margin-top: 50px;">
         <a href="{{ route('shop') }}" class="btn btn-outline-gold">عرض الكل</a>

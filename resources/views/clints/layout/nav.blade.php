@@ -6,7 +6,7 @@
         <li><a href="{{ route('shop') }}" class="{{ request()->is('shop*') ? 'active' : '' }}">المتجر</a></li>
         <li><a href="{{ route('shop', ['cat' => 'men']) }}">للرجال</a></li>
         <li><a href="{{ route('shop', ['cat' => 'women']) }}">للنساء</a></li>
-        <li><a href="{{ route('product') }}" class="{{ request()->is('product*') ? 'active' : '' }}">المجموعات</a></li>
+        <li><a href="{{ route('shop') }}" class="{{ request()->is('product*') ? 'active' : '' }}">المجموعات</a></li>
         <li><a href="#footer">من نحن</a></li>
       </ul>
       <div class="nav-actions">
@@ -44,7 +44,7 @@
     <a href="{{ route('shop') }}">المتجر</a>
     <a href="{{ route('shop', ['cat' => 'men']) }}">للرجال</a>
     <a href="{{ route('shop', ['cat' => 'women']) }}">للنساء</a>
-    <a href="{{ route('product') }}">المجموعات</a>
+    <a href="{{ route('shop') }}">المجموعات</a>
     <a href="#footer">من نحن</a>
   </div>
   <div class="nav-overlay" id="navOverlay"></div>

@@ -131,7 +131,7 @@
               <div class="product-card__image"><img src="{{asset('assets/clints/images/mens-perfume.png')}}"
                   alt="نوار إيليغانس"><span class="product-card__badge">جديد</span>
                 <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                    onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                    onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">لوكس بارفيوم</p>
@@ -148,7 +148,7 @@
               <div class="product-card__image"><img src="{{asset('assets/clints/images/womens-perfume.png')}}"
                   alt="روز ميستيك">
                 <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                    onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                    onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">لوكس بارفيوم</p>
@@ -166,7 +166,7 @@
               <div class="product-card__image"><img src="{{asset('assets/clints/images/arabic-perfume.png')}}"
                   alt="عنبر عود ملكي"><span class="product-card__badge">الأكثر مبيعاً</span>
                 <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                    onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                    onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">لوكس بارفيوم</p>
@@ -184,7 +184,7 @@
               <div class="product-card__image"><img src="{{asset('assets/clints/images/unisex-perfume.png')}}"
                   alt="فيلفيت سانتال">
                 <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                    onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                    onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">لوكس بارفيوم</p>
@@ -201,7 +201,7 @@
               <div class="product-card__image"><img src="{{asset('assets/clints/images/womens-perfume.png')}}"
                   alt="ياسمين ذهبي"><span class="product-card__badge">محدود</span>
                 <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                    onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                    onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">لوكس بارفيوم</p>
@@ -218,7 +218,7 @@
               <div class="product-card__image"><img src="{{asset('assets/clints/images/mens-perfume.png')}}"
                   alt="ميدنايت ليذر">
                 <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                    onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                    onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">لوكس بارفيوم</p>
@@ -235,7 +235,7 @@
               <div class="product-card__image"><img src="{{asset('assets/clints/images/womens-perfume.png')}}"
                   alt="إيريس أبسولو">
                 <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                    onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                    onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">فلور دو لوكس</p>
@@ -253,7 +253,7 @@
               <div class="product-card__image"><img src="{{asset('assets/clints/images/unisex-perfume.png')}}"
                   alt="أرز ودخان"><span class="product-card__badge">تخفيض</span>
                 <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                    onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                    onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">نوار أتيلييه</p>
@@ -270,7 +270,7 @@
               <div class="product-card__image"><img src="{{asset('assets/clints/images/arabic-perfume.png')}}"
                   alt="عود ملكي مكثف">
                 <div class="product-card__actions"><button><i class="far fa-heart"></i></button><button
-                    onclick="window.location.href='{{ route('product') }}'"><i class="far fa-eye"></i></button></div>
+                    onclick="window.location.href='{{ route('shop') }}'"><i class="far fa-eye"></i></button></div>
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">مجموعة العود</p>

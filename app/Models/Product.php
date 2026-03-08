@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Coupon;
+
 
 use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\HasMedia;
@@ -49,10 +51,6 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(Brand::class);
     }
 
-    public function notes()
-    {
-        return $this->hasMany(FragranceNote::class);
-    }
 
     public function sizes()
     {
@@ -63,4 +61,92 @@ class Product extends Model implements HasMedia
     {
         return $this->hasMany(Review::class);
     }
+    public function fragranceNotes()
+    {
+        return $this->belongsToMany(FragranceNote::class, 'product_fragrance_note')
+                    ->withPivot('type')
+                    ->withTimestamps();
+    }
+
+    public function topNotes()
+    {
+        return $this->fragranceNotes()->wherePivot('type', 'top');
+    }
+
+    public function heartNotes()
+    {
+        return $this->fragranceNotes()->wherePivot('type', 'middle');
+    }
+
+    public function baseNotes()
+    {
+        return $this->fragranceNotes()->wherePivot('type', 'base');
+    }
+
+    /**
+     * Get the best applicable coupon for this product.
+     */
+    public function getApplicableCoupon()
+    {
+        // 1. Check for specific coupons for this product
+        $specificCoupon = Coupon::where('is_active', true)
+            ->where('is_global', false)
+            ->whereHas('products', function($query) {
+                $query->where('products.id', $this->id);
+            })
+            ->get()
+            ->filter(function($coupon) {
+                return $coupon->isValid();
+            })
+            ->sortByDesc(function($coupon) {
+                return $this->calculateDiscountValue($coupon);
+            })
+            ->first();
+
+        // 2. Check for global coupons
+        $globalCoupon = Coupon::where('is_active', true)
+            ->where('is_global', true)
+            ->get()
+            ->filter(function($coupon) {
+                return $coupon->isValid();
+            })
+            ->sortByDesc(function($coupon) {
+                return $this->calculateDiscountValue($coupon);
+            })
+            ->first();
+
+        // Return the one that gives the better discount
+        if (!$specificCoupon) return $globalCoupon;
+        if (!$globalCoupon) return $specificCoupon;
+
+        return $this->calculateDiscountValue($specificCoupon) >= $this->calculateDiscountValue($globalCoupon) 
+            ? $specificCoupon 
+            : $globalCoupon;
+    }
+
+    /**
+     * Calculate discount value for a given coupon and this product.
+     */
+    protected function calculateDiscountValue($coupon)
+    {
+        $basePrice = $this->sale_price ?: $this->price;
+        if ($coupon->type === 'percent') {
+            return $basePrice * ($coupon->value / 100);
+        }
+        return min($coupon->value, $basePrice);
+    }
+
+    /**
+     * Get the final price after applying the best coupon.
+     */
+    public function getDiscountedPrice()
+    {
+        $basePrice = $this->sale_price ?: $this->price;
+        $coupon = $this->getApplicableCoupon();
+        
+        if (!$coupon) return $basePrice;
+
+        return max(0, $basePrice - $this->calculateDiscountValue($coupon));
+    }
 }
+

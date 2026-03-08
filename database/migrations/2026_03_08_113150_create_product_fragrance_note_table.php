@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('fragrance_notes', function (Blueprint $table) {
+        Schema::create('product_fragrance_note', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->enum('type', ['Top', 'Heart', 'Base']);
-            $table->json('note'); // Multi-lang
+            $table->foreignId('fragrance_note_id')->constrained()->onDelete('cascade');
+            $table->enum('type', ['top', 'middle', 'base']);
             $table->timestamps();
+
         });
     }
 
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fragrance_notes');
+        Schema::dropIfExists('product_fragrance_note');
     }
 };
