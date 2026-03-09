@@ -146,6 +146,7 @@
   </section>
 
   <!-- ========== الأكثر مبيعاً ========== -->
+  @if($bestsellerProducts->count() > 0)
   <section class="section bestsellers" id="bestsellers">
     <div class="container">
       <div class="section-header reveal">
@@ -181,15 +182,16 @@
         <div class="bestsellers__nav">
           <button class="bestsellers__btn" id="bsPrev"><i class="fas fa-arrow-right"></i></button>
           <div class="bestsellers__dots" id="bsDots">
-            <span class="dot active"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
+            @foreach($bestsellerProducts as $index => $product)
+            <span class="dot {{ $index === 0 ? 'active' : '' }}"></span>
+            @endforeach
           </div>
           <button class="bestsellers__btn" id="bsNext"><i class="fas fa-arrow-left"></i></button>
         </div>
       </div>
     </div>
   </section>
+  @endif
 
   <!-- ========== المنتجات المفضلة ========== -->
   <section class="section favorites" id="favorites">

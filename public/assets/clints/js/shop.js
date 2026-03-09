@@ -66,3 +66,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+function applyFilters() {
+    const filters = {
+        cat: Array.from(document.querySelectorAll('input[name="cat"]:checked')).map(el => el.value),
+        brand: Array.from(document.querySelectorAll('input[name="brand"]:checked')).map(el => el.value),
+        gender: Array.from(document.querySelectorAll('input[name="gender"]:checked')).map(el => el.value),
+        min_price: 0,
+        max_price: document.getElementById('priceRange') ? document.getElementById('priceRange').value : 500,
+        sort: document.getElementById('sortSelect') ? document.getElementById('sortSelect').value : 'latest'
+    };
+
+    let url = new URL(window.location.href);
+    url.searchParams.delete('cat');
+    url.searchParams.delete('brand');
+    url.searchParams.delete('gender');
+    url.searchParams.delete('max_price');
+    url.searchParams.delete('sort');
+    url.searchParams.delete('page'); // Reset to first page on filter
+
+    if (filters.cat.length) url.searchParams.set('cat', filters.cat.join(','));
+    if (filters.brand.length) url.searchParams.set('brand', filters.brand.join(','));
+    if (filters.gender.length) url.searchParams.set('gender', filters.gender.join(','));
+    if (filters.max_price < 500) url.searchParams.set('max_price', filters.max_price);
+    if (filters.sort !== 'latest') url.searchParams.set('sort', filters.sort);
+
+    window.location.href = url.pathname + url.search;
+}

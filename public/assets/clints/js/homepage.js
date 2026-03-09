@@ -28,6 +28,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const cards = track.querySelectorAll('.bestseller-card');
     const total = cards.length;
 
+    if (total === 0) return;
+
+    // Hide nav if only 1 card
+    if (total <= 1) {
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+        if (dotsContainer) dotsContainer.style.display = 'none';
+        return;
+    }
+
     function goTo(index) {
         current = (index + total) % total;
         track.style.transform = `translateX(-${current * 100}%)`;

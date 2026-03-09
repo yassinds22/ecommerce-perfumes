@@ -1,11 +1,11 @@
 <!-- ===== ORDERS SECTION ===== -->
-<section class="dashboard-section" id="orders">
+<section class="dashboard-section {{ ($isActive ?? false) ? 'active' : '' }}" id="orders">
     <div class="stats-grid" style="grid-template-columns: repeat(4,1fr); margin-bottom:24px">
         <div class="stat-card">
             <div class="stat-card__header">
                 <div class="stat-card__icon orders"><i class="fas fa-clock"></i></div>
             </div>
-            <div class="stat-card__value" style="font-size:1.4rem">3</div>
+            <div class="stat-card__value" style="font-size:1.4rem">{{ $orderStats['pending'] ?? 0 }}</div>
             <div class="stat-card__label">قيد الانتظار</div>
         </div>
         <div class="stat-card">
@@ -14,21 +14,21 @@
                     style="background:rgba(96,165,250,0.15);color:var(--color-info)"><i
                         class="fas fa-shipping-fast"></i></div>
             </div>
-            <div class="stat-card__value" style="font-size:1.4rem">2</div>
+            <div class="stat-card__value" style="font-size:1.4rem">{{ $orderStats['shipped'] ?? 0 }}</div>
             <div class="stat-card__label">تم الشحن</div>
         </div>
         <div class="stat-card">
             <div class="stat-card__header">
                 <div class="stat-card__icon products"><i class="fas fa-check-circle"></i></div>
             </div>
-            <div class="stat-card__value" style="font-size:1.4rem">384</div>
+            <div class="stat-card__value" style="font-size:1.4rem">{{ $orderStats['completed'] ?? 0 }}</div>
             <div class="stat-card__label">مكتمل</div>
         </div>
         <div class="stat-card">
             <div class="stat-card__header">
                 <div class="stat-card__icon customers"><i class="fas fa-times-circle"></i></div>
             </div>
-            <div class="stat-card__value" style="font-size:1.4rem">5</div>
+            <div class="stat-card__value" style="font-size:1.4rem">{{ $orderStats['cancelled'] ?? 0 }}</div>
             <div class="stat-card__label">ملغي</div>
         </div>
     </div>
@@ -52,15 +52,40 @@
                     <th>إجراءات</th>
                 </tr>
             </thead>
-            <tbody id="ordersTableBody"></tbody>
+            <tbody id="ordersTableBody">
+                @foreach($orders as $order)
+                <tr>
+                    <td style="font-weight:600;color:var(--color-gold)">#ORD-{{ $order->id }}</td>
+                    <td>
+                        <div class="table-product__name">{{ $order->user->name ?? 'عميل مجهول' }}</div>
+                        <div class="table-product__brand">{{ $order->user->email ?? '' }}</div>
+                    </td>
+                    <td>{{ $order->items_count ?? $order->products->count() }} منتج</td>
+                    <td style="font-weight:600">${{ number_format($order->total) }}</td>
+                    <td>
+                        <span class="status-badge {{ $order->status }}">
+                            @if($order->status == 'completed') مكتمل
+                            @elseif($order->status == 'pending') قيد الانتظار
+                            @elseif($order->status == 'shipped') تم الشحن
+                            @else {{ $order->status }}
+                            @endif
+                        </span>
+                    </td>
+                    <td>{{ $order->created_at->format('Y-m-d') }}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button title="عرض" onclick="viewOrder({{ $order->id }})"><i class="fas fa-eye"></i></button>
+                            <button title="تعديل" onclick="editOrder({{ $order->id }})"><i class="fas fa-pen"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
         </table>
         <div class="table-footer">
-            <span>عرض 7 من 384 نتيجة</span>
+            <span>عرض {{ $orders->count() }} من {{ $orders->total() }} نتيجة</span>
             <div class="pagination">
-                <button class="active">1</button>
-                <button>2</button>
-                <button>3</button>
-                <button>...</button>
+                {{ $orders->links('vendor.pagination.custom') }}
             </div>
         </div>
     </div>

@@ -9,6 +9,7 @@
     @include('admin.sections.customers')
     @include('admin.sections.reviews')
     @include('admin.sections.offers')
+    @include('admin.sections.settings')
 
     @include('admin.sections.modals')
 @endsection

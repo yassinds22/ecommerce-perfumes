@@ -6,33 +6,33 @@
         <div class="stat-card">
             <div class="stat-card__header">
                 <div class="stat-card__icon revenue"><i class="fas fa-dollar-sign"></i></div>
-                <span class="stat-card__trend up"><i class="fas fa-arrow-up"></i> 12.5%</span>
+                <span class="stat-card__trend up"><i class="fas fa-arrow-up"></i> {{ $trends['revenue'] }}%</span>
             </div>
-            <div class="stat-card__value" data-value="$48,560">0</div>
+            <div class="stat-card__value" data-value="${{ number_format($stats['total_revenue']) }}">{{ number_format($stats['total_revenue']) }}</div>
             <div class="stat-card__label">إجمالي الإيرادات</div>
         </div>
         <div class="stat-card">
             <div class="stat-card__header">
                 <div class="stat-card__icon orders"><i class="fas fa-shopping-bag"></i></div>
-                <span class="stat-card__trend up"><i class="fas fa-arrow-up"></i> 8.2%</span>
+                <span class="stat-card__trend up"><i class="fas fa-arrow-up"></i> {{ $trends['orders'] }}%</span>
             </div>
-            <div class="stat-card__value" data-value="384">0</div>
+            <div class="stat-card__value" data-value="{{ $stats['orders_count'] }}">{{ $stats['orders_count'] }}</div>
             <div class="stat-card__label">إجمالي الطلبات</div>
         </div>
         <div class="stat-card">
             <div class="stat-card__header">
                 <div class="stat-card__icon products"><i class="fas fa-box-open"></i></div>
-                <span class="stat-card__trend up"><i class="fas fa-arrow-up"></i> 3.1%</span>
+                <span class="stat-card__trend up"><i class="fas fa-arrow-up"></i> {{ $trends['products'] }}%</span>
             </div>
-            <div class="stat-card__value" data-value="48">0</div>
+            <div class="stat-card__value" data-value="{{ $stats['active_products'] }}">{{ $stats['active_products'] }}</div>
             <div class="stat-card__label">المنتجات النشطة</div>
         </div>
         <div class="stat-card">
             <div class="stat-card__header">
                 <div class="stat-card__icon customers"><i class="fas fa-users"></i></div>
-                <span class="stat-card__trend up"><i class="fas fa-arrow-up"></i> 15.3%</span>
+                <span class="stat-card__trend up"><i class="fas fa-arrow-up"></i> {{ $trends['customers'] }}%</span>
             </div>
-            <div class="stat-card__value" data-value="1,247">0</div>
+            <div class="stat-card__value" data-value="{{ $stats['customers_count'] }}">{{ $stats['customers_count'] }}</div>
             <div class="stat-card__label">العملاء المسجلين</div>
         </div>
     </div>
@@ -48,56 +48,15 @@
                     <button class="chart-tab">أسبوعي</button>
                 </div>
             </div>
-            <div class="chart-placeholder">
+            <div class="chart-placeholder" id="salesChartContainer" 
+                 data-sales='@json($salesData)'>
                 <div class="chart-bars">
+                    @foreach($salesData as $data)
                     <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">يناير</span>
+                        <div class="chart-bar" style="height:0%" title="${{ number_format($data['value']) }}"></div>
+                        <span class="chart-bar-label">{{ $data['month'] }}</span>
                     </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">فبراير</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">مارس</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">أبريل</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">مايو</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">يونيو</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">يوليو</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">أغسطس</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">سبتمبر</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">أكتوبر</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">نوفمبر</span>
-                    </div>
-                    <div class="chart-bar-group">
-                        <div class="chart-bar" style="height:0%"></div><span
-                            class="chart-bar-label">ديسمبر</span>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -107,30 +66,31 @@
             <div class="chart-card__header">
                 <h3>التصنيفات</h3>
             </div>
+            @php
+                $totalProducts = $stats['active_products'];
+                $conicParts = [];
+                $currentPercent = 0;
+                foreach($categoriesStats as $cat) {
+                    $percent = $totalProducts > 0 ? ($cat['count'] / $totalProducts) * 100 : 0;
+                    $conicParts[] = "{$cat['color']} {$currentPercent}% " . ($currentPercent + $percent) . "%";
+                    $currentPercent += $percent;
+                }
+                $conicGradient = count($conicParts) > 0 ? implode(', ', $conicParts) : '#8b8fa3 0% 100%';
+            @endphp
             <div class="donut-chart">
                 <div class="donut-visual"
-                    style="background: conic-gradient(#c9a84c 0% 35%, #60a5fa 35% 55%, #34d399 55% 75%, #f87171 75% 90%, #8b8fa3 90% 100%)">
+                    style="background: conic-gradient({{ $conicGradient }})">
                     <div class="donut-center">
-                        <strong>48</strong>
+                        <strong>{{ $totalProducts }}</strong>
                         <span>منتج</span>
                     </div>
                 </div>
                 <div class="donut-legend">
+                    @foreach($categoriesStats as $cat)
                     <div class="legend-item">
-                        <div class="legend-dot" style="background:#c9a84c"></div>رجالي <span>35%</span>
+                        <div class="legend-dot" style="background:{{ $cat['color'] }}"></div>{{ $cat['name'] }} <span>{{ $totalProducts > 0 ? round(($cat['count'] / $totalProducts) * 100) : 0 }}%</span>
                     </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:#60a5fa"></div>نسائي <span>20%</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:#34d399"></div>مشترك <span>20%</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:#f87171"></div>عربي <span>15%</span>
-                    </div>
-                    <div class="legend-item">
-                        <div class="legend-dot" style="background:#8b8fa3"></div>هدايا <span>10%</span>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -156,46 +116,24 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach($recentOrders as $order)
                 <tr>
-                    <td style="font-weight:600;color:var(--color-gold)">#ORD-2061</td>
-                    <td>سارة أحمد</td>
-                    <td>3 منتج</td>
-                    <td style="font-weight:600">$745</td>
-                    <td><span class="status-badge completed">مكتمل</span></td>
-                    <td>2026-03-07</td>
+                    <td style="font-weight:600;color:var(--color-gold)">#ORD-{{ $order->id }}</td>
+                    <td>{{ $order->user->name ?? 'عميل مجهول' }}</td>
+                    <td>{{ $order->items_count ?? $order->products->count() }} منتج</td>
+                    <td style="font-weight:600">${{ number_format($order->total) }}</td>
+                    <td>
+                        <span class="status-badge {{ $order->status }}">
+                            @if($order->status == 'completed') مكتمل
+                            @elseif($order->status == 'pending') قيد الانتظار
+                            @elseif($order->status == 'shipped') تم الشحن
+                            @else {{ $order->status }}
+                            @endif
+                        </span>
+                    </td>
+                    <td>{{ $order->created_at->format('Y-m-d') }}</td>
                 </tr>
-                <tr>
-                    <td style="font-weight:600;color:var(--color-gold)">#ORD-2060</td>
-                    <td>أحمد خالد</td>
-                    <td>1 منتج</td>
-                    <td style="font-weight:600">$340</td>
-                    <td><span class="status-badge shipped">تم الشحن</span></td>
-                    <td>2026-03-07</td>
-                </tr>
-                <tr>
-                    <td style="font-weight:600;color:var(--color-gold)">#ORD-2059</td>
-                    <td>مريم خالد</td>
-                    <td>2 منتج</td>
-                    <td style="font-weight:600">$495</td>
-                    <td><span class="status-badge pending">قيد الانتظار</span></td>
-                    <td>2026-03-06</td>
-                </tr>
-                <tr>
-                    <td style="font-weight:600;color:var(--color-gold)">#ORD-2058</td>
-                    <td>عمر محمد</td>
-                    <td>1 منتج</td>
-                    <td style="font-weight:600">$220</td>
-                    <td><span class="status-badge completed">مكتمل</span></td>
-                    <td>2026-03-06</td>
-                </tr>
-                <tr>
-                    <td style="font-weight:600;color:var(--color-gold)">#ORD-2057</td>
-                    <td>نورة العلي</td>
-                    <td>4 منتج</td>
-                    <td style="font-weight:600">$980</td>
-                    <td><span class="status-badge shipped">تم الشحن</span></td>
-                    <td>2026-03-05</td>
-                </tr>
+                @endforeach
             </tbody>
         </table>
     </div>
