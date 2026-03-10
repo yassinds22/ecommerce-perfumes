@@ -79,8 +79,13 @@
                 </div>
                 <div class="form-group">
                     <label>المخزون المتوفر</label>
-                    <input type="number" name="stock" value="{{ old('stock', 0) }}" required>
-                    @error('stock') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
+                    <input type="number" name="stock_quantity" value="{{ old('stock_quantity', 0) }}" min="0" required>
+                    @error('stock_quantity') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
+                </div>
+                <div class="form-group">
+                    <label>حد التنبيه (المخزون المنخفض)</label>
+                    <input type="number" name="low_stock_threshold" value="{{ old('low_stock_threshold', 10) }}" min="0" required>
+                    @error('low_stock_threshold') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
                 </div>
             </div>
 

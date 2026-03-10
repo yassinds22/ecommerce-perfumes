@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>لوكس بارفيوم — اكتشف عطرك المميز</title>
   <meta name="description"
     content="اكتشف العطور الفاخرة المصنوعة من أجود المكونات. تسوق عطور فاخرة للرجال والنساء في لوكس بارفيوم.">

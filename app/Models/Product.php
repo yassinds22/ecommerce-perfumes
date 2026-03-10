@@ -25,6 +25,9 @@ class Product extends Model implements HasMedia
         'sale_price',
         'sku',
         'stock',
+        'stock_quantity',
+        'low_stock_threshold',
+        'is_out_of_stock',
         'gender',
         'is_featured',
         'is_bestseller',
@@ -37,6 +40,7 @@ class Product extends Model implements HasMedia
         'is_featured' => 'boolean',
         'is_bestseller' => 'boolean',
         'status' => 'boolean',
+        'is_out_of_stock' => 'boolean',
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
     ];
@@ -81,6 +85,27 @@ class Product extends Model implements HasMedia
     public function baseNotes()
     {
         return $this->fragranceNotes()->wherePivot('type', 'base');
+    }
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function isLowStock()
+    {
+        return $this->stock_quantity <= $this->low_stock_threshold && !$this->is_out_of_stock;
+    }
+
+    public function updateStockStatus()
+    {
+        $this->is_out_of_stock = $this->stock_quantity <= 0;
+        $this->save();
     }
 
     /**

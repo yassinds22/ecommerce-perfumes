@@ -7,10 +7,12 @@ use App\Services\ProductService;
 use App\Services\CategoryService;
 use App\Services\NoteService;
 use App\Models\Brand;
+use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    use LogsActivity;
     /**
      * @var ProductService
      */
@@ -83,7 +85,8 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
             'sku' => 'required|string|unique:products,sku',
-            'stock' => 'required|integer|min:0',
+            'stock_quantity' => 'required|integer|min:0',
+            'low_stock_threshold' => 'required|integer|min:0',
             'gender' => 'required|in:Men,Women,Unisex,Kids',
             'is_featured' => 'nullable|boolean',
             'is_bestseller' => 'nullable|boolean',
@@ -99,7 +102,9 @@ class ProductController extends Controller
         ]);
 
 
-        $this->productService->createProduct($data);
+        $product = $this->productService->createProduct($data);
+
+        $this->logActivity('إضافة منتج جديد', "تم إضافة المنتج: {$product->name}", $product);
 
         return redirect()->route('admin.products.index')->with('success', 'تم إضافة المنتج بنجاح');
     }
@@ -139,7 +144,8 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
             'sku' => 'required|string|unique:products,sku,' . $id,
-            'stock' => 'required|integer|min:0',
+            'stock_quantity' => 'required|integer|min:0',
+            'low_stock_threshold' => 'required|integer|min:0',
             'gender' => 'required|in:Men,Women,Unisex,Kids',
             'is_featured' => 'nullable|boolean',
             'is_bestseller' => 'nullable|boolean',
@@ -155,7 +161,9 @@ class ProductController extends Controller
         ]);
 
 
-        $this->productService->updateProduct($id, $data);
+        $product = $this->productService->updateProduct($id, $data);
+
+        $this->logActivity('تعديل منتج', "تم تعديل بيانات المنتج: {$product->name}", $product);
 
         return redirect()->route('admin.products.index')->with('success', 'تم تحديث المنتج بنجاح');
     }
@@ -166,6 +174,9 @@ class ProductController extends Controller
     public function destroy(int $id)
     {
         $this->productService->deleteProduct($id);
+
+        $this->logActivity('حذف منتج', "تم حذف المنتج رقم: {$id}");
+
         return redirect()->route('admin.products.index')->with('success', 'تم حذف المنتج بنجاح');
     }
 

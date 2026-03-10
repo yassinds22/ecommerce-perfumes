@@ -15,7 +15,11 @@ class Order extends Model
         'status',
         'payment_method',
         'payment_status',
-        'address_details'
+        'address_details',
+        'shipping_company',
+        'tracking_number',
+        'shipped_at',
+        'delivered_at'
     ];
 
     protected $casts = [
@@ -23,6 +27,8 @@ class Order extends Model
         'total' => 'decimal:2',
         'shipping_cost' => 'decimal:2',
         'tax' => 'decimal:2',
+        'shipped_at' => 'datetime',
+        'delivered_at' => 'datetime',
     ];
 
     public function user()

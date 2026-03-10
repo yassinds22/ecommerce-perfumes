@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\CouponService;
+use App\Models\Coupon;
+use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 
 class CouponController extends Controller
 {
+    use LogsActivity;
     /**
      * @var CouponService
      */
@@ -61,7 +64,9 @@ class CouponController extends Controller
         $data['is_active'] = $request->has('is_active');
         $productIds = $request->input('products', []);
 
-        $this->couponService->createCoupon($data, $productIds);
+        $coupon = $this->couponService->createCoupon($data, $productIds);
+
+        $this->logActivity('إضافة كوبون جديد', "تم إضافة الكوبون بنجاح: {$coupon->code}", $coupon);
 
         return redirect()->route('admin.coupons.index')->with('success', 'تم إضافة الكوبون بنجاح');
     }
@@ -97,7 +102,9 @@ class CouponController extends Controller
         $data['is_active'] = $request->has('is_active');
         $productIds = $request->input('products', []);
 
-        $this->couponService->updateCoupon($id, $data, $productIds);
+        $coupon = $this->couponService->updateCoupon($id, $data, $productIds);
+
+        $this->logActivity('تعديل كوبون', "تم تعديل الكوبون: {$coupon->code}", $coupon);
 
         return redirect()->route('admin.coupons.index')->with('success', 'تم تحديث الكوبون بنجاح');
     }
@@ -110,6 +117,11 @@ class CouponController extends Controller
     public function toggleStatus(int $id)
     {
         $this->couponService->toggleStatus($id);
+        
+        $coupon = \App\Models\Coupon::find($id);
+        $statusText = $coupon->is_active ? 'تفعيل' : 'تعطيل';
+        $this->logActivity('تغيير حالة الكوبون', "تم {$statusText} الكوبون: {$coupon->code}", $coupon);
+
         return redirect()->back()->with('success', 'تم تغيير حالة الكوبون بنجاح');
     }
 
@@ -120,6 +132,9 @@ class CouponController extends Controller
     public function destroy(int $id)
     {
         $this->couponService->deleteCoupon($id);
+        
+        $this->logActivity('حذف كوبون', "تم حذف الكوبون رقم: {$id}");
+
         return redirect()->route('admin.coupons.index')->with('success', 'تم حذف الكوبون بنجاح');
     }
 }

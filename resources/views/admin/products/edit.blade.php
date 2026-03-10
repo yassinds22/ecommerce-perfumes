@@ -70,10 +70,17 @@
                 <div class="form-group">
                     <label>رمز المنتج (SKU)</label>
                     <input type="text" name="sku" value="{{ old('sku', $product->sku) }}" required>
+                    @error('sku') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
                     <label>المخزون المتوفر</label>
-                    <input type="number" name="stock" value="{{ old('stock', $product->stock) }}" required>
+                    <input type="number" name="stock_quantity" value="{{ old('stock_quantity', $product->stock_quantity) }}" min="0" required>
+                    @error('stock_quantity') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
+                </div>
+                <div class="form-group">
+                    <label>حد التنبيه</label>
+                    <input type="number" name="low_stock_threshold" value="{{ old('low_stock_threshold', $product->low_stock_threshold) }}" min="0" required>
+                    @error('low_stock_threshold') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
                 </div>
             </div>
 
@@ -194,6 +201,44 @@
                 <a href="{{ route('admin.products.index') }}" class="btn btn-outline">إلغاء</a>
             </div>
         </form>
+    </div>
+    <div class="table-card" style="max-width: 1000px; margin: 30px auto;">
+        <div class="table-card__header">
+            <h3>سجل حركة المخزون</h3>
+            <div class="badge {{ $product->is_out_of_stock ? 'badge--danger' : ($product->isLowStock() ? 'badge--warning' : 'badge--success') }}">
+                {{ $product->is_out_of_stock ? 'نفذ من المخزون' : ($product->isLowStock() ? 'مخزون منخفض' : 'متوفر') }}
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>التاريخ</th>
+                        <th>النوع</th>
+                        <th>الكمية</th>
+                        <th>البيان / المرجع</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($product->stockMovements()->latest()->take(10)->get() as $movement)
+                        <tr>
+                            <td>{{ $movement->created_at->format('Y-m-d H:i') }}</td>
+                            <td>
+                                <span class="badge badge--{{ $movement->type === 'increase' ? 'success' : ($movement->type === 'decrease' ? 'danger' : 'info') }}">
+                                    {{ $movement->type === 'increase' ? 'زيادة' : ($movement->type === 'decrease' ? 'نقص' : 'تعديل') }}
+                                </span>
+                            </td>
+                            <td dir="ltr">{{ $movement->type === 'decrease' ? '-' : '+' }}{{ $movement->quantity }}</td>
+                            <td>{{ $movement->reference ?: '---' }}</td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 20px; color: var(--color-text-muted)">لا يوجد حركات مخزون مسجلة</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </section>
 @endsection

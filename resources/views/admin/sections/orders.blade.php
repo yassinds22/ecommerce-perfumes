@@ -67,15 +67,28 @@
                             @if($order->status == 'completed') مكتمل
                             @elseif($order->status == 'pending') قيد الانتظار
                             @elseif($order->status == 'shipped') تم الشحن
+                            @elseif($order->status == 'processing') قيد المعالجة
+                            @elseif($order->status == 'delivered') تم التسليم
+                            @elseif($order->status == 'cancelled') ملغي
                             @else {{ $order->status }}
                             @endif
                         </span>
+                        @if($order->tracking_number)
+                            <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 5px">
+                                <i class="fas fa-truck"></i> {{ $order->shipping_company }}: {{ $order->tracking_number }}
+                            </div>
+                        @endif
                     </td>
                     <td>{{ $order->created_at->format('Y-m-d') }}</td>
                     <td>
                         <div class="table-actions">
                             <button title="عرض" onclick="viewOrder({{ $order->id }})"><i class="fas fa-eye"></i></button>
-                            <button title="تعديل" onclick="editOrder({{ $order->id }})"><i class="fas fa-pen"></i></button>
+                            <button title="بيانات الشحن" onclick="editShipping({{ $order->id }}, '{{ $order->shipping_company }}', '{{ $order->tracking_number }}')">
+                                <i class="fas fa-shipping-fast"></i>
+                            </button>
+                            <button title="تغيير الحالة" onclick="editOrderStatus({{ $order->id }}, '{{ $order->status }}')">
+                                <i class="fas fa-tasks"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>

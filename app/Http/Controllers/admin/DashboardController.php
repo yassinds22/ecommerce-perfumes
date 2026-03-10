@@ -14,11 +14,54 @@ class DashboardController extends Controller
     public function index()
     {
         // Aggregate Statistics
+        $totalRevenue = Order::where('status', 'completed')->sum('total');
+        $ordersCount = Order::count();
+        $customersCount = User::where('role', 'Customer')->count();
+        $activeProducts = Product::where('status', true)->count();
+
+        // Calculate Trends (Comparing this month vs last month)
+        $thisMonth = Carbon::now()->startOfMonth();
+        $lastMonth = Carbon::now()->subMonth()->startOfMonth();
+
+        $thisMonthRevenue = Order::where('status', 'completed')->where('created_at', '>=', $thisMonth)->sum('total');
+        $lastMonthRevenue = Order::where('status', 'completed')->where('created_at', '>=', $lastMonth)->where('created_at', '<', $thisMonth)->sum('total');
+        $revenueTrend = $lastMonthRevenue > 0 ? (($thisMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100 : 100;
+
+        $thisMonthOrders = Order::where('created_at', '>=', $thisMonth)->count();
+        $lastMonthOrders = Order::where('created_at', '>=', $lastMonth)->where('created_at', '<', $thisMonth)->count();
+        $ordersTrend = $lastMonthOrders > 0 ? (($thisMonthOrders - $lastMonthOrders) / $lastMonthOrders) * 100 : 100;
+
         $stats = [
-            'total_revenue' => Order::where('status', 'completed')->sum('total'),
-            'orders_count' => Order::count(),
-            'active_products' => Product::where('status', true)->count(),
-            'customers_count' => User::where('role', 'Customer')->count(),
+            'total_revenue' => $totalRevenue,
+            'orders_count' => $ordersCount,
+            'active_products' => $activeProducts,
+            'customers_count' => $customersCount,
+        ];
+
+        $trends = [
+            'revenue' => round($revenueTrend, 1),
+            'orders' => round($ordersTrend, 1),
+            'products' => 0, 
+            'customers' => 0,
+        ];
+
+        // Top Selling Products
+        $topProducts = Product::withCount(['orderItems as total_sold' => function($query) {
+                $query->select(\DB::raw('sum(quantity)'));
+            }])
+            ->orderByDesc('total_sold')
+            ->take(5)
+            ->get();
+
+        // New vs Returning Customers
+        $returningCustomersCount = User::where('role', 'Customer')
+            ->has('orders', '>', 1)
+            ->count();
+        
+        $customerStats = [
+            'new' => $customersCount - $returningCustomersCount,
+            'returning' => $returningCustomersCount,
+            'total' => $customersCount
         ];
 
         // Specific Stats for Sections
@@ -27,14 +70,6 @@ class DashboardController extends Controller
             'shipped' => Order::where('status', 'shipped')->count(),
             'completed' => Order::where('status', 'completed')->count(),
             'cancelled' => Order::where('status', 'cancelled')->count(),
-        ];
-
-        // Placeholder trends
-        $trends = [
-            'revenue' => 12.5,
-            'orders' => 8.2,
-            'products' => 3.1,
-            'customers' => 15.3,
         ];
 
         // Data for Sections
@@ -78,8 +113,10 @@ class DashboardController extends Controller
 
         // Manual stats for reviews for now as we don't have many
         $reviews = \App\Models\Review::with(['user', 'product'])->latest()->paginate(10);
+        $recentActivities = \App\Models\ActivityLog::with('user')->latest()->take(10)->get();
         $settings = \App\Models\Setting::all()->groupBy('group');
+        $unreadNotificationsCount = auth()->user() ? auth()->user()->unreadNotifications->count() : 0;
 
-        return view('admin.index', compact('stats', 'trends', 'recentOrders', 'orders', 'orderStats', 'customers', 'reviews', 'allProducts', 'salesData', 'categoriesStats', 'offers', 'categories', 'settings'));
+        return view('admin.index', compact('stats', 'trends', 'recentOrders', 'orders', 'orderStats', 'customers', 'reviews', 'allProducts', 'salesData', 'categoriesStats', 'offers', 'categories', 'settings', 'topProducts', 'customerStats', 'recentActivities', 'unreadNotificationsCount'));
     }
 }

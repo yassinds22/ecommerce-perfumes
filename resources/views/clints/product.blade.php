@@ -4,7 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>عنبر عود ملكي — لوكس بارفيوم</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ $product->name }} — لوكس بارفيوم</title>
     <meta name="description"
         content="عنبر عود ملكي — مزيج فخم من العود الكمبودي النادر والعنبر الدافئ. عطر فاخر من لوكس بارفيوم.">
     <link rel="stylesheet" href="{{ asset('assets/clints/css/style.css') }}">
@@ -205,6 +206,32 @@
                         </div><span>2</span>
                     </div>
                 </div>
+            <!-- Add Review Form -->
+            <div class="add-review-form" style="margin-bottom: 40px; background: var(--bg-card); padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <h3 style="margin-bottom: 20px;">أضف تقييمك</h3>
+                <form id="reviewForm" data-product-id="{{ $product->id }}">
+                    <div class="rating-input" style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;">
+                        <span>تقييمك:</span>
+                        <div class="star-rating" style="display: flex; flex-direction: row-reverse; gap: 5px; font-size: 1.5rem;">
+                            <input type="radio" name="rating" value="5" id="r5" style="display:none;"><label for="r5" style="cursor:pointer; color: var(--color-text-dim);">★</label>
+                            <input type="radio" name="rating" value="4" id="r4" style="display:none;"><label for="r4" style="cursor:pointer; color: var(--color-text-dim);">★</label>
+                            <input type="radio" name="rating" value="3" id="r3" style="display:none;"><label for="r3" style="cursor:pointer; color: var(--color-text-dim);">★</label>
+                            <input type="radio" name="rating" value="2" id="r2" style="display:none;"><label for="r2" style="cursor:pointer; color: var(--color-text-dim);">★</label>
+                            <input type="radio" name="rating" value="1" id="r1" style="display:none;"><label for="r1" style="cursor:pointer; color: var(--color-text-dim);">★</label>
+                        </div>
+                    </div>
+                    <style>
+                        .star-rating label:hover,
+                        .star-rating label:hover ~ label,
+                        .star-rating input:checked ~ label {
+                            color: var(--color-gold) !important;
+                        }
+                    </style>
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <textarea id="reviewComment" placeholder="أدخل تعليقك هنا..." required style="width: 100%; padding: 15px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--color-text); min-height: 120px;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="submitReviewBtn">إرسال التقييم</button>
+                </form>
             </div>
 
             <div class="reviews-list">

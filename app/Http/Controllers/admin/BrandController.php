@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\BrandService;
+use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
+    use LogsActivity;
     /**
      * @var BrandService
      */
@@ -50,7 +52,9 @@ class BrandController extends Controller
             'logo' => 'nullable|image|max:2048',
         ]);
 
-        $this->brandService->createBrand($data);
+        $brand = $this->brandService->createBrand($data);
+
+        $this->logActivity('إضافة ماركة جديدة', "تم إضافة الماركة: {$brand->name}", $brand);
 
         return redirect()->route('admin.brands.index')->with('success', 'تم إضافة الماركة بنجاح');
     }
@@ -74,7 +78,9 @@ class BrandController extends Controller
             'logo' => 'nullable|image|max:2048',
         ]);
 
-        $this->brandService->updateBrand($id, $data);
+        $brand = $this->brandService->updateBrand($id, $data);
+
+        $this->logActivity('تعديل ماركة', "تم تعديل بيانات الماركة: {$brand->name}", $brand);
 
         return redirect()->route('admin.brands.index')->with('success', 'تم تحديث الماركة بنجاح');
     }
@@ -85,6 +91,8 @@ class BrandController extends Controller
     public function destroy(int $id)
     {
         $this->brandService->deleteBrand($id);
+
+        $this->logActivity('حذف ماركة', "تم حذف الماركة رقم: {$id}");
         return redirect()->route('admin.brands.index')->with('success', 'تم حذف الماركة بنجاح');
     }
 }

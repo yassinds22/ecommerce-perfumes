@@ -343,3 +343,295 @@ function showDashToast(message) {
   toast.classList.add('visible');
   setTimeout(() => toast.classList.remove('visible'), 3000);
 }
+// ===== ORDER MANAGEMENT =====
+function editShipping(id, company, tracking) {
+  document.getElementById('shippingOrderId').value = id;
+  document.getElementById('shippingCompany').value = company || '';
+  document.getElementById('trackingNumber').value = tracking || '';
+  openModal('editShippingModal');
+}
+
+function editOrderStatus(id, status) {
+  document.getElementById('statusOrderId').value = id;
+  document.getElementById('orderStatusSelect').value = status;
+  openModal('editStatusModal');
+}
+
+function viewOrder(id) {
+  fetch(`/admin/orders/${id}`, {
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+    .then(resp => resp.json())
+    .then(order => {
+      // For now, let's just show a simple alert or log. 
+      // In a real app, we'd open a detailed view modal.
+      console.log('Order Details:', order);
+      alert(`تفاصيل الطلب #ORD-${order.id}\nالعميل: ${order.user.name}\nالمبلغ: $${order.total}\nالحالة: ${order.status}`);
+    });
+}
+
+// Form listeners for Orders
+document.addEventListener('DOMContentLoaded', () => {
+  const shippingForm = document.getElementById('shippingForm');
+  if (shippingForm) {
+    shippingForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('shippingOrderId').value;
+      const formData = new FormData(shippingForm);
+
+      fetch(`/admin/orders/${id}/shipping`, {
+        method: 'POST', // We use POST with _method PUT in Blade
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+      })
+        .then(resp => resp.json())
+        .then(data => {
+          if (data.success) {
+            showDashToast(data.message);
+            closeModal('editShippingModal');
+            setTimeout(() => location.reload(), 1500); // Reload to see changes
+          }
+        });
+    });
+  }
+
+  const statusForm = document.getElementById('statusForm');
+  if (statusForm) {
+    statusForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('statusOrderId').value;
+      const formData = new FormData(statusForm);
+
+      fetch(`/admin/orders/${id}/status`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+      })
+        .then(resp => resp.json())
+        .then(data => {
+          if (data.success) {
+            showDashToast(data.message);
+            closeModal('editStatusModal');
+            setTimeout(() => location.reload(), 1500);
+          }
+        });
+    });
+  }
+});
+
+// ===== REVIEW MODERATION =====
+function approveReview(id) {
+  if (!confirm('هل تريد اعتماد هذا التقييم ليظهر في الموقع؟')) return;
+
+  fetch(`/admin/reviews/${id}/approve`, {
+    method: 'PATCH',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    }
+  })
+    .then(resp => resp.json())
+    .then(data => {
+      if (data.success) {
+        showDashToast(data.message);
+        setTimeout(() => location.reload(), 1000);
+      }
+    });
+}
+
+function rejectReview(id) {
+  if (!confirm('هل تريد إلغاء اعتماد هذا التقييم؟ سيختفي من الموقع.')) return;
+
+  fetch(`/admin/reviews/${id}/reject`, {
+    method: 'PATCH',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    }
+  })
+    .then(resp => resp.json())
+    .then(data => {
+      if (data.success) {
+        showDashToast(data.message);
+        setTimeout(() => location.reload(), 1000);
+      }
+    });
+}
+
+function toggleVerifiedReview(id) {
+  fetch(`/admin/reviews/${id}/toggle-verified`, {
+    method: 'PATCH',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    }
+  })
+    .then(resp => resp.json())
+    .then(data => {
+      if (data.success) {
+        showDashToast(data.message);
+        setTimeout(() => location.reload(), 1000);
+      }
+    });
+}
+
+function deleteReview(id) {
+  if (!confirm('هل أنت متأكد من حذف هذا التقييم نهائياً؟')) return;
+
+  fetch(`/admin/reviews/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+    }
+  })
+    .then(resp => resp.json())
+    .then(data => {
+      if (data.success) {
+        showDashToast(data.message);
+        setTimeout(() => location.reload(), 1000);
+      }
+    });
+}
+
+function filterReviews() {
+  const rating = document.getElementById('filterReviewRating').value;
+  const status = document.getElementById('filterReviewStatus').value;
+
+  const params = new URLSearchParams();
+  if (rating) params.append('rating', rating);
+  if (status) params.append('status', status);
+
+  const url = `/admin/reviews?${params.toString()}`;
+
+  fetch(url, {
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+    .then(resp => resp.text())
+    .then(html => {
+      document.getElementById('reviews').innerHTML = html;
+      // Re-bind events if necessary or reload part
+      // Since we are replacing the whole section, it should work 
+      // but usually it's better to just reload the table body.
+      // For simplicity in this layout, we reload or replace.
+      window.location.href = url; // Full reload for now to keep it simple and clean with the existing logic
+    });
+}
+
+// ===== Notifications =====
+const notifBtn = document.getElementById('notifBtn');
+const notifMenu = document.getElementById('notifMenu');
+const notifList = document.getElementById('notifList');
+
+if (notifBtn) {
+  notifBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    notifMenu.classList.toggle('active');
+    if (notifMenu.classList.contains('active')) {
+      fetchNotifications();
+    }
+  });
+}
+
+document.addEventListener('click', (e) => {
+  if (notifMenu && !notifMenu.contains(e.target) && !notifBtn.contains(e.target)) {
+    notifMenu.classList.remove('active');
+  }
+});
+
+function fetchNotifications() {
+  fetch('/admin/notifications')
+    .then(res => res.json())
+    .then(data => {
+      if (data.length === 0) {
+        notifList.innerHTML = '<div style="padding: 20px; text-align: center; color: var(--color-text-dim)">لا توجد تنبيهات جديدة</div>';
+        return;
+      }
+
+      notifList.innerHTML = '';
+      data.forEach(notif => {
+        const isUnread = !notif.read_at;
+        const item = document.createElement('div');
+        item.className = `notif-item ${isUnread ? 'unread' : ''}`;
+        item.innerHTML = `
+                    <div class="notif-icon" style="background: rgba(201, 168, 76, 0.1); color: var(--color-gold)">
+                        <i class="${notif.data.icon || 'fas fa-info-circle'}"></i>
+                    </div>
+                    <div class="notif-content">
+                        <h4>${notif.data.title}</h4>
+                        <p>${notif.data.message}</p>
+                        <span class="notif-time">${formatTime(notif.created_at)}</span>
+                    </div>
+                `;
+        item.onclick = (e) => {
+          e.stopPropagation();
+          markAsRead(notif.id, item);
+        };
+        notifList.appendChild(item);
+      });
+    });
+}
+
+function markAsRead(id, element) {
+  if (!element.classList.contains('unread')) return;
+
+  fetch(`/admin/notifications/${id}/read`, {
+    method: 'POST',
+    headers: {
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+      'Content-Type': 'application/json'
+    }
+  }).then(() => {
+    element.classList.remove('unread');
+    updateNotifBadge();
+  });
+}
+
+function markAllAsRead(e) {
+  if (e) e.preventDefault();
+  fetch('/admin/notifications/read-all', {
+    method: 'POST',
+    headers: {
+      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || '',
+    }
+  }).then(() => {
+    document.querySelectorAll('.notif-item').forEach(el => el.classList.remove('unread'));
+    updateNotifBadge();
+  });
+}
+
+function updateNotifBadge() {
+  const dot = document.getElementById('notifDot');
+  const hasUnread = document.querySelector('.notif-item.unread');
+  if (dot && !hasUnread) {
+    dot.style.display = 'none';
+  }
+}
+
+function formatTime(dateStr) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diff = Math.floor((now - date) / 1000);
+
+  if (diff < 60) return 'الآن';
+  if (diff < 3600) return `منذ ${Math.floor(diff / 60)} دقيقة`;
+  if (diff < 86400) return `منذ ${Math.floor(diff / 3600)} ساعة`;
+  return date.toLocaleDateString('ar-EG');
+}
+
+// ===== STAT CARDS GLOW EFFECT =====
+document.addEventListener('mousemove', e => {
+  document.querySelectorAll('.stat-card').forEach(card => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    card.style.setProperty('--mouse-x', `${x}px`);
+    card.style.setProperty('--mouse-y', `${y}px`);
+  });
+});

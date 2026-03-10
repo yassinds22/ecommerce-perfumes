@@ -99,25 +99,76 @@ function populateReview() {
 }
 
 function placeOrder() {
-    // Hide all steps
-    document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
+    const btn = document.querySelector('.place-order-btn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التأكيد...';
 
-    // Show success
-    const success = document.getElementById('stepSuccess');
-    if (success) {
-        success.style.display = 'block';
-        success.classList.add('active');
-    }
+    const subtotal = CartManager.getTotal();
+    const tax = subtotal * 0.08;
+    const total = subtotal + tax;
 
-    // Update indicators
-    document.querySelectorAll('.step-dot').forEach(dot => dot.classList.add('completed'));
-    document.querySelectorAll('.step-line').forEach(line => line.classList.add('active'));
+    const data = {
+        total: total,
+        items: CartManager.items, // Added: Send cart items to server
+        firstName: document.getElementById('firstName')?.value,
+        lastName: document.getElementById('lastName')?.value,
+        email: document.getElementById('email')?.value,
+        phone: document.getElementById('phone')?.value,
+        address: document.getElementById('address')?.value,
+        city: document.getElementById('city')?.value,
+        zip: document.getElementById('zip')?.value,
+        country: document.getElementById('country')?.value,
+        payment_method: document.querySelector('input[name="payment"]:checked')?.value || 'card',
+        _token: document.querySelector('meta[name="csrf-token"]')?.content
+    };
 
-    // Clear cart
-    CartManager.items = [];
-    CartManager.save();
+    fetch('/checkout', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                // Hide all steps
+                document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
 
-    showToast('تم إرسال الطلب بنجاح!');
+                // Show success
+                const success = document.getElementById('stepSuccess');
+                if (success) {
+                    // Update order number in success message
+                    const orderNumEl = success.querySelector('strong');
+                    if (orderNumEl) orderNumEl.textContent = '#' + (res.order_number || 'LP-2026-4281');
+
+                    success.style.display = 'block';
+                    success.classList.add('active');
+                }
+
+                // Update indicators
+                document.querySelectorAll('.step-dot').forEach(dot => dot.classList.add('completed'));
+                document.querySelectorAll('.step-line').forEach(line => line.classList.add('active'));
+
+                // Clear cart
+                CartManager.items = [];
+                CartManager.save();
+
+                showToast('تم إرسال الطلب بنجاح!');
+            } else {
+                showToast('حدث خطأ أثناء إتمام الطلب، يرجى المحاولة لاحقاً');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            showToast('حدث خطأ فني، يرجى المحاولة لاحقاً');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
 }
 
 // ===== Initialize =====

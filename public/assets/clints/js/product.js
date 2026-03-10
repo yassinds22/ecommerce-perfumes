@@ -109,9 +109,59 @@ document.addEventListener('DOMContentLoaded', () => {
         if (wishBtn.classList.contains('active')) {
             icon.className = 'fas fa-heart';
             showToast('تمت الإضافة للمفضلة');
-        } else {
-            icon.className = 'far fa-heart';
-            showToast('تم الإزالة من المفضلة');
+        });
+});
+
+// ===== REVIEW SUBMISSION =====
+document.addEventListener('DOMContentLoaded', () => {
+    const reviewForm = document.getElementById('reviewForm');
+    if (!reviewForm) return;
+
+    reviewForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitReviewBtn');
+        const productId = reviewForm.dataset.productId;
+        const rating = reviewForm.querySelector('input[name="rating"]:checked')?.value;
+        const comment = document.getElementById('reviewComment').value;
+
+        if (!rating) {
+            showToast('يرجى اختيار التقييم بالنجوم');
+            return;
         }
+
+        const originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+        fetch('/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                rating: rating,
+                comment: comment
+            })
+        })
+            .then(res => res.json())
+            .then(res => {
+                if (res.success) {
+                    showToast(res.message);
+                    reviewForm.reset();
+                } else {
+                    showToast('حدث خطأ، يرجى المحاولة لاحقاً');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showToast('حدث خطأ فني');
+            })
+            .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            });
     });
 });

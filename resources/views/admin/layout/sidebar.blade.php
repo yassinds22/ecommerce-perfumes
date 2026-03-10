@@ -1,8 +1,7 @@
-<!-- ===== SIDEBAR ===== -->
 <aside class="sidebar">
     <div class="sidebar__logo">
-        <div class="sidebar__logo-icon"><i class="fas fa-gem"></i></div>
-        <h2>لوكس <span>بارفيوم</span></h2>
+        <div class="sidebar__logo-icon"><i class="fas fa-crown"></i></div>
+        <h2>لوكس<span>بارفيوم</span></h2>
     </div>
 
     <nav class="sidebar__nav">
@@ -37,17 +36,21 @@
             <i class="fas fa-tags"></i> العروض
         </a>
 
-
-        <div class="sidebar__label" style="margin-top:16px">الإعدادات</div>
-        <a href="{{ route('admin.settings.index') }}" class="sidebar__link {{ request()->routeIs('admin.settings.index') ? 'active' : '' }}" data-section="settings">
-            <i class="fas fa-cog"></i> الإعدادات
-        </a>
-        <a href="{{ url('/') }}" class="sidebar__link">
-            <i class="fas fa-external-link-alt"></i> عرض الموقع
-        </a>
     </nav>
 
     <div class="sidebar__footer">
+        <div class="sidebar__nav-secondary" style="margin-bottom: 20px;">
+            <a href="{{ route('admin.settings.index') }}" class="sidebar__link {{ request()->routeIs('admin.settings.index') ? 'active' : '' }}" style="padding: 8px 12px; font-size: 0.85rem;">
+                <i class="fas fa-cog" style="font-size: 0.9rem;"></i> الإعدادات
+            </a>
+            <a href="{{ url('/') }}" target="_blank" class="sidebar__link" style="padding: 8px 12px; font-size: 0.85rem;">
+                <i class="fas fa-external-link-alt" style="font-size: 0.9rem;"></i> عرض الموقع
+            </a>
+            <a href="#" class="sidebar__link" style="color: #ff4d4d; padding: 8px 12px; font-size: 0.85rem;" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="fas fa-sign-out-alt" style="font-size: 0.9rem;"></i> تسجيل الخروج
+            </a>
+        </div>
+
         <div class="sidebar__user">
             <div class="sidebar__avatar">يم</div>
             <div class="sidebar__user-info">
@@ -56,4 +59,7 @@
             </div>
         </div>
     </div>
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+        @csrf
+    </form>
 </aside>

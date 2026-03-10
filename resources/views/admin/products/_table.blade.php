@@ -47,8 +47,14 @@
 
 
     <td>
-        <span class="status-badge {{ $product->stock > 10 ? 'shipped' : ($product->stock > 0 ? 'pending' : 'cancelled') }}">
-            {{ $product->stock }} قطعة
+        <span class="status-badge {{ $product->is_out_of_stock ? 'cancelled' : ($product->isLowStock() ? 'pending' : 'shipped') }}">
+            @if($product->is_out_of_stock)
+                <i class="fas fa-times-circle" style="margin-left:5px"></i> نفذ من المخزون
+            @elseif($product->isLowStock())
+                {{ $product->stock_quantity }} قطعة (منخفض)
+            @else
+                {{ $product->stock_quantity }} قطعة
+            @endif
         </span>
     </td>
     <td>

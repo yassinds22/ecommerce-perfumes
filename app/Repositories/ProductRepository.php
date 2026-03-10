@@ -35,7 +35,7 @@ class ProductRepository extends BaseRepository
      */
     public function getActiveWithRelations(): Collection
     {
-        return $this->model->with(['category', 'brand', 'sizes', 'fragranceNotes'])->get();
+        return $this->model->with(['category', 'brand', 'sizes', 'fragranceNotes', 'stockMovements'])->get();
     }
 
     /**
@@ -46,7 +46,7 @@ class ProductRepository extends BaseRepository
      */
     public function getPaginatedActiveWithRelations(int $perPage = 10)
     {
-        return $this->model->with(['category', 'brand', 'sizes', 'fragranceNotes'])->paginate($perPage);
+        return $this->model->with(['category', 'brand', 'sizes', 'fragranceNotes', 'stockMovements'])->paginate($perPage);
     }
 
 
@@ -58,7 +58,7 @@ class ProductRepository extends BaseRepository
      */
     public function findWithRelations(int $id): Product
     {
-        return $this->model->with(['category', 'brand', 'sizes', 'fragranceNotes'])->findOrFail($id);
+        return $this->model->with(['category', 'brand', 'sizes', 'fragranceNotes', 'stockMovements'])->findOrFail($id);
     }
 
 }

@@ -14,13 +14,20 @@ class ProductService
     protected $productRepository;
 
     /**
+     * @var StockService
+     */
+    protected $stockService;
+
+    /**
      * ProductService constructor.
      *
      * @param ProductRepository $productRepository
+     * @param StockService $stockService
      */
-    public function __construct(ProductRepository $productRepository)
+    public function __construct(ProductRepository $productRepository, StockService $stockService)
     {
         $this->productRepository = $productRepository;
+        $this->stockService = $stockService;
     }
 
     /**
@@ -70,6 +77,15 @@ class ProductService
 
         $product = $this->productRepository->create($data);
 
+        // Sync old stock field
+        $product->stock = $data['stock_quantity'] ?? 0;
+        $product->save();
+
+        // Initialize stock movement
+        if (isset($data['stock_quantity']) && $data['stock_quantity'] > 0) {
+            $this->stockService->increase($product, $data['stock_quantity'], 'الرصيد الافتتاحي');
+        }
+
         $this->syncFragranceNotes($product, $data);
 
         if (request()->hasFile('image')) {
@@ -103,6 +119,12 @@ class ProductService
 
         if ($updated) {
             $product = $this->getProductById($id);
+            
+            // Sync old stock field for compatibility
+            $product->stock = $product->stock_quantity;
+            $product->is_out_of_stock = $product->stock_quantity <= 0;
+            $product->save();
+
             $this->syncFragranceNotes($product, $data);
 
             if (request()->hasFile('image')) {

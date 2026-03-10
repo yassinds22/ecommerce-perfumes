@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\CategoryService;
+use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
+    use LogsActivity;
     /**
      * @var CategoryService
      */
@@ -53,7 +55,9 @@ class CategoryController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $this->categoryService->createCategory($data);
+        $category = $this->categoryService->createCategory($data);
+
+        $this->logActivity('إضافة قسم جديد', "تم إضافة القسم: {$category->name}", $category);
 
 
         return redirect()->route('admin.categories.index')->with('success', 'تم إضافة القسم بنجاح');
@@ -81,7 +85,9 @@ class CategoryController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        $this->categoryService->updateCategory($id, $data);
+        $category = $this->categoryService->updateCategory($id, $data);
+
+        $this->logActivity('تعديل قسم', "تم تعديل بيانات القسم: {$category->name}", $category);
 
 
         return redirect()->route('admin.categories.index')->with('success', 'تم تحديث القسم بنجاح');
@@ -93,6 +99,8 @@ class CategoryController extends Controller
     public function destroy(int $id)
     {
         $this->categoryService->deleteCategory($id);
+
+        $this->logActivity('حذف قسم', "تم حذف القسم رقم: {$id}");
         return redirect()->route('admin.categories.index')->with('success', 'تم حذف القسم بنجاح');
     }
 }
