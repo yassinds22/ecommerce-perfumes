@@ -10,18 +10,20 @@ Route::get('/shop', [\App\Http\Controllers\Clients\ShopController::class, 'index
 
 Route::get('/product/{id}', [\App\Http\Controllers\Clients\ShopController::class, 'product'])->name('product');
 
-
 Route::get('/cart', function () {
     return view('clints.cart');
 })->name('cart');
 
-Route::get('/checkout', function () {
-    return view('clints.checkout');
-})->name('checkout');
 
 Route::get('/login', [\App\Http\Controllers\Auth\AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [\App\Http\Controllers\Auth\AuthController::class, 'login']);
+Route::get('/register', [\App\Http\Controllers\Auth\AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [\App\Http\Controllers\Auth\AuthController::class, 'register']);
 Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout'])->name('logout');
+
+Route::get('/checkout', function () {
+    return view('clints.checkout');
+})->name('checkout')->middleware('auth');
 
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

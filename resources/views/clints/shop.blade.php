@@ -65,7 +65,7 @@
               <label class="filter-check">
                 <input type="checkbox" name="cat" value="{{ $category->id }}"
                   {{ in_array($category->id, $selectedCats) ? 'checked' : '' }}
-                  onchange="applyFilters()"> {{ $category->name }}
+                  onchange="applyFilters()"> {{ $category->getTranslation('name', 'ar') }}
                 <span>({{ $category->products_count }})</span>
               </label>
               @endforeach
@@ -136,11 +136,11 @@
 
           <div class="product-grid" id="productGrid">
             @foreach($products as $product)
-            <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+            <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->getTranslation('name', 'ar') }}" data-price="{{ $product->price }}"
               data-img="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}">
               <div class="product-card__image">
                 <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}"
-                  alt="{{ $product->name }}">
+                  alt="{{ $product->getTranslation('name', 'ar') }}">
                 @if($product->created_at->gt(now()->subDays(7)))
                   <span class="product-card__badge">جديد</span>
                 @endif
@@ -151,7 +151,7 @@
               </div>
               <div class="product-card__info">
                 <p class="product-card__brand">{{ $product->brand->name ?? 'لوكس بارفيوم' }}</p>
-                <h4 class="product-card__name">{{ $product->name }}</h4>
+                <h4 class="product-card__name">{{ $product->getTranslation('name', 'ar') }}</h4>
                 <div class="product-card__rating">
                   <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
                     class="fas fa-star star"></i><i class="fas fa-star-half-alt star"></i><span>(128)</span>

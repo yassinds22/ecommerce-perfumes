@@ -55,9 +55,9 @@
         @foreach($categories as $category)
         <a href="{{ route('shop', ['cat' => $category->id]) }}" class="category-card">
           <div class="category-card__circle">
-            <img src="{{ $category->getFirstMediaUrl('images') ?: asset('assets/clints/images/perfume-collection.png') }}" alt="{{ $category->name }}">
+            <img src="{{ $category->getFirstMediaUrl('images') ?: asset('assets/clints/images/perfume-collection.png') }}" alt="{{ $category->getTranslation('name', 'ar') }}">
           </div>
-          <h4 class="category-card__name">{{ $category->name }}</h4>
+          <h4 class="category-card__name">{{ $category->getTranslation('name', 'ar') }}</h4>
           <span class="category-card__count">{{ $category->products_count }} منتج</span>
         </a>
         @endforeach
@@ -112,10 +112,10 @@
       </div>
       <div class="featured__grid reveal" id="featuredGrid">
         @foreach($featuredProducts as $product)
-        <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+        <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->getTranslation('name', 'ar') }}" data-price="{{ $product->price }}"
           data-img="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}">
           <div class="product-card__image">
-            <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $product->name }}">
+            <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $product->getTranslation('name', 'ar') }}">
             @if($product->created_at->gt(now()->subDays(7)))
               <span class="product-card__badge">جديد</span>
             @endif
@@ -127,7 +127,7 @@
           </div>
           <div class="product-card__info">
             <p class="product-card__brand">{{ $product->brand->name ?? 'لوكس بارفيوم' }}</p>
-            <h4 class="product-card__name">{{ $product->name }}</h4>
+            <h4 class="product-card__name">{{ $product->getTranslation('name', 'ar') }}</h4>
             <div class="product-card__rating">
               <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
                 class="fas fa-star star"></i><i class="fas fa-star-half-alt star"></i>
@@ -161,12 +161,12 @@
           @foreach($bestsellerProducts as $product)
           <div class="bestseller-card">
             <div class="bestseller-card__image">
-              <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/arabic-perfume.png') }}" alt="{{ $product->name }}">
+              <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/arabic-perfume.png') }}" alt="{{ $product->getTranslation('name', 'ar') }}">
             </div>
             <div class="bestseller-card__info">
-              <span class="section-label">{{ $product->category->name ?? 'المجموعة المميزة' }}</span>
-              <h3>{{ $product->name }}</h3>
-              <p>{{ $product->short_description }}</p>
+              <span class="section-label">{{ $product->category->getTranslation('name', 'ar') ?? 'المجموعة المميزة' }}</span>
+              <h3>{{ $product->getTranslation('name', 'ar') }}</h3>
+              <p>{{ $product->getTranslation('description', 'ar') }}</p>
               <div class="bestseller-card__meta">
                 <span class="bestseller-card__price">${{ $product->sale_price ?: $product->price }}</span>
                 <div class="bestseller-card__rating">
@@ -205,10 +205,10 @@
       </div>
       <div class="favorites__grid reveal">
         @foreach($favoriteProducts as $product)
-        <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->name }}" data-price="{{ $product->price }}"
+        <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->getTranslation('name', 'ar') }}" data-price="{{ $product->price }}"
           data-img="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}">
           <div class="product-card__image">
-            <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $product->name }}">
+            <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $product->getTranslation('name', 'ar') }}">
             <span class="product-card__badge">موصى به</span>
             <div class="product-card__actions">
               <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
@@ -218,7 +218,7 @@
           </div>
           <div class="product-card__info">
             <p class="product-card__brand">{{ $product->brand->name ?? 'لوكس بارفيوم' }}</p>
-            <h4 class="product-card__name">{{ $product->name }}</h4>
+            <h4 class="product-card__name">{{ $product->getTranslation('name', 'ar') }}</h4>
             <div class="product-card__rating">
               <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
                 class="fas fa-star star"></i><i class="fas fa-star star"></i>

@@ -4,9 +4,11 @@
       <ul class="nav-links">
         <li><a href="{{ route('home') }}" class="{{ request()->is('/') ? 'active' : '' }}">الرئيسية</a></li>
         <li><a href="{{ route('shop') }}" class="{{ request()->is('shop*') ? 'active' : '' }}">المتجر</a></li>
-        <li><a href="{{ route('shop', ['cat' => 'men']) }}">للرجال</a></li>
-        <li><a href="{{ route('shop', ['cat' => 'women']) }}">للنساء</a></li>
-        <li><a href="{{ route('shop') }}" class="{{ request()->is('product*') ? 'active' : '' }}">المجموعات</a></li>
+        @isset($parentCategories)
+          @foreach($parentCategories as $cat)
+            <li><a href="{{ route('shop', ['cat' => $cat->id]) }}" class="{{ request()->get('cat') == $cat->id ? 'active' : '' }}">{{ $cat->getTranslation('name', 'ar') }}</a></li>
+          @endforeach
+        @endisset
         <li><a href="#footer">من نحن</a></li>
       </ul>
       <div class="nav-actions">
@@ -15,8 +17,21 @@
             <i class="far fa-user"></i>
           </button>
           <div class="dropdown-menu">
-            <a href="#"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>
-            <a href="#"><i class="fas fa-user-plus"></i> إنشاء حساب</a>
+            @auth
+              <span class="dropdown-header">أهلاً، {{ auth()->user()->name }}</span>
+              @if(auth()->user()->role === 'Admin')
+                <a href="{{ route('admin.index') }}"><i class="fas fa-cog"></i> لوحة التحكم</a>
+              @endif
+              <a href="#" onclick="event.preventDefault(); document.getElementById('nav-logout-form').submit();">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+              </a>
+              <form id="nav-logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+              </form>
+            @else
+              <a href="{{ route('login') }}"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>
+              <a href="{{ route('register') }}"><i class="fas fa-user-plus"></i> إنشاء حساب</a>
+            @endauth
           </div>
         </div>
         <button class="nav-action-btn" id="searchBtn" aria-label="بحث">
@@ -42,9 +57,11 @@
   <div class="mobile-nav" id="mobileNav">
     <a href="{{ route('home') }}">الرئيسية</a>
     <a href="{{ route('shop') }}">المتجر</a>
-    <a href="{{ route('shop', ['cat' => 'men']) }}">للرجال</a>
-    <a href="{{ route('shop', ['cat' => 'women']) }}">للنساء</a>
-    <a href="{{ route('shop') }}">المجموعات</a>
+    @isset($parentCategories)
+      @foreach($parentCategories as $cat)
+        <a href="{{ route('shop', ['cat' => $cat->id]) }}" class="{{ request()->get('cat') == $cat->id ? 'active' : '' }}">{{ $cat->getTranslation('name', 'ar') }}</a>
+      @endforeach
+    @endisset
     <a href="#footer">من نحن</a>
   </div>
   <div class="nav-overlay" id="navOverlay"></div>

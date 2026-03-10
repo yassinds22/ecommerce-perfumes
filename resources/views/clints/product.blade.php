@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $product->name }} — لوكس بارفيوم</title>
+    <title>{{ $product->getTranslation('name', 'ar') }} — لوكس بارفيوم</title>
     <meta name="description"
         content="عنبر عود ملكي — مزيج فخم من العود الكمبودي النادر والعنبر الدافئ. عطر فاخر من لوكس بارفيوم.">
     <link rel="stylesheet" href="{{ asset('assets/clints/css/style.css') }}">
@@ -25,7 +25,7 @@
         <div class="breadcrumb">
             <a href="{{ route('home') }}">الرئيسية</a><span class="separator">/</span>
             <a href="{{ route('shop') }}">المتجر</a><span class="separator">/</span>
-            <span class="current">{{ $product->name }}</span>
+            <span class="current">{{ $product->getTranslation('name', 'ar') }}</span>
         </div>
     </div>
 
@@ -36,7 +36,7 @@
                 <!-- المعرض -->
                 <div class="product-gallery">
                     <div class="product-gallery__main" id="mainImage">
-                        <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/arabic-perfume.png') }}" alt="{{ $product->name }}" id="galleryMain">
+                        <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/arabic-perfume.png') }}" alt="{{ $product->getTranslation('name', 'ar') }}" id="galleryMain">
                         <div class="product-gallery__zoom-hint"><i class="fas fa-search-plus"></i> مرر للتكبير</div>
                     </div>
                     <div class="product-gallery__thumbs">
@@ -54,7 +54,7 @@
                     <span class="product-info__badge">الأكثر مبيعاً</span>
                     @endif
                     <p class="product-info__brand">{{ $product->brand->name ?? 'لوكس بارفيوم' }}</p>
-                    <h1 class="product-info__name">{{ $product->name }}</h1>
+                    <h1 class="product-info__name">{{ $product->getTranslation('name', 'ar') }}</h1>
 
                     <div class="product-info__rating">
                         <div class="stars">
@@ -89,7 +89,7 @@
                                 </div>
                                 <div class="note-items">
                                     @foreach($product->topNotes as $note)
-                                    <span>{{ $note->name }}</span>
+                                    <span>{{ $note->getTranslation('name', 'ar') }}</span>
                                     @endforeach
                                 </div>
                             </div>
@@ -103,7 +103,7 @@
                                 </div>
                                 <div class="note-items">
                                     @foreach($product->heartNotes as $note)
-                                    <span>{{ $note->name }}</span>
+                                    <span>{{ $note->getTranslation('name', 'ar') }}</span>
                                     @endforeach
                                 </div>
                             </div>
@@ -117,7 +117,7 @@
                                 </div>
                                 <div class="note-items">
                                     @foreach($product->baseNotes as $note)
-                                    <span>{{ $note->name }}</span>
+                                    <span>{{ $note->getTranslation('name', 'ar') }}</span>
                                     @endforeach
                                 </div>
                             </div>
@@ -298,11 +298,11 @@
             </div>
             <div class="related-grid">
                 @foreach($relatedProducts as $item)
-                <div class="product-card" data-id="{{ $item->id }}" data-name="{{ $item->name }}" data-price="{{ $item->price }}"
+                <div class="product-card" data-id="{{ $item->id }}" data-name="{{ $item->getTranslation('name', 'ar') }}" data-price="{{ $item->price }}"
                     data-img="{{ $item->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}">
                     <div class="product-card__image">
                         <img src="{{ $item->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}"
-                            alt="{{ $item->name }}">
+                            alt="{{ $item->getTranslation('name', 'ar') }}">
                         <div class="product-card__actions">
                             <button><i class="far fa-heart"></i></button>
                             <button onclick="window.location.href='{{ route('product', $item->id) }}'"><i class="far fa-eye"></i></button>
@@ -310,7 +310,7 @@
                     </div>
                     <div class="product-card__info">
                         <p class="product-card__brand">{{ $item->brand->name ?? 'لوكس بارفيوم' }}</p>
-                        <h4 class="product-card__name">{{ $item->name }}</h4>
+                        <h4 class="product-card__name">{{ $item->getTranslation('name', 'ar') }}</h4>
                         <div class="product-card__rating">
                             <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
                                 class="fas fa-star star"></i><i class="fas fa-star-half-alt star"></i><span>(128)</span>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول — Luxe Parfum</title>
+    <title>إنشاء حساب جديد — Luxe Parfum</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -29,20 +29,19 @@
         body {
             background-color: var(--bg-dark);
             background-image: 
-                radial-gradient(circle at 20% 20%, rgba(197, 160, 89, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 80% 80%, rgba(197, 160, 89, 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 80% 20%, rgba(197, 160, 89, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, rgba(197, 160, 89, 0.05) 0%, transparent 40%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--text-main);
-            overflow: hidden;
+            padding: 20px;
         }
 
         .login-container {
             width: 100%;
-            max-width: 450px;
-            padding: 20px;
+            max-width: 500px;
             position: relative;
             z-index: 10;
         }
@@ -65,18 +64,17 @@
         }
 
         .logo-box {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .logo-box i {
-            font-size: 40px;
+            font-size: 35px;
             color: var(--primary);
-            filter: drop-shadow(0 0 15px rgba(197, 160, 89, 0.3));
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .logo-box h1 {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
             letter-spacing: 2px;
             background: linear-gradient(135deg, #fff 0%, #c5a059 100%);
@@ -85,28 +83,28 @@
         }
 
         .login-header {
-            margin-bottom: 35px;
+            margin-bottom: 30px;
         }
 
         .login-header h2 {
-            font-size: 24px;
+            font-size: 22px;
             margin-bottom: 8px;
         }
 
         .login-header p {
             color: var(--text-muted);
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             text-align: right;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-muted);
             padding-right: 5px;
         }
@@ -121,8 +119,7 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
-            font-size: 18px;
-            transition: color 0.3s;
+            font-size: 16px;
         }
 
         .input-wrapper input {
@@ -130,9 +127,9 @@
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
-            padding: 14px 45px 14px 15px;
+            padding: 12px 45px 12px 15px;
             color: #fff;
-            font-size: 16px;
+            font-size: 15px;
             transition: all 0.3s;
         }
 
@@ -140,11 +137,6 @@
             outline: none;
             border-color: var(--primary);
             background: rgba(197, 160, 89, 0.05);
-            box-shadow: 0 0 20px rgba(197, 160, 89, 0.1);
-        }
-
-        .input-wrapper input:focus + i {
-            color: var(--primary);
         }
 
         .btn-login {
@@ -153,7 +145,7 @@
             color: #000;
             border: none;
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
             font-size: 16px;
             font-weight: 700;
             cursor: pointer;
@@ -168,7 +160,6 @@
         .btn-login:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(197, 160, 89, 0.2);
-            filter: brightness(1.1);
         }
 
         .alert-error {
@@ -177,42 +168,25 @@
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 20px;
-            font-size: 14px;
+            font-size: 13px;
             color: #ff6b6b;
             text-align: right;
         }
 
         .footer-links {
             margin-top: 25px;
-            display: flex;
-            justify-content: space-between;
             font-size: 14px;
+            color: var(--text-muted);
         }
 
         .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-
-        .footer-links a:hover {
             color: var(--primary);
-        }
-
-        /* Particles effect background */
-        .particles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
+            text-decoration: none;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-
     <div class="login-container">
         <div class="login-card">
             <div class="logo-box">
@@ -221,8 +195,8 @@
             </div>
 
             <div class="login-header">
-                <h2>مرحباً بك مجدداً</h2>
-                <p>يرجى تسجيل الدخول للوصول إلى حسابك</p>
+                <h2>انضم إلينا اليوم</h2>
+                <p>قم بإنشاء حساب للاستمتاع بتجربة تسوق فريدة</p>
             </div>
 
             @if ($errors->any())
@@ -233,8 +207,16 @@
                 </div>
             @endif
 
-            <form action="{{ route('login') }}" method="POST">
+            <form action="{{ route('register') }}" method="POST">
                 @csrf
+                <div class="form-group">
+                    <label>الاسم الكامل</label>
+                    <div class="input-wrapper">
+                        <input type="text" name="name" value="{{ old('name') }}" required placeholder="أدخل اسمك الكامل">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>البريد الإلكتروني</label>
                     <div class="input-wrapper">
@@ -251,53 +233,24 @@
                     </div>
                 </div>
 
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px; font-size: 14px; color: var(--text-muted);">
-                    <input type="checkbox" name="remember" id="remember">
-                    <label for="remember" style="margin: 0; cursor: pointer;">تذكرني</label>
+                <div class="form-group">
+                    <label>تأكيد كلمة المرور</label>
+                    <div class="input-wrapper">
+                        <input type="password" name="password_confirmation" required placeholder="••••••••">
+                        <i class="fas fa-check-double"></i>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-login">
-                    <span>تسجيل الدخول</span>
-                    <i class="fas fa-sign-in-alt"></i>
+                    <span>إنشاء الحساب</span>
+                    <i class="fas fa-user-plus"></i>
                 </button>
             </form>
 
-            <div class="footer-links" style="display: flex; flex-direction: column; gap: 10px;">
-                <div style="display: flex; justify-content: space-between;">
-                    <a href="#">نسيت كلمة المرور؟</a>
-                    <a href="{{ route('home') }}">العودة للرئيسية</a>
-                </div>
-                <p style="margin-top: 15px; font-size: 14px; color: var(--text-muted);">
-                    ليس لديك حساب؟ <a href="{{ route('register') }}" style="color: var(--primary); font-weight: 600;">إنشاء حساب جديد</a>
-                </p>
-            </div>
+            <p class="footer-links">
+                لديك حساب بالفعل؟ <a href="{{ route('login') }}">تسجيل الدخول</a>
+            </p>
         </div>
     </div>
-
-    <script>
-        // Simple background decoration
-        const container = document.getElementById('particles');
-        for (let i = 0; i < 20; i++) {
-            const dot = document.createElement('div');
-            dot.style.position = 'absolute';
-            dot.style.width = Math.random() * 3 + 'px';
-            dot.style.height = dot.style.width;
-            dot.style.background = 'rgba(197, 160, 89, 0.15)';
-            dot.style.borderRadius = '50%';
-            dot.style.left = Math.random() * 100 + '%';
-            dot.style.top = Math.random() * 100 + '%';
-            dot.style.animation = `pulse ${3 + Math.random() * 5}s infinite ease-in-out`;
-            container.appendChild(dot);
-        }
-
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes pulse {
-                0%, 100% { opacity: 0.1; transform: scale(1); }
-                50% { opacity: 0.5; transform: scale(1.5); }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
 </body>
 </html>
