@@ -37,9 +37,11 @@
         <button class="nav-action-btn" id="searchBtn" aria-label="بحث">
           <i class="fas fa-search"></i>
         </button>
-        <button class="nav-action-btn" aria-label="المفضلة">
+        <a href="{{ route('wishlist.index') }}" class="nav-action-btn" aria-label="المفضلة">
           <i class="far fa-heart"></i>
-        </button>
+          @php $wishlistCount = auth()->check() ? auth()->user()->wishlist()->count() : 0; @endphp
+          <span class="badge {{ $wishlistCount > 0 ? '' : 'hide-badge' }}" id="wishlistCount">{{ $wishlistCount }}</span>
+        </a>
         <button class="nav-action-btn" id="cartToggle" aria-label="سلة التسوق">
           <i class="fas fa-shopping-bag"></i>
           <span class="badge" id="cartCount">0</span>

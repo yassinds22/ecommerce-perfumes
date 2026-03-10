@@ -61,7 +61,7 @@
                             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
                                 class="fas fa-star"></i><i class="fas fa-star"></i>
                         </div>
-                        <span>5.0 (312 تقييم)</span>
+                        <span>{{ number_format($product->average_rating ?? 5.0, 1) }} ({{ $product->reviews_count }} تقييم)</span>
                     </div>
 
                     <div class="product-info__price">
@@ -147,8 +147,8 @@
                         <button class="btn btn-primary product-add-btn" id="addToCartBtn">
                             <i class="fas fa-shopping-bag"></i> أضف للسلة
                         </button>
-                        <button class="btn-icon wishlist-btn" id="wishlistBtn">
-                            <i class="far fa-heart"></i>
+                        <button class="btn-icon wishlist-btn {{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'active' : '' }}" id="wishlistBtn" data-product-id="{{ $product->id }}">
+                            <i class="{{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'fas' : 'far' }} fa-heart"></i>
                         </button>
                     </div>
 
@@ -208,8 +208,11 @@
                 </div>
             <!-- Add Review Form -->
             <div class="add-review-form" style="margin-bottom: 40px; background: var(--bg-card); padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                @auth
                 <h3 style="margin-bottom: 20px;">أضف تقييمك</h3>
                 <form id="reviewForm" data-product-id="{{ $product->id }}">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
                     <div class="rating-input" style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;">
                         <span>تقييمك:</span>
                         <div class="star-rating" style="display: flex; flex-direction: row-reverse; gap: 5px; font-size: 1.5rem;">
@@ -228,62 +231,46 @@
                         }
                     </style>
                     <div class="form-group" style="margin-bottom: 20px;">
-                        <textarea id="reviewComment" placeholder="أدخل تعليقك هنا..." required style="width: 100%; padding: 15px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--color-text); min-height: 120px;"></textarea>
+                        <textarea id="reviewComment" name="comment" placeholder="أدخل تعليقك هنا..." required style="width: 100%; padding: 15px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--color-text); min-height: 120px;"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary" id="submitReviewBtn">إرسال التقييم</button>
                 </form>
+                @else
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-lock" style="font-size: 2rem; color: var(--color-gold); margin-bottom: 15px; display: block;"></i>
+                    <p style="margin-bottom: 20px; color: var(--color-text-dim);">يرجى تسجيل الدخول لتتمكن من إضافة تقييم لهذا المنتج.</p>
+                    <a href="{{ route('login') }}" class="btn btn-primary">تسجيل الدخول</a>
+                </div>
+                @endauth
             </div>
 
             <div class="reviews-list">
+                @forelse($product->reviews as $review)
                 <div class="review-card">
                     <div class="review-card__header">
                         <div class="review-card__author">
-                            <div class="review-avatar">أخ</div>
+                            <div class="review-avatar">{{ mb_substr($review->user->name, 0, 2) }}</div>
                             <div>
-                                <h4>أحمد خالد</h4><span class="review-date">28 فبراير، 2026</span>
+                                <h4>{{ $review->user->name }}</h4><span class="review-date">{{ $review->created_at->diffForHumans() }}</span>
                             </div>
                         </div>
-                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    </div>
-                    <h4 class="review-title">عطر رائع بكل المقاييس</h4>
-                    <p>هذا أفضل عطر عود ارتديته على الإطلاق. مزيج الزعفران والورد مع العود مذهل. الثبات مدهش — أحصل على
-                        12+ ساعة من الرائحة الجميلة. يستحق كل قرش.</p>
-                    <span class="review-verified"><i class="fas fa-check-circle"></i> شراء موثق</span>
-                </div>
-                <div class="review-card">
-                    <div class="review-card__header">
-                        <div class="review-card__author">
-                            <div class="review-avatar">نع</div>
-                            <div>
-                                <h4>نورة العلي</h4><span class="review-date">15 فبراير، 2026</span>
-                            </div>
-                        </div>
-                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
-                    </div>
-                    <h4 class="review-title">هدية مثالية</h4>
-                    <p>اشتريته كهدية لزوجي وهو يعشقه تماماً. التغليف أنيق جداً والرائحة راقية دون أن تكون طاغية. أنصح به
-                        بشدة!</p>
-                    <span class="review-verified"><i class="fas fa-check-circle"></i> شراء موثق</span>
-                </div>
-                <div class="review-card">
-                    <div class="review-card__header">
-                        <div class="review-card__author">
-                            <div class="review-avatar">يح</div>
-                            <div>
-                                <h4>ياسر حسن</h4><span class="review-date">20 يناير، 2026</span>
-                            </div>
-                        </div>
-                        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i
-                                class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                        <div class="stars">
+                            @for($i = 1; $i <= 5; $i++)
+                                <i class="fa{{ $i <= $review->rating ? 's' : 'r' }} fa-star" style="color: {{ $i <= $review->rating ? 'var(--color-gold)' : 'var(--color-text-dim)' }}"></i>
+                            @endfor
                         </div>
                     </div>
-                    <h4 class="review-title">فخامة في زجاجة</h4>
-                    <p>المقدمة غنية بشكل لا يصدق مع الزعفران والفلفل. يجف ليصبح مزيج عنبر وعود دافئ وجميل. عطر جدي
-                        لمناسبات جدية. أتمنى فقط لو كان السعر أقل قليلاً.</p>
-                    <span class="review-verified"><i class="fas fa-check-circle"></i> شراء موثق</span>
+                    <p>{{ $review->comment }}</p>
+                    @if($review->is_verified_purchase)
+                        <span class="review-verified"><i class="fas fa-check-circle"></i> شراء موثق</span>
+                    @endif
                 </div>
+                @empty
+                <div class="mini-cart__empty">
+                    <i class="fas fa-comment-slash"></i>
+                    <p>لا توجد تقييمات لهذا المنتج بعد. كن أول من يقيمه!</p>
+                </div>
+                @endforelse
             </div>
         </div>
     </section>
@@ -304,7 +291,9 @@
                         <img src="{{ $item->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}"
                             alt="{{ $item->getTranslation('name', 'ar') }}">
                         <div class="product-card__actions">
-                            <button><i class="far fa-heart"></i></button>
+                            <button class="wishlist-btn {{ auth()->check() && auth()->user()->wishlist->contains('product_id', $item->id) ? 'active' : '' }}">
+                                <i class="{{ auth()->check() && auth()->user()->wishlist->contains('product_id', $item->id) ? 'fas' : 'far' }} fa-heart"></i>
+                            </button>
                             <button onclick="window.location.href='{{ route('product', $item->id) }}'"><i class="far fa-eye"></i></button>
                         </div>
                     </div>

@@ -58,7 +58,23 @@ class ProductRepository extends BaseRepository
      */
     public function findWithRelations(int $id): Product
     {
-        return $this->model->with(['category', 'brand', 'sizes', 'fragranceNotes', 'stockMovements'])->findOrFail($id);
+        return $this->model->with([
+            'category', 
+            'brand', 
+            'sizes', 
+            'fragranceNotes', 
+            'stockMovements',
+            'reviews' => function($query) {
+                $query->where('is_approved', true)->with('user')->latest();
+            }
+        ])
+        ->withAvg(['reviews as average_rating' => function($q) {
+            $q->where('is_approved', true);
+        }], 'rating')
+        ->withCount(['reviews' => function($q) {
+            $q->where('is_approved', true);
+        }])
+        ->findOrFail($id);
     }
 
 }

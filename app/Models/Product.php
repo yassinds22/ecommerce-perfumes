@@ -9,10 +9,23 @@ use App\Models\Coupon;
 use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class Product extends Model implements HasMedia
 {
     use HasTranslations, InteractsWithMedia;
+
+    public function registerMediaConversions(Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+             ->width(400)
+             ->height(400)
+             ->sharpen(10);
+             
+        $this->addMediaConversion('preview')
+             ->width(150)
+             ->height(150);
+    }
 
     protected $fillable = [
         'category_id',
@@ -95,6 +108,11 @@ class Product extends Model implements HasMedia
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
     }
 
     public function isLowStock()

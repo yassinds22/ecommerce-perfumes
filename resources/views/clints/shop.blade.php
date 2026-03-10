@@ -145,7 +145,9 @@
                   <span class="product-card__badge">جديد</span>
                 @endif
                 <div class="product-card__actions">
-                    <button><i class="far fa-heart"></i></button>
+                    <button class="wishlist-btn {{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'active' : '' }}">
+                        <i class="{{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'fas' : 'far' }} fa-heart"></i>
+                    </button>
                     <button onclick="window.location.href='{{ route('product', $product->id) }}'"><i class="far fa-eye"></i></button>
                 </div>
               </div>

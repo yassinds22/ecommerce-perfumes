@@ -16,14 +16,24 @@ Route::get('/cart', function () {
 
 
 Route::get('/login', [\App\Http\Controllers\Auth\AuthController::class, 'showLogin'])->name('login');
-Route::post('/login', [\App\Http\Controllers\Auth\AuthController::class, 'login']);
+Route::post('/login', [\App\Http\Controllers\Auth\AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::get('/register', [\App\Http\Controllers\Auth\AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [\App\Http\Controllers\Auth\AuthController::class, 'register']);
+Route::post('/register', [\App\Http\Controllers\Auth\AuthController::class, 'register'])->middleware('throttle:3,1');
 Route::post('/logout', [\App\Http\Controllers\Auth\AuthController::class, 'logout'])->name('logout');
 
-Route::get('/checkout', function () {
-    return view('clints.checkout');
-})->name('checkout')->middleware('auth');
+Route::middleware('auth')->group(function () {
+    Route::get('/checkout', function () {
+        return view('clints.checkout');
+    })->name('checkout');
+
+    Route::post('/reviews', [\App\Http\Controllers\Clients\ReviewController::class, 'store'])
+        ->name('reviews.store');
+
+    // Wishlist Routes
+    Route::get('/wishlist', [\App\Http\Controllers\Clients\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/toggle', [\App\Http\Controllers\Clients\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::delete('/wishlist/{id}', [\App\Http\Controllers\Clients\WishlistController::class, 'destroy'])->name('wishlist.destroy');
+});
 
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

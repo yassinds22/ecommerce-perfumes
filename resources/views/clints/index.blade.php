@@ -120,7 +120,9 @@
               <span class="product-card__badge">جديد</span>
             @endif
             <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
+              <button class="wishlist-btn {{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'active' : '' }}" aria-label="أضف للمفضلة">
+                <i class="{{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'fas' : 'far' }} fa-heart"></i>
+              </button>
               <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product', $product->id) }}'"><i
                   class="far fa-eye"></i></button>
             </div>
@@ -211,7 +213,9 @@
             <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $product->getTranslation('name', 'ar') }}">
             <span class="product-card__badge">موصى به</span>
             <div class="product-card__actions">
-              <button aria-label="أضف للمفضلة"><i class="far fa-heart"></i></button>
+              <button class="wishlist-btn {{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'active' : '' }}" aria-label="أضف للمفضلة">
+                <i class="{{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'fas' : 'far' }} fa-heart"></i>
+              </button>
               <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product', $product->id) }}'"><i
                   class="far fa-eye"></i></button>
             </div>

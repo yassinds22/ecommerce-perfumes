@@ -14,20 +14,19 @@ class CheckoutController extends Controller
 {
     public function placeOrder(Request $request)
     {
-        // 1. Initial Stock Verification (Prevent starting transaction if stock is missing)
-        if ($request->has('items')) {
-            foreach ($request->items as $item) {
-                $product = \App\Models\Product::find($item['id']);
-                if (!$product || $product->stock_quantity < $item['qty']) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'عذراً، المنتج "' . ($product ? $product->name : 'غير موجود') . '" غير متوفر بالكمية المطلوبة.'
-                    ], 422);
+        return DB::transaction(function () use ($request) {
+            // 1. Pessimistic Locking & Stock Verification (Inside Transaction)
+            if ($request->has('items')) {
+                foreach ($request->items as $item) {
+                    // Lock the product row for update to prevent concurrent changes
+                    $product = \App\Models\Product::lockForUpdate()->find($item['id']);
+                    
+                    if (!$product || $product->stock_quantity < $item['qty']) {
+                        throw new \Exception('Product "' . ($product ? $product->name : 'Unknown') . '" is out of stock.', 422);
+                    }
                 }
             }
-        }
 
-        return DB::transaction(function () use ($request) {
             $order = Order::create([
                 'user_id' => auth()->id() ?? 1,
                 'order_number' => 'LP-' . date('Ymd') . '-' . rand(1000, 9999),
@@ -58,7 +57,7 @@ class CheckoutController extends Controller
                         'price_at_purchase' => $item['price'],
                     ]);
 
-                    // Decrease Stock (This also logs the movement)
+                    // Decrease Stock
                     $product = \App\Models\Product::find($item['id']);
                     if ($product) {
                         $stockService->decrease($product, $item['qty'], "طلب رقم #{$order->order_number}");
@@ -66,14 +65,9 @@ class CheckoutController extends Controller
                 }
             }
 
-            // Notify all Admins
+            // Notify Admins (Offloaded to Queue via ShouldQueue in Notification class)
             $admins = User::where('role', 'Admin')->get();
-            try {
-                Notification::send($admins, new NewOrderNotification($order));
-            } catch (\Exception $e) {
-                // Log error but don't break the order process
-                \Log::error("Notification failed: " . $e->getMessage());
-            }
+            Notification::send($admins, new NewOrderNotification($order));
 
             return response()->json([
                 'success' => true,

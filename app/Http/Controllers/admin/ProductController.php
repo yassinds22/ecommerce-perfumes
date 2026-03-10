@@ -47,7 +47,7 @@ class ProductController extends Controller
      */
     public function index(\Illuminate\Http\Request $request)
     {
-        $products = $this->productService->getPaginatedProducts(2);
+        $products = $this->productService->getPaginatedProducts(12);
         
         if ($request->ajax()) {
             return view('admin.products._table', compact('products'))->render();

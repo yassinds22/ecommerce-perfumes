@@ -109,7 +109,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (wishBtn.classList.contains('active')) {
             icon.className = 'fas fa-heart';
             showToast('تمت الإضافة للمفضلة');
-        });
+        } else {
+            icon.className = 'far fa-heart';
+            showToast('تمت الإزالة من المفضلة');
+        }
+    });
 });
 
 // ===== REVIEW SUBMISSION =====
@@ -151,13 +155,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (res.success) {
                     showToast(res.message);
                     reviewForm.reset();
+                } else if (res.message) {
+                    showToast(res.message);
                 } else {
                     showToast('حدث خطأ، يرجى المحاولة لاحقاً');
                 }
             })
             .catch(err => {
                 console.error(err);
-                showToast('حدث خطأ فني');
+                showToast('يرجى تسجيل الدخول للتمكن من إضافة تقييم');
             })
             .finally(() => {
                 btn.disabled = false;
