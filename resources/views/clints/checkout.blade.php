@@ -10,10 +10,13 @@
     <link rel="stylesheet" href="{{ asset('assets/clints/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/clints/css/checkout.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        window.stripeKey = "{{ config('services.stripe.key') }}";
+    </script>
 </head>
 
 <body>
-
     <!-- التنقل المبسط -->
     @include('clints.layout.nav')
 
@@ -119,28 +122,10 @@
 
                         <!-- نموذج البطاقة -->
                         <div class="card-form" id="cardForm">
-                            <div class="form-group">
-                                <label for="cardName">الاسم على البطاقة *</label>
-                                <input type="text" id="cardName" placeholder="محمد أحمد">
+                            <div id="payment-element">
+                                <!-- سيتم وضع عناصر Stripe هنا تلقائياً عبر JS -->
                             </div>
-                            <div class="form-group">
-                                <label for="cardNumber">رقم البطاقة *</label>
-                                <div class="card-input-wrapper">
-                                    <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19">
-                                    <div class="card-icons"><i class="fab fa-cc-visa"></i><i
-                                            class="fab fa-cc-mastercard"></i><i class="fab fa-cc-amex"></i></div>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="cardExpiry">تاريخ الانتهاء *</label>
-                                    <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
-                                </div>
-                                <div class="form-group">
-                                    <label for="cardCvv">الرمز السري (CVV) *</label>
-                                    <input type="text" id="cardCvv" placeholder="123" maxlength="4">
-                                </div>
-                            </div>
+                            <div id="card-errors" role="alert" style="color: var(--color-danger); margin-top: 10px; font-size: 0.9rem;"></div>
                         </div>
 
                         <div class="checkout-actions">

@@ -1,8 +1,9 @@
 /* ==========================================
-   checkout.js — Multi-step form, order summary
+   checkout.js — Multi-step form, order summary, and Stripe
    ========================================== */
 
 let currentStep = 1;
+let stripe, elements, cardElement;
 
 function goToStep(step) {
     // Validate current step
@@ -30,7 +31,7 @@ function goToStep(step) {
     const activeStep = document.getElementById(`step${step}`);
     if (activeStep) activeStep.classList.add('active');
 
-    // Update step indicator
+    // Update step indicator (if UI has them)
     document.querySelectorAll('.step-dot').forEach(dot => {
         const dotStep = parseInt(dot.dataset.step);
         dot.classList.remove('active', 'completed');
@@ -52,12 +53,12 @@ function goToStep(step) {
 
 function populateReview() {
     // Address
-    const firstName = document.getElementById('firstName')?.value || 'John';
-    const lastName = document.getElementById('lastName')?.value || 'Doe';
-    const address = document.getElementById('address')?.value || '123 Main St';
-    const city = document.getElementById('city')?.value || 'New York';
-    const state = document.getElementById('state')?.value || 'NY';
-    const zip = document.getElementById('zip')?.value || '10001';
+    const firstName = document.getElementById('firstName')?.value || '';
+    const lastName = document.getElementById('lastName')?.value || '';
+    const address = document.getElementById('address')?.value || '';
+    const city = document.getElementById('city')?.value || '';
+    const state = document.getElementById('state')?.value || '';
+    const zip = document.getElementById('zip')?.value || '';
 
     const reviewAddress = document.getElementById('reviewAddress');
     if (reviewAddress) {
@@ -68,14 +69,12 @@ function populateReview() {
     const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value;
     const reviewPayment = document.getElementById('reviewPayment');
     if (reviewPayment) {
-        if (paymentMethod === 'card') {
-            const cardNum = document.getElementById('cardNumber')?.value || '';
-            const last4 = cardNum.slice(-4) || '****';
-            reviewPayment.textContent = `بطاقة ائتمان تنتهي بـ ${last4}`;
+        if (paymentMethod === 'card' || paymentMethod === 'stripe') {
+            reviewPayment.textContent = 'بطاقة ائتمان (Stripe)';
         } else if (paymentMethod === 'paypal') {
             reviewPayment.textContent = 'بايبال (PayPal)';
         } else {
-            reviewPayment.textContent = 'سترايب (Stripe)';
+            reviewPayment.textContent = 'الدفع عند الاستلام';
         }
     }
 
@@ -86,7 +85,6 @@ function populateReview() {
         CartManager.items.forEach(item => {
             reviewItems.innerHTML += `
         <div class="review-item">
-          <div class="review-item__img"><img src="${item.img}" alt="${item.name}"></div>
           <div class="review-item__info">
             <h4>${item.name}</h4>
             <span>الكمية: ${item.qty}</span>
@@ -98,19 +96,68 @@ function populateReview() {
     }
 }
 
+// ===== Initialize Stripe =====
+function initStripe() {
+    if (!window.stripeKey || stripe) return;
+
+    stripe = Stripe(window.stripeKey);
+    // Set locale to Arabic for better UI/UX and native error messages
+    elements = stripe.elements({ locale: 'ar' });
+
+    const style = {
+        base: {
+            color: '#2C2C2C', // Using dark text for visibility on white background
+            fontFamily: '"Outfit", sans-serif',
+            fontSmoothing: 'antialiased',
+            fontSize: '17px',
+            '::placeholder': {
+                color: 'rgba(0, 0, 0, 0.4)' // Darker placeholder
+            }
+        },
+        invalid: {
+            color: '#ff4444',
+            iconColor: '#ff4444'
+        }
+    };
+
+    cardElement = elements.create('card', {
+        style: style,
+        hidePostalCode: true
+    });
+
+    const mountPoint = document.getElementById('payment-element');
+    if (mountPoint) {
+        cardElement.mount('#payment-element');
+    }
+
+    cardElement.on('change', function (event) {
+        const displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+
+        // Track completeness locally if needed
+        window.isCardValid = event.complete;
+    });
+}
+
 function placeOrder() {
     const btn = document.querySelector('.place-order-btn');
     const originalText = btn.innerHTML;
+    const paymentMethod = document.querySelector('input[name="payment"]:checked')?.value || 'card';
+
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التأكيد...';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري معالجة الطلب...';
 
     const subtotal = CartManager.getTotal();
     const tax = subtotal * 0.08;
     const total = subtotal + tax;
 
-    const data = {
+    const orderData = {
         total: total,
-        items: CartManager.items, // Added: Send cart items to server
+        items: CartManager.items,
         firstName: document.getElementById('firstName')?.value,
         lastName: document.getElementById('lastName')?.value,
         email: document.getElementById('email')?.value,
@@ -119,61 +166,95 @@ function placeOrder() {
         city: document.getElementById('city')?.value,
         zip: document.getElementById('zip')?.value,
         country: document.getElementById('country')?.value,
-        payment_method: document.querySelector('input[name="payment"]:checked')?.value || 'card',
+        payment_method: paymentMethod,
         _token: document.querySelector('meta[name="csrf-token"]')?.content
     };
 
+    // 1. Create the Order
     fetch('/checkout', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify(data)
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(orderData)
     })
         .then(res => res.json())
-        .then(res => {
-            if (res.success) {
-                // Hide all steps
-                document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
+        .then(async res => {
+            if (!res.success) {
+                throw new Error(res.error || 'فشل إنشاء الطلب');
+            }
 
-                // Show success
-                const success = document.getElementById('stepSuccess');
-                if (success) {
-                    // Update order number in success message
-                    const orderNumEl = success.querySelector('strong');
-                    if (orderNumEl) orderNumEl.textContent = '#' + (res.order_number || 'LP-2026-4281');
-
-                    success.style.display = 'block';
-                    success.classList.add('active');
-                }
-
-                // Update indicators
-                document.querySelectorAll('.step-dot').forEach(dot => dot.classList.add('completed'));
-                document.querySelectorAll('.step-line').forEach(line => line.classList.add('active'));
-
-                // Clear cart
-                CartManager.items = [];
-                CartManager.save();
-
-                showToast('تم إرسال الطلب بنجاح!');
+            // 2. If Stripe, handle payment
+            if (paymentMethod === 'stripe' || paymentMethod === 'card') {
+                return handleStripePayment(res.order_id, res.order_number);
             } else {
-                showToast('حدث خطأ أثناء إتمام الطلب، يرجى المحاولة لاحقاً');
+                showSuccess(res.order_number);
             }
         })
         .catch(err => {
             console.error(err);
-            showToast('حدث خطأ فني، يرجى المحاولة لاحقاً');
-        })
-        .finally(() => {
+            showToast(err.message || 'حدث خطأ فني، يرجى المحاولة لاحقاً');
             btn.disabled = false;
             btn.innerHTML = originalText;
         });
 }
 
+async function handleStripePayment(orderId, orderNumber) {
+    const btn = document.querySelector('.place-order-btn');
+
+    try {
+        const createPaymentRes = await fetch('/payment/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content
+            },
+            body: JSON.stringify({ order_id: orderId })
+        });
+
+        const paymentData = await createPaymentRes.json();
+        if (paymentData.error) throw new Error(paymentData.error);
+
+        const result = await stripe.confirmCardPayment(paymentData.clientSecret, {
+            payment_method: {
+                card: cardElement,
+                billing_details: {
+                    name: document.getElementById('firstName').value + ' ' + document.getElementById('lastName').value,
+                    email: document.getElementById('email').value,
+                    phone: document.getElementById('phone').value,
+                }
+            }
+        });
+
+        if (result.error) {
+            throw new Error(result.error.message);
+        } else if (result.paymentIntent.status === 'succeeded') {
+            showSuccess(orderNumber);
+        }
+    } catch (err) {
+        showToast(err.message);
+        btn.disabled = false;
+        btn.innerHTML = 'تأكيد الطلب';
+    }
+}
+
+function showSuccess(orderNumber) {
+    document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
+    const success = document.getElementById('stepSuccess');
+    if (success) {
+        const orderNumEl = success.querySelector('strong');
+        if (orderNumEl) orderNumEl.textContent = '#' + orderNumber;
+        success.style.display = 'block';
+        success.classList.add('active');
+    }
+    CartManager.items = [];
+    CartManager.save();
+    showToast('تم إرسال الطلب بنجاح!');
+}
+
 // ===== Initialize =====
 document.addEventListener('DOMContentLoaded', () => {
-    // Render order summary sidebar
+    initStripe();
+
     const checkoutItems = document.getElementById('checkoutItems');
     const checkoutSubtotal = document.getElementById('checkoutSubtotal');
     const checkoutTax = document.getElementById('checkoutTax');
@@ -183,7 +264,6 @@ document.addEventListener('DOMContentLoaded', () => {
         CartManager.items.forEach(item => {
             checkoutItems.innerHTML += `
         <div class="checkout-summary__item">
-          <div class="checkout-summary__item-img"><img src="${item.img}" alt="${item.name}"></div>
           <div class="checkout-summary__item-info"><h4>${item.name}</h4><span>الكمية: ${item.qty}</span></div>
           <span class="checkout-summary__item-price">$${(item.price * item.qty).toFixed(2)}</span>
         </div>
@@ -199,31 +279,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (checkoutTax) checkoutTax.textContent = `$${tax.toFixed(2)}`;
     if (checkoutTotal) checkoutTotal.textContent = `$${total.toFixed(2)}`;
 
-    // Payment method toggle
     document.querySelectorAll('.payment-method').forEach(method => {
         method.addEventListener('click', () => {
             document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
             method.classList.add('active');
+            const cardForm = document.getElementById('cardForm');
+            const val = method.querySelector('input').value;
+            if (cardForm) cardForm.style.display = (val === 'card' || val === 'stripe') ? 'block' : 'none';
         });
     });
-
-    // Card number formatting
-    const cardNumberInput = document.getElementById('cardNumber');
-    if (cardNumberInput) {
-        cardNumberInput.addEventListener('input', (e) => {
-            let v = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/g, '');
-            if (v.length > 16) v = v.slice(0, 16);
-            e.target.value = v.match(/.{1,4}/g)?.join(' ') || '';
-        });
-    }
-
-    // Expiry formatting
-    const expiryInput = document.getElementById('cardExpiry');
-    if (expiryInput) {
-        expiryInput.addEventListener('input', (e) => {
-            let v = e.target.value.replace(/\D/g, '');
-            if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
-            e.target.value = v;
-        });
-    }
 });

@@ -55,24 +55,31 @@
             <tbody id="ordersTableBody">
                 @foreach($orders as $order)
                 <tr>
-                    <td style="font-weight:600;color:var(--color-gold)">#ORD-{{ $order->id }}</td>
+                    <td style="font-weight:600;color:var(--color-gold)">#{{ $order->order_number }}</td>
                     <td>
                         <div class="table-product__name">{{ $order->user->name ?? 'عميل مجهول' }}</div>
                         <div class="table-product__brand">{{ $order->user->email ?? '' }}</div>
                     </td>
-                    <td>{{ $order->items_count ?? $order->products->count() }} منتج</td>
+                    <td>{{ $order->items_count ?? $order->items->count() }} منتج</td>
                     <td style="font-weight:600">${{ number_format($order->total) }}</td>
                     <td>
-                        <span class="status-badge {{ $order->status }}">
-                            @if($order->status == 'completed') مكتمل
-                            @elseif($order->status == 'pending') قيد الانتظار
-                            @elseif($order->status == 'shipped') تم الشحن
-                            @elseif($order->status == 'processing') قيد المعالجة
-                            @elseif($order->status == 'delivered') تم التسليم
-                            @elseif($order->status == 'cancelled') ملغي
+                        @php $status = strtolower($order->status); @endphp
+                        <span class="status-badge {{ $status }}">
+                            @if($status == 'completed') مكتمل
+                            @elseif($status == 'pending') قيد الانتظار
+                            @elseif($status == 'shipped') تم الشحن
+                            @elseif($status == 'processing') قيد المعالجة
+                            @elseif($status == 'delivered') تم التسليم
+                            @elseif($status == 'cancelled' || $status == 'canceled') ملغي
+                            @elseif($status == 'paid') تم الدفع
                             @else {{ $order->status }}
                             @endif
                         </span>
+                        @if(strtolower($order->payment_status) == 'paid')
+                            <div style="font-size: 0.7rem; color: var(--color-success); margin-top: 2px">
+                                <i class="fas fa-check-double"></i> مدفوع
+                            </div>
+                        @endif
                         @if($order->tracking_number)
                             <div style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 5px">
                                 <i class="fas fa-truck"></i> {{ $order->shipping_company }}: {{ $order->tracking_number }}

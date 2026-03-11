@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout', function () {
         return view('clints.checkout');
     })->name('checkout');
+    Route::post('/checkout', [\App\Http\Controllers\Clients\CheckoutController::class, 'placeOrder'])->name('checkout.store');
 
     Route::post('/reviews', [\App\Http\Controllers\Clients\ReviewController::class, 'store'])
         ->name('reviews.store');
@@ -33,7 +34,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/wishlist', [\App\Http\Controllers\Clients\WishlistController::class, 'index'])->name('wishlist.index');
     Route::post('/wishlist/toggle', [\App\Http\Controllers\Clients\WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::delete('/wishlist/{id}', [\App\Http\Controllers\Clients\WishlistController::class, 'destroy'])->name('wishlist.destroy');
+
+    // Payment Routes (Stripe)
+    Route::post('/payment/create', [\App\Http\Controllers\PaymentController::class, 'createPayment'])->name('payment.create');
+    Route::get('/payment/success', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
+    Route::get('/payment/cancel', [\App\Http\Controllers\PaymentController::class, 'cancel'])->name('payment.cancel');
 });
+
+// Stripe Webhook (Publicly accessible)
+Route::post('/stripe/webhook', [\App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
 
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

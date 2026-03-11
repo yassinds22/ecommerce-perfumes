@@ -25,7 +25,7 @@ class OrderRepository extends BaseRepository
      */
     public function getPaginatedOrders(int $perPage = 10): LengthAwarePaginator
     {
-        return $this->model->with('user')->latest()->paginate($perPage);
+        return $this->model->with('user')->withCount('items')->latest()->paginate($perPage);
     }
 
     /**
@@ -47,7 +47,7 @@ class OrderRepository extends BaseRepository
      */
     public function getOrderWithDetails(int $id): Order
     {
-        return $this->model->with(['user', 'products'])->findOrFail($id);
+        return $this->model->with(['user', 'items.product'])->findOrFail($id);
     }
 
     /**

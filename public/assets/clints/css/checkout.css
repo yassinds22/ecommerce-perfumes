@@ -250,6 +250,24 @@
     color: var(--color-text-muted);
 }
 
+/* Stripe Specific Styles */
+#payment-element {
+    padding: 12px;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    transition: border-color var(--transition-fast);
+}
+
+#payment-element.StripeElement--focus {
+    border-color: var(--color-gold);
+}
+
+#card-errors {
+    margin-top: 8px;
+    font-size: 0.85rem;
+}
+
 .checkout-actions {
     display: flex;
     justify-content: space-between;

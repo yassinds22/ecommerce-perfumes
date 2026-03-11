@@ -19,7 +19,8 @@ class Order extends Model
         'shipping_company',
         'tracking_number',
         'shipped_at',
-        'delivered_at'
+        'delivered_at',
+        'stripe_payment_intent'
     ];
 
     protected $casts = [
