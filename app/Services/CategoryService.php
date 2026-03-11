@@ -82,23 +82,23 @@ class CategoryService
      *
      * @param int $id
      * @param array $data
-     * @return bool
+     * @return Category
      */
-    public function updateCategory(int $id, array $data): bool
+    public function updateCategory(int $id, array $data): Category
     {
         if (isset($data['name']['en'])) {
             $data['slug'] = \Illuminate\Support\Str::slug($data['name']['en']);
         }
         
-        $updated = $this->categoryRepository->update($id, $data);
+        $this->categoryRepository->update($id, $data);
+        $category = $this->getCategoryById($id);
 
-        if ($updated && request()->hasFile('image')) {
-            $category = $this->getCategoryById($id);
+        if ($category && request()->hasFile('image')) {
             $category->clearMediaCollection('images');
             $category->addMediaFromRequest('image')->toMediaCollection('images');
         }
 
-        return $updated;
+        return $category;
     }
 
 

@@ -71,38 +71,9 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Admin\ProductRequest $request)
     {
-        $data = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
-            'name.en' => 'required|string|max:255',
-            'name.ar' => 'required|string|max:255',
-            'description.en' => 'nullable|string',
-            'description.ar' => 'nullable|string',
-            'short_description.en' => 'nullable|string',
-            'short_description.ar' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0',
-            'sku' => 'required|string|unique:products,sku',
-            'stock_quantity' => 'required|integer|min:0',
-            'low_stock_threshold' => 'required|integer|min:0',
-            'gender' => 'required|in:Men,Women,Unisex,Kids',
-            'is_featured' => 'nullable|boolean',
-            'is_bestseller' => 'nullable|boolean',
-            'status' => 'nullable|boolean',
-            'image' => 'nullable|image|max:2048',
-            'gallery.*' => 'nullable|image|max:2048',
-            'top_notes' => 'nullable|array', // Added
-            'top_notes.*' => 'exists:fragrance_notes,id', // Added
-            'middle_notes' => 'nullable|array', // Added
-            'middle_notes.*' => 'exists:fragrance_notes,id', // Added
-            'base_notes' => 'nullable|array', // Added
-            'base_notes.*' => 'exists:fragrance_notes,id', // Added
-        ]);
-
-
-        $product = $this->productService->createProduct($data);
+        $product = $this->productService->createProduct($request->validated());
 
         $this->logActivity('إضافة منتج جديد', "تم إضافة المنتج: {$product->name}", $product);
 
@@ -130,38 +101,9 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(\App\Http\Requests\Admin\ProductRequest $request, int $id)
     {
-        $data = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'required|exists:brands,id',
-            'name.en' => 'required|string|max:255',
-            'name.ar' => 'required|string|max:255',
-            'description.en' => 'nullable|string',
-            'description.ar' => 'nullable|string',
-            'short_description.en' => 'nullable|string',
-            'short_description.ar' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0',
-            'sku' => 'required|string|unique:products,sku,' . $id,
-            'stock_quantity' => 'required|integer|min:0',
-            'low_stock_threshold' => 'required|integer|min:0',
-            'gender' => 'required|in:Men,Women,Unisex,Kids',
-            'is_featured' => 'nullable|boolean',
-            'is_bestseller' => 'nullable|boolean',
-            'status' => 'nullable|boolean',
-            'image' => 'nullable|image|max:2048',
-            'gallery.*' => 'nullable|image|max:2048',
-            'top_notes' => 'nullable|array', // Added
-            'top_notes.*' => 'exists:fragrance_notes,id', // Added
-            'middle_notes' => 'nullable|array', // Added
-            'middle_notes.*' => 'exists:fragrance_notes,id', // Added
-            'base_notes' => 'nullable|array', // Added
-            'base_notes.*' => 'exists:fragrance_notes,id', // Added
-        ]);
-
-
-        $product = $this->productService->updateProduct($id, $data);
+        $product = $this->productService->updateProduct($id, $request->validated());
 
         $this->logActivity('تعديل منتج', "تم تعديل بيانات المنتج: {$product->name}", $product);
 

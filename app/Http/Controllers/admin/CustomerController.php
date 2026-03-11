@@ -3,20 +3,30 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
+    /**
+     * @var UserService
+     */
+    protected $userService;
+
+    /**
+     * CustomerController constructor.
+     *
+     * @param UserService $userService
+     */
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function index(Request $request)
     {
-        $customers = User::where('role', 'Customer')
-            ->withCount('orders')
-            ->withSum('orders', 'total')
-            ->latest()
-            ->paginate(10);
-
-        $customersCount = User::where('role', 'Customer')->count();
+        $customers = $this->userService->getPaginatedCustomers(10);
+        $customersCount = $this->userService->getCustomersCount();
 
         if ($request->ajax()) {
             return view('admin.sections.customers', compact('customers', 'customersCount'))->render();
@@ -27,15 +37,13 @@ class CustomerController extends Controller
 
     public function show($id)
     {
-        $customer = User::with(['orders.products'])->findOrFail($id);
+        $customer = $this->userService->getCustomerDetails($id);
         return response()->json($customer);
     }
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
-
+        $this->userService->deleteUser($id);
         return response()->json(['success' => true, 'message' => 'تم حذف العميل بنجاح']);
     }
 }

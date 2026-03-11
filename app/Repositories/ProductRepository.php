@@ -77,4 +77,29 @@ class ProductRepository extends BaseRepository
         ->findOrFail($id);
     }
 
+    /**
+     * Get top selling products.
+     *
+     * @param int $count
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getTopSellingProducts(int $count = 5)
+    {
+        return $this->model->withCount(['orderItems as total_sold' => function($query) {
+                $query->select(\Illuminate\Support\Facades\DB::raw('sum(quantity)'));
+            }])
+            ->orderByDesc('total_sold')
+            ->take($count)
+            ->get();
+    }
+
+    /**
+     * Count active products.
+     *
+     * @return int
+     */
+    public function countActive(): int
+    {
+        return $this->model->where('status', true)->count();
+    }
 }

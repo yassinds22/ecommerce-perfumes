@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 
 class BrandService
 {
+    use \App\Traits\LogsActivity;
+
     /**
      * @var BrandRepository
      */
@@ -63,6 +65,8 @@ class BrandService
             $brand->addMediaFromRequest('logo')->toMediaCollection('logos');
         }
 
+        $this->logActivity('إضافة ماركة جديدة', "تم إضافة الماركة: {$brand->name}", $brand);
+
         return $brand;
     }
 
@@ -71,23 +75,25 @@ class BrandService
      *
      * @param int $id
      * @param array $data
-     * @return bool
+     * @return Brand
      */
-    public function updateBrand(int $id, array $data): bool
+    public function updateBrand(int $id, array $data): Brand
     {
         if (isset($data['name'])) {
             $data['slug'] = Str::slug($data['name']);
         }
 
-        $updated = $this->brandRepository->update($id, $data);
+        $this->brandRepository->update($id, $data);
+        $brand = $this->getBrandById($id);
 
-        if ($updated && request()->hasFile('logo')) {
-            $brand = $this->getBrandById($id);
+        if (request()->hasFile('logo')) {
             $brand->clearMediaCollection('logos');
             $brand->addMediaFromRequest('logo')->toMediaCollection('logos');
         }
 
-        return $updated;
+        $this->logActivity('تعديل ماركة', "تم تعديل بيانات الماركة: {$brand->name}", $brand);
+
+        return $brand;
     }
 
     /**
@@ -98,6 +104,7 @@ class BrandService
      */
     public function deleteBrand(int $id): bool
     {
+        $this->logActivity('حذف ماركة', "تم حذف الماركة رقم: {$id}");
         return $this->brandRepository->delete($id);
     }
 }

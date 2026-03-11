@@ -3,123 +3,94 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Order;
-use App\Models\Product;
-use App\Models\User;
-use Carbon\Carbon;
+use App\Services\DashboardService;
+use App\Services\OrderService;
+use App\Services\ProductService;
+use App\Services\UserService;
+use App\Services\CategoryService;
+use App\Services\CouponService;
+use App\Services\ReviewService;
+use App\Services\NoteService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    protected $dashboardService;
+    protected $orderService;
+    protected $productService;
+    protected $userService;
+    protected $categoryService;
+    protected $couponService;
+    protected $reviewService;
+
+    public function __construct(
+        DashboardService $dashboardService,
+        OrderService $orderService,
+        ProductService $productService,
+        UserService $userService,
+        CategoryService $categoryService,
+        CouponService $couponService,
+        ReviewService $reviewService
+    ) {
+        $this->dashboardService = $dashboardService;
+        $this->orderService = $orderService;
+        $this->productService = $productService;
+        $this->userService = $userService;
+        $this->categoryService = $categoryService;
+        $this->couponService = $couponService;
+        $this->reviewService = $reviewService;
+    }
+
     public function index()
     {
-        // Cache basic stats for 1 hour
-        $stats = Cache::remember('admin_dashboard_stats', 3600, function() {
-            return [
-                'total_revenue' => Order::where('status', 'completed')->sum('total'),
-                'orders_count' => Order::count(),
-                'active_products' => Product::where('status', true)->count(),
-                'customers_count' => User::where('role', 'Customer')->count(),
-            ];
-        });
+        // Aggregate Statistics & Trends
+        $stats = $this->dashboardService->getBasicStats();
+        $trends = $this->dashboardService->getTrends();
+        $topProducts = $this->dashboardService->getTopSellingProducts(5);
+        $salesData = $this->dashboardService->getSalesChartData();
+        $categoriesStats = $this->dashboardService->getCategoryDistribution();
+        $customerStats = $this->dashboardService->getCustomerStats();
 
-        // Cache trends for 1 hour
-        $trends = Cache::remember('admin_dashboard_trends', 3600, function() {
-            $thisMonth = Carbon::now()->startOfMonth();
-            $lastMonth = Carbon::now()->subMonth()->startOfMonth();
-
-            $thisMonthRevenue = Order::where('status', 'completed')->where('created_at', '>=', $thisMonth)->sum('total');
-            $lastMonthRevenue = Order::where('status', 'completed')->where('created_at', '>=', $lastMonth)->where('created_at', '<', $thisMonth)->sum('total');
-            $revenueTrend = $lastMonthRevenue > 0 ? (($thisMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100 : 100;
-
-            $thisMonthOrders = Order::where('created_at', '>=', $thisMonth)->count();
-            $lastMonthOrders = Order::where('created_at', '>=', $lastMonth)->where('created_at', '<', $thisMonth)->count();
-            $ordersTrend = $lastMonthOrders > 0 ? (($thisMonthOrders - $lastMonthOrders) / $lastMonthOrders) * 100 : 100;
-
-            return [
-                'revenue' => round($revenueTrend, 1),
-                'orders' => round($ordersTrend, 1),
-                'products' => 0, 
-                'customers' => 0,
-            ];
-        });
-
-        // Top Selling Products (Cache for 6 hours)
-        $topProducts = Cache::remember('admin_top_products', 3600 * 6, function() {
-            return Product::withCount(['orderItems as total_sold' => function($query) {
-                    $query->select(DB::raw('sum(quantity)'));
-                }])
-                ->orderByDesc('total_sold')
-                ->take(5)
-                ->get();
-        });
-
-        // Data for Sections (Dynamic - No caching)
-        $recentOrders = Order::with('user')->latest()->take(5)->get();
-        $orders = Order::with('user')->latest()->paginate(10);
-        $customers = User::where('role', 'Customer')
-            ->withCount('orders')
-            ->withSum('orders', 'total')
-            ->latest()
-            ->paginate(10);
+        // Section Data (using domain services)
+        $recentOrders = $this->orderService->getPaginatedOrders(5);
+        $orders = $this->orderService->getPaginatedOrders(10);
+        $orderStats = $this->orderService->getOrderStats();
         
-        $allProducts = Product::with(['category', 'brand', 'media'])->latest()->paginate(10);
-        $offers = \App\Models\Coupon::latest()->paginate(10);
-        $categories = \App\Models\Category::paginate(10);
+        $customers = $this->userService->getPaginatedCustomers(10);
+        $allProducts = $this->productService->getPaginatedProducts(10);
+        $reviews = $this->reviewService->getReviews([], 10);
+        $offers = $this->couponService->getPaginatedCoupons(10);
+        $categories = $this->categoryService->getPaginatedCategories(10);
 
-        // Sales Chart Data (Last 12 Months) - Cache for 12 hours
-        $salesData = Cache::remember('admin_sales_chart', 3600 * 12, function() {
-            $data = [];
-            for ($i = 11; $i >= 0; $i--) {
-                $month = Carbon::now()->subMonths($i);
-                $sales = Order::where('status', 'completed')
-                    ->whereMonth('created_at', $month->month)
-                    ->whereYear('created_at', $month->year)
-                    ->sum('total');
-                
-                $data[] = [
-                    'month' => $month->translatedFormat('F'),
-                    'value' => (float)$sales
-                ];
-            }
-            return $data;
-        });
-
-        // Category Distribution - Cache for 12 hours
-        $categoriesStats = Cache::remember('admin_categories_stats', 3600 * 12, function() {
-            return \App\Models\Category::withCount('products')->get()->map(function($cat) {
-                return [
-                    'name' => $cat->getTranslation('name', 'ar'),
-                    'count' => $cat->products_count,
-                    'color' => '#'.substr(md5($cat->name), 0, 6)
-                ];
-            });
-        });
-
-        $reviews = \App\Models\Review::with(['user', 'product'])->latest()->paginate(10);
-        $recentActivities = \App\Models\ActivityLog::with('user')->latest()->take(10)->get();
+        // Additional data
         $settings = \App\Models\Setting::all()->groupBy('group');
+        $recentActivities = \App\Models\ActivityLog::with('user')->latest()->take(10)->get();
         $unreadNotificationsCount = auth()->user() ? auth()->user()->unreadNotifications->count() : 0;
 
-        $orderStats = [
-            'pending' => Order::where('status', 'pending')->count(),
-            'shipped' => Order::where('status', 'shipped')->count(),
-            'completed' => Order::where('status', 'completed')->count(),
-            'cancelled' => Order::where('status', 'cancelled')->count(),
-        ];
+        return view('admin.index', compact(
+            'stats', 'trends', 'recentOrders', 'orders', 'orderStats', 
+            'customers', 'reviews', 'allProducts', 'salesData', 
+            'categoriesStats', 'offers', 'categories', 'settings', 
+            'topProducts', 'customerStats', 'recentActivities', 
+            'unreadNotificationsCount'
+        ));
+    }
 
-        $returningCustomersCount = User::where('role', 'Customer')
-            ->has('orders', '>', 1)
-            ->count();
-        
-        $customerStats = [
-            'new' => $stats['customers_count'] - $returningCustomersCount,
-            'returning' => $returningCustomersCount,
-            'total' => $stats['customers_count']
-        ];
+    public function getNotifications()
+    {
+        return response()->json(auth()->user()->unreadNotifications);
+    }
 
-        return view('admin.index', compact('stats', 'trends', 'recentOrders', 'orders', 'orderStats', 'customers', 'reviews', 'allProducts', 'salesData', 'categoriesStats', 'offers', 'categories', 'settings', 'topProducts', 'customerStats', 'recentActivities', 'unreadNotificationsCount'));
+    public function markNotificationAsRead($id)
+    {
+        $notification = auth()->user()->notifications()->findOrFail($id);
+        $notification->markAsRead();
+        return response()->json(['success' => true]);
+    }
+
+    public function markAllNotificationsAsRead()
+    {
+        auth()->user()->unreadNotifications->markAsRead();
+        return response()->json(['success' => true]);
     }
 }

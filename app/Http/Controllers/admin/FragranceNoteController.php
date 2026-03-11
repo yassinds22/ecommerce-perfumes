@@ -3,16 +3,21 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\FragranceNote;
 use App\Services\NoteService;
-use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 
 class FragranceNoteController extends Controller
 {
-    use LogsActivity;
+    /**
+     * @var NoteService
+     */
     protected $noteService;
 
+    /**
+     * FragranceNoteController constructor.
+     *
+     * @param NoteService $noteService
+     */
     public function __construct(NoteService $noteService)
     {
         $this->noteService = $noteService;
@@ -28,13 +33,8 @@ class FragranceNoteController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created resource in storage.
      */
-    public function create()
-    {
-        //
-    }
-
     public function store(Request $request)
     {
         $request->validate([
@@ -44,13 +44,14 @@ class FragranceNoteController extends Controller
             'description_en' => 'nullable|string',
         ]);
 
-        $note = $this->noteService->createNote($request->all());
-
-        $this->logActivity('إضافة مكون عطر', "تم إضافة المكون: {$note->name_ar}", $note);
+        $this->noteService->createNote($request->all());
 
         return redirect()->back()->with('success', 'تمت إضافة المكون بنجاح');
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -60,19 +61,17 @@ class FragranceNoteController extends Controller
             'description_en' => 'nullable|string',
         ]);
 
-        $note = $this->noteService->updateNote($id, $request->all());
-
-        $this->logActivity('تعديل مكون عطر', "تم تعديل بيانات المكون: {$note->name_ar}", $note);
+        $this->noteService->updateNote($id, $request->all());
 
         return redirect()->back()->with('success', 'تم تحديث المكون بنجاح');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy($id)
     {
         $this->noteService->deleteNote($id);
-
-        $this->logActivity('حذف مكون عطر', "تم حذف المكون رقم: {$id}");
         return redirect()->back()->with('success', 'تم حذف المكون بنجاح');
     }
-
 }

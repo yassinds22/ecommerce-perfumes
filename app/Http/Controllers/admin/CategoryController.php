@@ -46,16 +46,9 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Admin\CategoryRequest $request)
     {
-        $data = $request->validate([
-            'name.en' => 'required|string|max:255',
-            'name.ar' => 'required|string|max:255',
-            'parent_id' => 'nullable|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        $category = $this->categoryService->createCategory($data);
+        $category = $this->categoryService->createCategory($request->validated());
 
         $this->logActivity('إضافة قسم جديد', "تم إضافة القسم: {$category->name}", $category);
 
@@ -76,16 +69,9 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(\App\Http\Requests\Admin\CategoryRequest $request, int $id)
     {
-        $data = $request->validate([
-            'name.en' => 'required|string|max:255',
-            'name.ar' => 'required|string|max:255',
-            'parent_id' => 'nullable|exists:categories,id',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        $category = $this->categoryService->updateCategory($id, $data);
+        $category = $this->categoryService->updateCategory($id, $request->validated());
 
         $this->logActivity('تعديل قسم', "تم تعديل بيانات القسم: {$category->name}", $category);
 

@@ -3,14 +3,29 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Setting;
+use App\Services\SettingService;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
+    /**
+     * @var SettingService
+     */
+    protected $settingService;
+
+    /**
+     * SettingController constructor.
+     *
+     * @param SettingService $settingService
+     */
+    public function __construct(SettingService $settingService)
+    {
+        $this->settingService = $settingService;
+    }
+
     public function index(Request $request)
     {
-        $settings = Setting::all()->groupBy('group');
+        $settings = $this->settingService->getGroupedSettings();
         
         if ($request->ajax()) {
             return view('admin.sections.settings', compact('settings'))->render();
@@ -21,11 +36,7 @@ class SettingController extends Controller
 
     public function update(Request $request)
     {
-        $data = $request->except('_token');
-        
-        foreach ($data as $key => $value) {
-            Setting::where('key', $key)->update(['value' => $value]);
-        }
+        $this->settingService->updateSettings($request->except('_token'));
         
         if ($request->ajax()) {
             return response()->json(['success' => true, 'message' => 'تم تحديث الإعدادات بنجاح']);

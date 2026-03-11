@@ -4,12 +4,10 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\BrandService;
-use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 
 class BrandController extends Controller
 {
-    use LogsActivity;
     /**
      * @var BrandService
      */
@@ -45,16 +43,9 @@ class BrandController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\Admin\BrandRequest $request)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255|unique:brands,name',
-            'logo' => 'nullable|image|max:2048',
-        ]);
-
-        $brand = $this->brandService->createBrand($data);
-
-        $this->logActivity('إضافة ماركة جديدة', "تم إضافة الماركة: {$brand->name}", $brand);
+        $this->brandService->createBrand($request->validated());
 
         return redirect()->route('admin.brands.index')->with('success', 'تم إضافة الماركة بنجاح');
     }
@@ -71,16 +62,9 @@ class BrandController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(\App\Http\Requests\Admin\BrandRequest $request, int $id)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255|unique:brands,name,' . $id,
-            'logo' => 'nullable|image|max:2048',
-        ]);
-
-        $brand = $this->brandService->updateBrand($id, $data);
-
-        $this->logActivity('تعديل ماركة', "تم تعديل بيانات الماركة: {$brand->name}", $brand);
+        $this->brandService->updateBrand($id, $request->validated());
 
         return redirect()->route('admin.brands.index')->with('success', 'تم تحديث الماركة بنجاح');
     }
@@ -91,8 +75,6 @@ class BrandController extends Controller
     public function destroy(int $id)
     {
         $this->brandService->deleteBrand($id);
-
-        $this->logActivity('حذف ماركة', "تم حذف الماركة رقم: {$id}");
         return redirect()->route('admin.brands.index')->with('success', 'تم حذف الماركة بنجاح');
     }
 }

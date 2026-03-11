@@ -107,19 +107,18 @@ class ProductService
      *
      * @param int $id
      * @param array $data
-     * @return bool
+     * @return Product
      */
-    public function updateProduct(int $id, array $data): bool
+    public function updateProduct(int $id, array $data): Product
     {
         if (isset($data['name']['en'])) {
             $data['slug'] = \Illuminate\Support\Str::slug($data['name']['en']);
         }
 
-        $updated = $this->productRepository->update($id, $data);
+        $this->productRepository->update($id, $data);
+        $product = $this->getProductById($id);
 
-        if ($updated) {
-            $product = $this->getProductById($id);
-            
+        if ($product) {
             // Sync old stock field for compatibility
             $product->stock = $product->stock_quantity;
             $product->is_out_of_stock = $product->stock_quantity <= 0;
@@ -139,7 +138,7 @@ class ProductService
             }
         }
 
-        return $updated;
+        return $product;
     }
 
     /**

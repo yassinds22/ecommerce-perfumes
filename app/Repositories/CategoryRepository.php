@@ -36,4 +36,14 @@ class CategoryRepository extends BaseRepository
     {
         return $this->model->with('children')->get();
     }
+
+    /**
+     * Get category distribution stats (product counts).
+     *
+     * @return Collection
+     */
+    public function getCategoryDistribution(): Collection
+    {
+        return $this->model->withCount('products')->get();
+    }
 }

@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 class CouponService
 {
+    use \App\Traits\LogsActivity;
+
     /**
      * @var CouponRepository
      */
@@ -31,6 +33,17 @@ class CouponService
     public function getAllCoupons(): Collection
     {
         return $this->couponRepository->all();
+    }
+
+    /**
+     * Get paginated coupons.
+     *
+     * @param int $perPage
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getPaginatedCoupons(int $perPage = 10)
+    {
+        return \App\Models\Coupon::latest()->paginate($perPage);
     }
 
     /**
@@ -59,6 +72,8 @@ class CouponService
             $coupon->products()->sync($productIds);
         }
 
+        $this->logActivity('إضافة كوبون جديد', "تم إضافة الكوبون بنجاح: {$coupon->code}", $coupon);
+
         return $coupon;
     }
 
@@ -68,22 +83,22 @@ class CouponService
      * @param int $id
      * @param array $data
      * @param array $productIds
-     * @return bool
+     * @return Coupon
      */
-    public function updateCoupon(int $id, array $data, array $productIds = []): bool
+    public function updateCoupon(int $id, array $data, array $productIds = []): Coupon
     {
-        $updated = $this->couponRepository->update($id, $data);
+        $this->couponRepository->update($id, $data);
+        $coupon = $this->getCouponById($id);
         
-        if ($updated) {
-            $coupon = $this->getCouponById($id);
-            if (!$data['is_global']) {
-                $coupon->products()->sync($productIds);
-            } else {
-                $coupon->products()->detach();
-            }
+        if (!$data['is_global']) {
+            $coupon->products()->sync($productIds);
+        } else {
+            $coupon->products()->detach();
         }
 
-        return $updated;
+        $this->logActivity('تعديل كوبون', "تم تعديل الكوبون: {$coupon->code}", $coupon);
+
+        return $coupon;
     }
 
     /**
@@ -94,6 +109,7 @@ class CouponService
      */
     public function deleteCoupon(int $id): bool
     {
+        $this->logActivity('حذف كوبون', "تم حذف الكوبون رقم: {$id}");
         return $this->couponRepository->delete($id);
     }
 
@@ -123,7 +139,13 @@ class CouponService
     public function toggleStatus(int $id): bool
     {
         $coupon = $this->getCouponById($id);
-        return $this->couponRepository->update($id, ['is_active' => !$coupon->is_active]);
+        $newStatus = !$coupon->is_active;
+        $updated = $this->couponRepository->update($id, ['is_active' => $newStatus]);
+        
+        $statusText = $newStatus ? 'تفعيل' : 'تعطيل';
+        $this->logActivity('تغيير حالة الكوبون', "تم {$statusText} الكوبون: {$coupon->code}", $coupon);
+
+        return $updated;
     }
 }
 
