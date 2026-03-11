@@ -204,7 +204,8 @@
     </div>
     <div class="table-card" style="max-width: 1000px; margin: 30px auto;">
         <div class="table-card__header">
-            <h3>سجل حركة المخزون</h3>
+           
+        
             <div class="badge {{ $product->is_out_of_stock ? 'badge--danger' : ($product->isLowStock() ? 'badge--warning' : 'badge--success') }}">
                 {{ $product->is_out_of_stock ? 'نفذ من المخزون' : ($product->isLowStock() ? 'مخزون منخفض' : 'متوفر') }}
             </div>
