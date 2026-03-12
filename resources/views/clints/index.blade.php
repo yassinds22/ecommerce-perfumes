@@ -196,50 +196,76 @@
   </section>
   @endif
 
-  <!-- ========== المنتجات المفضلة ========== -->
-  <section class="section favorites" id="favorites">
+  <!-- ========== مختارات لك (Personalized) ========== -->
+  @auth
+  @if($personalizedProducts->count() > 0)
+  <section class="section personalized-section" id="recommended">
     <div class="container">
       <div class="section-header reveal">
-        <span class="section-label">اختيار العملاء</span>
-        <h2>منتجات نالت إعجابكم</h2>
-        <p class="section-subtitle">اكتشف المنتجات الأكثر تقييماً وتفضيلاً من قبل عملائنا</p>
+        <span class="section-label">خاص بك</span>
+        <h2>مختارات لك</h2>
+        <p class="section-subtitle">عطور اخترناها خصيصاً بناءً على ذوقك</p>
         <div class="divider"></div>
       </div>
-      <div class="favorites__grid reveal">
-        @foreach($favoriteProducts as $product)
+      <div class="reveal">
+        <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px;">
+          @foreach($personalizedProducts as $product)
+          <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->getTranslation('name', 'ar') }}" data-price="{{ $product->price }}"
+            data-img="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}">
+            <div class="product-card__image">
+              <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $product->getTranslation('name', 'ar') }}">
+              <div class="product-card__actions">
+                <button class="wishlist-btn {{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'active' : '' }}">
+                  <i class="{{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'fas' : 'far' }} fa-heart"></i>
+                </button>
+                <button onclick="window.location.href='{{ route('product', $product->id) }}'"><i class="far fa-eye"></i></button>
+              </div>
+            </div>
+            <div class="product-card__info">
+              <p class="product-card__brand">{{ $product->brand->name ?? 'لوكس بارفيوم' }}</p>
+              <h4 class="product-card__name">{{ $product->getTranslation('name', 'ar') }}</h4>
+              <p class="product-card__price">${{ $product->sale_price ?: $product->price }}</p>
+              <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
+            </div>
+          </div>
+          @endforeach
+        </div>
+      </div>
+    </div>
+  </section>
+  @endif
+  @endauth
+
+  <!-- ========== الأكثر تميزاً (Popular) ========== -->
+  <section class="section popular-section" id="popular">
+    <div class="container">
+      <div class="section-header reveal">
+        <span class="section-label">المنتجات الشائعة</span>
+        <h2>الأكثر تميزاً</h2>
+        <p class="section-subtitle">تعرف على العطور التي نالت إعجاب الجميع</p>
+        <div class="divider"></div>
+      </div>
+      <div class="popular__grid reveal" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px;">
+        @foreach($popularProducts as $product)
         <div class="product-card" data-id="{{ $product->id }}" data-name="{{ $product->getTranslation('name', 'ar') }}" data-price="{{ $product->price }}"
           data-img="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}">
           <div class="product-card__image">
             <img src="{{ $product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $product->getTranslation('name', 'ar') }}">
-            <span class="product-card__badge">موصى به</span>
             <div class="product-card__actions">
-              <button class="wishlist-btn {{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'active' : '' }}" aria-label="أضف للمفضلة">
+              <button class="wishlist-btn {{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'active' : '' }}">
                 <i class="{{ auth()->check() && auth()->user()->wishlist->contains('product_id', $product->id) ? 'fas' : 'far' }} fa-heart"></i>
               </button>
-              <button aria-label="عرض سريع" onclick="window.location.href='{{ route('product', $product->id) }}'"><i
-                  class="far fa-eye"></i></button>
+              <button onclick="window.location.href='{{ route('product', $product->id) }}'"><i class="far fa-eye"></i></button>
             </div>
           </div>
           <div class="product-card__info">
             <p class="product-card__brand">{{ $product->brand->name ?? 'لوكس بارفيوم' }}</p>
             <h4 class="product-card__name">{{ $product->getTranslation('name', 'ar') }}</h4>
-            <div class="product-card__rating">
-              <i class="fas fa-star star"></i><i class="fas fa-star star"></i><i class="fas fa-star star"></i><i
-                class="fas fa-star star"></i><i class="fas fa-star star"></i>
-              <span>(182)</span>
-            </div>
-            @if($product->sale_price)
-              <p class="product-card__price"><span style="text-decoration: line-through; opacity: 0.6; font-size: 0.8em; margin-left: 8px">${{ $product->price }}</span> ${{ $product->sale_price }}</p>
-            @else
-              <p class="product-card__price">${{ $product->price }}</p>
-            @endif
+            <p class="product-card__price">${{ $product->sale_price ?: $product->price }}</p>
             <button class="product-card__btn add-to-cart-btn">أضف للسلة</button>
           </div>
         </div>
         @endforeach
-      </div>
-      <div class="section-footer reveal" style="text-align: center; margin-top: 50px;">
-        <a href="{{ route('shop') }}" class="btn btn-outline-gold">عرض الكل</a>
       </div>
     </div>
   </section>

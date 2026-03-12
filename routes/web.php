@@ -14,6 +14,18 @@ Route::get('/cart', function () {
     return view('clints.cart');
 })->name('cart');
 
+Route::get('/search', [\App\Http\Controllers\SearchController::class, 'index'])->name('search');
+Route::get('/search/suggestions', [\App\Http\Controllers\SearchController::class, 'suggestions'])->name('search.suggestions');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/loyalty', [\App\Http\Controllers\Clients\LoyaltyController::class, 'index'])->name('loyalty.index');
+});
+
+// Recommendation System Routes
+Route::post('/recommendations/track-view', [\App\Http\Controllers\RecommendationController::class, 'trackView'])->name('recommendations.track-view');
+Route::post('/recommendations/track-click', [\App\Http\Controllers\RecommendationController::class, 'trackClick'])->name('recommendations.track-click');
+Route::get('/recommendations/similar/{product}', [\App\Http\Controllers\RecommendationController::class, 'getSimilar'])->name('recommendations.similar');
+
 
 Route::get('/login', [\App\Http\Controllers\Auth\AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [\App\Http\Controllers\Auth\AuthController::class, 'login'])->middleware('throttle:5,1');
@@ -49,6 +61,7 @@ Route::post('/stripe/webhook', [\App\Http\Controllers\PaymentController::class, 
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('index');
+    Route::get('analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics.index');
     
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);

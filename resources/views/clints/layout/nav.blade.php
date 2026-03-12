@@ -22,6 +22,7 @@
               @if(auth()->user()->role === 'Admin')
                 <a href="{{ route('admin.index') }}"><i class="fas fa-cog"></i> لوحة التحكم</a>
               @endif
+              <a href="{{ route('loyalty.index') }}"><i class="fas fa-crown"></i> نقاط الولاء</a>
               <a href="#" onclick="event.preventDefault(); document.getElementById('nav-logout-form').submit();">
                 <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
               </a>
@@ -90,3 +91,90 @@
       <a href="{{ route('cart') }}" class="btn btn-primary">عرض السلة</a>
     </div>
   </aside>
+
+  <!-- واجهة البحث الذكي -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-overlay__header">
+      <button class="search-overlay__close" id="searchClose"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="search-overlay__content">
+      <form action="{{ route('search') }}" method="GET">
+        <div class="search-overlay__input-wrapper">
+          <input type="text" name="q" id="searchInput" class="search-overlay__input" placeholder="ابحث عن عطر، براند، أو مكون عطري..." autocomplete="off">
+          <i class="fas fa-search search-overlay__icon"></i>
+        </div>
+      </form>
+
+      <div class="search-suggestions" id="searchSuggestions">
+        <span class="search-suggestions__title">مقترحات البحث</span>
+        <div class="search-suggestions__list" id="suggestionsList">
+          <!-- سيتم تحميل المقترحات هنا عبر AJAX -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchBtn = document.getElementById('searchBtn');
+      const searchOverlay = document.getElementById('searchOverlay');
+      const searchClose = document.getElementById('searchClose');
+      const searchInput = document.getElementById('searchInput');
+      const suggestionsList = document.getElementById('suggestionsList');
+      const searchSuggestions = document.getElementById('searchSuggestions');
+
+      // فتح البحث
+      if (searchBtn) {
+        searchBtn.addEventListener('click', () => {
+          searchOverlay.classList.add('active');
+          setTimeout(() => searchInput.focus(), 300);
+        });
+      }
+
+      // إغلاق البحث
+      if (searchClose) {
+        searchClose.addEventListener('click', () => {
+          searchOverlay.classList.remove('active');
+        });
+      }
+
+      // منطق الإكمال التلقائي
+      let timeout = null;
+      searchInput.addEventListener('input', function() {
+        clearTimeout(timeout);
+        const query = this.value.trim();
+
+        if (query.length < 2) {
+          searchSuggestions.classList.remove('active');
+          return;
+        }
+
+        timeout = setTimeout(() => {
+          fetch(`/search/suggestions?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+              suggestionsList.innerHTML = '';
+              if (data.length > 0) {
+                data.forEach(item => {
+                  const suggestionHtml = `
+                    <a href="/product/${item.id}" class="search-suggestions__item">
+                      <div class="search-suggestions__img">
+                        <img src="${item.image || '/assets/clints/img/placeholder.png'}" alt="${item.name}">
+                      </div>
+                      <div class="search-suggestions__info">
+                        <span class="search-suggestions__name">${item.name}</span>
+                        <span class="search-suggestions__brand">${item.brand || ''}</span>
+                      </div>
+                    </a>
+                  `;
+                  suggestionsList.insertAdjacentHTML('beforeend', suggestionHtml);
+                });
+                searchSuggestions.classList.add('active');
+              } else {
+                searchSuggestions.classList.remove('active');
+              }
+            });
+        }, 300);
+      });
+    });
+  </script>

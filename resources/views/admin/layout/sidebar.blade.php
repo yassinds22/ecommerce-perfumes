@@ -9,6 +9,9 @@
         <a href="{{ route('admin.index') }}" class="sidebar__link {{ request()->routeIs('admin.index') ? 'active' : '' }}" data-section="overview">
             <i class="fas fa-th-large"></i> نظرة عامة
         </a>
+        <a href="{{ route('admin.analytics.index') }}" class="sidebar__link {{ request()->routeIs('admin.analytics.index') ? 'active' : '' }}">
+            <i class="fas fa-chart-line"></i> التحليلات
+        </a>
         <a href="{{ route('admin.categories.index') }}" class="sidebar__link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
             <i class="fas fa-tags"></i> الأقسام
         </a>

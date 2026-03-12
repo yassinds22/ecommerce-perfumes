@@ -39,7 +39,7 @@ class DashboardService
         return Cache::remember('admin_dashboard_stats', 3600, function() {
             return [
                 'total_revenue' => $this->orderRepository->getTotalRevenue(),
-                'orders_count' => $this->orderRepository->model->count(),
+                'orders_count' => $this->orderRepository->count(),
                 'active_products' => $this->productRepository->countActive(),
                 'customers_count' => $this->userRepository->countByRole('Customer'),
             ];

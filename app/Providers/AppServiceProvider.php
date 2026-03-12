@@ -28,6 +28,11 @@ class AppServiceProvider extends ServiceProvider
             \App\Listeners\GenerateInvoiceListener::class
         );
 
+        Event::listen(
+            \App\Events\OrderCompleted::class,
+            \App\Listeners\AwardLoyaltyPointsListener::class
+        );
+
         // Share categories with all client views for navigation
         View::composer(['clints.layout.nav', 'clints.index', 'clints.shop'], function ($view) {
             $view->with('parentCategories', Category::whereNull('parent_id')->get());

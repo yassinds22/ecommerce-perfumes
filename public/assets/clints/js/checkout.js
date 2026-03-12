@@ -153,7 +153,14 @@ function placeOrder() {
 
     const subtotal = CartManager.getTotal();
     const tax = subtotal * 0.08;
-    const total = subtotal + tax;
+    let total = subtotal + tax;
+
+    // Apply loyalty discount if applicable
+    if (document.getElementById('usePointsCheckbox')?.checked) {
+        const points = parseInt(document.getElementById('pointsToRedeem')?.value) || 0;
+        const discount = points / 10; // 10 points = $1
+        total = Math.max(0, total - discount);
+    }
 
     const orderData = {
         total: total,
@@ -167,6 +174,7 @@ function placeOrder() {
         zip: document.getElementById('zip')?.value,
         country: document.getElementById('country')?.value,
         payment_method: paymentMethod,
+        redeem_points: document.getElementById('usePointsCheckbox')?.checked ? document.getElementById('pointsToRedeem')?.value : 0,
         _token: document.querySelector('meta[name="csrf-token"]')?.content
     };
 
@@ -299,6 +307,36 @@ document.addEventListener('DOMContentLoaded', () => {
     if (checkoutSubtotal) checkoutSubtotal.textContent = `$${subtotal.toFixed(2)}`;
     if (checkoutTax) checkoutTax.textContent = `$${tax.toFixed(2)}`;
     if (checkoutTotal) checkoutTotal.textContent = `$${total.toFixed(2)}`;
+
+    // Loyalty Points Logic
+    const usePointsCheckbox = document.getElementById('usePointsCheckbox');
+    const pointsToRedeem = document.getElementById('pointsToRedeem');
+    const pointsInputWrapper = document.getElementById('pointsInputWrapper');
+
+    if (usePointsCheckbox) {
+        usePointsCheckbox.addEventListener('change', function () {
+            pointsInputWrapper.style.display = this.checked ? 'block' : 'none';
+            updateCheckoutTotals();
+        });
+    }
+
+    if (pointsToRedeem) {
+        pointsToRedeem.addEventListener('input', updateCheckoutTotals);
+    }
+
+    function updateCheckoutTotals() {
+        const subtotal = CartManager.getTotal();
+        const tax = subtotal * 0.08;
+        let total = subtotal + tax;
+
+        if (usePointsCheckbox && usePointsCheckbox.checked) {
+            const points = parseInt(pointsToRedeem.value) || 0;
+            const discount = points / 10;
+            total = Math.max(0, total - discount);
+        }
+
+        if (checkoutTotal) checkoutTotal.textContent = `$${total.toFixed(2)}`;
+    }
 
     document.querySelectorAll('.payment-method').forEach(method => {
         method.addEventListener('click', () => {

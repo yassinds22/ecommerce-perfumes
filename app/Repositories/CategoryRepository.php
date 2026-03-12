@@ -42,8 +42,14 @@ class CategoryRepository extends BaseRepository
      *
      * @return Collection
      */
-    public function getCategoryDistribution(): Collection
+    /**
+     * Get paginated categories with product counts.
+     *
+     * @param int $perPage
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getPaginatedCategories(int $perPage = 10)
     {
-        return $this->model->withCount('products')->get();
+        return $this->model->withCount('products')->latest()->paginate($perPage);
     }
 }

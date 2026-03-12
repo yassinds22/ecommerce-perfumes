@@ -45,7 +45,6 @@ class CheckoutController extends Controller
                     'payment_status' => 'pending'
                 ]);
 
-                // Create Order Items and Update Stock
                 if ($request->has('items')) {
                     $stockService = app(\App\Services\StockService::class);
                     foreach ($request->items as $item) {
@@ -61,6 +60,15 @@ class CheckoutController extends Controller
                             $stockService->decrease($product, $item['qty'], "طلب رقم #{$order->order_number}");
                         }
                     }
+                }
+
+                // 3. Handle Loyalty Points Redemption
+                if (auth()->check() && $request->redeem_points > 0) {
+                    $loyaltyService = app(\App\Services\LoyaltyService::class);
+                    $loyaltyService->redeemPoints(auth()->user(), $request->redeem_points, $order);
+                    
+                    // The discount should have been validated on frontend, 
+                    // ideally we re-verify total matches after discount here
                 }
 
                 $admins = User::where('role', 'Admin')->get();

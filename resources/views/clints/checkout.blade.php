@@ -193,6 +193,34 @@
                     <div class="checkout-summary__items" id="checkoutItems">
                         <!-- يتم تعبئتها بواسطة JS -->
                     </div>
+
+                    @auth
+                    <div class="loyalty-box mt-4 p-3 border rounded">
+                        <h5>نقاط الولاء</h5>
+                        <div id="loyaltyPointsInfo">
+                            @php 
+                                $loyaltyService = app(\App\Services\LoyaltyService::class);
+                                $userPoints = $loyaltyService->getUserPoints(auth()->user());
+                                $discountValue = $loyaltyService->calculateDiscountValue($userPoints);
+                            @endphp
+                            @if($userPoints > 0)
+                                <p class="small text-muted mb-2">لديك {{ $userPoints }} نقطة (تساوي ${{ number_format($discountValue, 2) }})</p>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="usePointsCheckbox">
+                                    <label class="form-check-label" for="usePointsCheckbox">
+                                        استخدام النقاط للخصم
+                                    </label>
+                                </div>
+                                <div id="pointsInputWrapper" style="display:none;">
+                                    <input type="number" id="pointsToRedeem" class="form-control form-control-sm" placeholder="النقاط" max="{{ $userPoints }}">
+                                </div>
+                            @else
+                                <p class="small text-muted mb-0">ليس لديك نقاط كافية حالياً</p>
+                            @endif
+                        </div>
+                    </div>
+                    @endauth
+
                     <div class="checkout-summary__rows">
                         <div class="checkout-summary__row"><span>المجموع الفرعي</span><span
                                 id="checkoutSubtotal">$0.00</span>

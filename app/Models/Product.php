@@ -10,10 +10,11 @@ use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Laravel\Scout\Searchable;
 
 class Product extends Model implements HasMedia
 {
-    use HasTranslations, InteractsWithMedia;
+    use HasTranslations, InteractsWithMedia, Searchable;
 
     public function registerMediaConversions(Media $media = null): void
     {
@@ -190,6 +191,34 @@ class Product extends Model implements HasMedia
         if (!$coupon) return $basePrice;
 
         return max(0, $basePrice - $this->calculateDiscountValue($coupon));
+    }
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        // Load relationships if not loaded
+        $this->loadMissing(['category', 'brand', 'fragranceNotes']);
+
+        return [
+            'id' => (int) $this->id,
+            'name' => $this->getTranslations('name'), // Index all translations
+            'brand' => $this->brand ? $this->brand->name : null,
+            'category' => $this->category ? $this->category->getTranslations('name') : null,
+            'description' => $this->getTranslations('description'),
+            'short_description' => $this->getTranslations('short_description'),
+            'sku' => $this->sku,
+            'fragrance_notes' => $this->fragranceNotes->map(function ($note) {
+                return $note->getTranslations('name');
+            })->flatten()->toArray(),
+            'price' => (float) ($this->sale_price ?: $this->price),
+            'status' => (bool) $this->status,
+            'is_out_of_stock' => (bool) $this->is_out_of_stock,
+            'gender' => $this->gender,
+        ];
     }
 }
 

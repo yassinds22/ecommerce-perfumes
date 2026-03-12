@@ -88,4 +88,14 @@ abstract class BaseRepository
     {
         return $this->model->findOrFail($id);
     }
+
+    /**
+     * Get the total count of records.
+     *
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->model->count();
+    }
 }

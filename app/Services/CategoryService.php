@@ -24,6 +24,17 @@ class CategoryService
     }
 
     /**
+     * Get paginated categories.
+     *
+     * @param int $perPage
+     * @return \Illuminate\Pagination\LengthAwarePaginator
+     */
+    public function getPaginatedCategories(int $perPage = 10)
+    {
+        return $this->categoryRepository->getPaginatedCategories($perPage);
+    }
+
+    /**
      * Get all categories.
      *
      * @return Collection

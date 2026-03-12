@@ -10,10 +10,12 @@ use Illuminate\Http\Request;
 class ShopController extends Controller
 {
     protected $productService;
+    protected $recommendationService;
 
-    public function __construct(ProductService $productService)
+    public function __construct(ProductService $productService, \App\Services\RecommendationService $recommendationService)
     {
         $this->productService = $productService;
+        $this->recommendationService = $recommendationService;
     }
 
     public function index(Request $request)
@@ -75,11 +77,7 @@ class ShopController extends Controller
     {
         $product = $this->productService->getProductById((int)$id);
 
-        $relatedProducts = Product::where('category_id', $product->category_id)
-            ->where('id', '!=', $product->id)
-            ->where('status', true)
-            ->take(4)
-            ->get();
+        $relatedProducts = $this->recommendationService->getSimilarFragrances($product);
 
         return view('clints.product', compact('product', 'relatedProducts'));
     }

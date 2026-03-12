@@ -77,8 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const price = parseFloat(document.querySelector('.price-current')?.textContent.replace('$', '') || 0);
         const img = document.getElementById('galleryMain')?.src || '';
 
+        const productId = document.body.dataset.productId;
         const product = {
-            id: '3', // This should ideally come from a data-id attribute on the body or a hidden input
+            id: productId,
             name: name,
             price: price,
             img: img

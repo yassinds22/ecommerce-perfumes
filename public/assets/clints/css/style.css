@@ -1298,3 +1298,139 @@ h4 {
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+/* ---------- Search Overlay ---------- */
+.search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-bg);
+  z-index: 3000;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 24px;
+  transform: translateY(-100%);
+  transition: transform var(--transition-slow);
+}
+
+.search-overlay.active {
+  transform: translateY(0);
+}
+
+.search-overlay__header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 60px;
+}
+
+.search-overlay__close {
+  font-size: 2rem;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.search-overlay__close:hover {
+  color: var(--color-gold);
+}
+
+.search-overlay__content {
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.search-overlay__input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--color-text);
+  padding-bottom: 12px;
+}
+
+.search-overlay__input {
+  flex: 1;
+  font-size: 2rem;
+  font-family: var(--font-heading);
+  background: transparent;
+  color: var(--color-text);
+  padding-right: 15px;
+}
+
+.search-overlay__input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.search-overlay__icon {
+  font-size: 1.5rem;
+  color: var(--color-text-muted);
+}
+
+/* Autocomplete Suggestions */
+.search-suggestions {
+  margin-top: 40px;
+  display: none;
+}
+
+.search-suggestions.active {
+  display: block;
+}
+
+.search-suggestions__title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  margin-bottom: 20px;
+  display: block;
+}
+
+.search-suggestions__list {
+  display: grid;
+  gap: 20px;
+}
+
+.search-suggestions__item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.search-suggestions__item:hover {
+  background: var(--color-bg-alt);
+}
+
+.search-suggestions__img {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+
+.search-suggestions__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.search-suggestions__info {
+  flex: 1;
+}
+
+.search-suggestions__name {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: block;
+}
+
+.search-suggestions__brand {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
