@@ -52,9 +52,12 @@ class PaymentController extends Controller
      */
     public function success(Request $request)
     {
-        // Stripe usually redirects back with payment_intent and payment_intent_client_secret
-        // We can verify the status here if needed, but the Webhook is the source of truth.
-        return view('clints.payment.success');
+        $order = null;
+        if ($request->has('payment_intent')) {
+            $order = Order::where('stripe_payment_intent', $request->payment_intent)->first();
+        }
+        
+        return view('clints.payment.success', compact('order'));
     }
 
     /**

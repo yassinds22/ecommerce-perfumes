@@ -38,7 +38,9 @@ Route::middleware('auth')->group(function () {
     // Payment Routes (Stripe)
     Route::post('/payment/create', [\App\Http\Controllers\PaymentController::class, 'createPayment'])->name('payment.create');
     Route::get('/payment/success', [\App\Http\Controllers\PaymentController::class, 'success'])->name('payment.success');
-    Route::get('/payment/cancel', [\App\Http\Controllers\PaymentController::class, 'cancel'])->name('payment.cancel');
+    // Invoices
+    Route::get('/orders/{order}/invoice', [\App\Http\Controllers\Clients\InvoiceController::class, 'view'])->name('orders.invoice.view');
+    Route::get('/orders/{order}/invoice/download', [\App\Http\Controllers\Clients\InvoiceController::class, 'download'])->name('orders.invoice.download');
 });
 
 // Stripe Webhook (Publicly accessible)

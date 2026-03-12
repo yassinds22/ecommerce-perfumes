@@ -96,6 +96,11 @@
                             <button title="تغيير الحالة" onclick="editOrderStatus({{ $order->id }}, '{{ $order->status }}')">
                                 <i class="fas fa-tasks"></i>
                             </button>
+                            @if(in_array(strtolower($order->status), ['processing', 'shipped', 'delivered', 'completed']))
+                            <a href="{{ route('orders.invoice.download', $order->id) }}" target="_blank" title="تحميل الفاتورة" class="btn-icon" style="color:var(--color-danger); display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 8px; background: rgba(239, 68, 68, 0.1);">
+                                <i class="fas fa-file-pdf"></i>
+                            </a>
+                            @endif
                         </div>
                     </td>
                 </tr>

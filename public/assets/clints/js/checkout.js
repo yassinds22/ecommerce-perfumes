@@ -186,7 +186,7 @@ function placeOrder() {
             if (paymentMethod === 'stripe' || paymentMethod === 'card') {
                 return handleStripePayment(res.order_id, res.order_number);
             } else {
-                showSuccess(res.order_number);
+                showSuccess(res.order_number, res.order_id);
             }
         })
         .catch(err => {
@@ -228,7 +228,7 @@ async function handleStripePayment(orderId, orderNumber) {
         if (result.error) {
             throw new Error(result.error.message);
         } else if (result.paymentIntent.status === 'succeeded') {
-            showSuccess(orderNumber);
+            showSuccess(orderNumber, orderId);
         }
     } catch (err) {
         showToast(err.message);
@@ -237,12 +237,23 @@ async function handleStripePayment(orderId, orderNumber) {
     }
 }
 
-function showSuccess(orderNumber) {
+function showSuccess(orderNumber, orderId) {
     document.querySelectorAll('.checkout-step').forEach(s => s.classList.remove('active'));
     const success = document.getElementById('stepSuccess');
     if (success) {
         const orderNumEl = success.querySelector('strong');
         if (orderNumEl) orderNumEl.textContent = '#' + orderNumber;
+
+        // Setup Invoice Download Button
+        const downloadBtn = document.getElementById('downloadInvoiceBtn');
+        if (downloadBtn && orderId) {
+            downloadBtn.href = `/orders/${orderId}/invoice/download`;
+            downloadBtn.style.display = 'inline-flex';
+            downloadBtn.style.alignItems = 'center';
+            downloadBtn.style.justifyContent = 'center';
+            downloadBtn.style.gap = '8px';
+        }
+
         success.style.display = 'block';
         success.classList.add('active');
     }
@@ -253,6 +264,16 @@ function showSuccess(orderNumber) {
 
 // ===== Initialize =====
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if cart is empty
+    if (CartManager.items.length === 0) {
+        // If we're not seeing the success step, redirect to shop
+        const successStep = document.getElementById('stepSuccess');
+        if (!successStep || (successStep && !successStep.classList.contains('active'))) {
+            window.location.href = '/shop';
+            return;
+        }
+    }
+
     initStripe();
 
     const checkoutItems = document.getElementById('checkoutItems');

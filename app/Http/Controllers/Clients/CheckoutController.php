@@ -68,6 +68,11 @@ class CheckoutController extends Controller
                     Notification::send($admins, new NewOrderNotification($order));
                 }
 
+                // Fire Order Completed Event for Invoice Generation
+                // For COD, we fire it immediately. For Stripe, it's typically fired in Webhook,
+                // but we can fire it here if we want immediate (unpaid) invoice generation.
+                event(new \App\Events\OrderCompleted($order));
+
                 return response()->json([
                     'success' => true,
                     'order_id' => $order->id,

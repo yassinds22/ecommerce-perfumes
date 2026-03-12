@@ -75,6 +75,10 @@ class StripeService
                     'payment_status' => 'Paid',
                     'status' => 'Processing' // Move to processing after payment
                 ]);
+                
+                // Fire Order Completed Event
+                event(new \App\Events\OrderCompleted($order));
+                
                 Log::info("Order #{$order->order_number} marked as PAID via Stripe.");
             }
         }

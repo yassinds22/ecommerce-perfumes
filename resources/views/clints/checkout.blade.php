@@ -177,7 +177,12 @@
                             <h2>تم تأكيد الطلب بنجاح!</h2>
                             <p>شكراً لشرائك. رقم طلبك هو <strong>#LP-2026-4281</strong> تم تأكيده.</p>
                             <p class="success-note">تم إرسال رسالة تأكيد إلكترونية إلى بريدك.</p>
-                            <a href="{{ route('home') }}" class="btn btn-primary">متابعة التسوق</a>
+                            <div id="successActions" style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                                <a href="{{ route('home') }}" class="btn btn-primary">متابعة التسوق</a>
+                                <a href="#" id="downloadInvoiceBtn" class="btn btn-outline" style="display:none; border: 1px solid var(--color-gold); color: var(--color-gold);">
+                                    <i class="fas fa-file-pdf"></i> تحميل الفاتورة
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

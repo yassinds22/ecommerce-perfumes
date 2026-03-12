@@ -20,7 +20,10 @@ class Order extends Model
         'tracking_number',
         'shipped_at',
         'delivered_at',
-        'stripe_payment_intent'
+        'stripe_payment_intent',
+        'invoice_number',
+        'invoice_generated_at',
+        'invoice_path'
     ];
 
     protected $casts = [
@@ -30,6 +33,7 @@ class Order extends Model
         'tax' => 'decimal:2',
         'shipped_at' => 'datetime',
         'delivered_at' => 'datetime',
+        'invoice_generated_at' => 'datetime',
     ];
 
     public function user()
