@@ -12,6 +12,9 @@
         <a href="{{ route('admin.analytics.index') }}" class="sidebar__link {{ request()->routeIs('admin.analytics.index') ? 'active' : '' }}">
             <i class="fas fa-chart-line"></i> التحليلات
         </a>
+        <a href="{{ route('admin.reports.index') }}" class="sidebar__link {{ request()->routeIs('admin.reports.index') ? 'active' : '' }}">
+            <i class="fas fa-file-invoice-dollar"></i> التقارير
+        </a>
         <a href="{{ route('admin.categories.index') }}" class="sidebar__link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
             <i class="fas fa-tags"></i> الأقسام
         </a>
