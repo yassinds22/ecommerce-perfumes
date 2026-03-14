@@ -80,6 +80,10 @@ This project follows a professional **Controller-Service-Repository** pattern to
 - **Full Localization**: Seamless switching between Arabic (RTL) and English (LTR) layouts without layout breaking.
 - **Interactive Visualizations**: Real-time sales trends and payment distribution charts using **Chart.js**.
 
+### ⚡ High-Performance Caching (Redis)
+- **Infrastructure Readiness**: Implementation of Redis support using the **Predis** library, enabling sub-second data retrieval for high-traffic scenarios.
+- **Scalable Architecture**: Configured to handle Caching, Session management, and Queue processing through Redis, significantly reducing database load.
+
 ### 💳 Secure Payment Gateway (Stripe)
 - **End-to-End Encryption**: Professional integration of Stripe for secure, encrypted credit card transactions.
 - **Automated Lifecycle**: Handling of payment intents, webhooks, and automated order status transitions upon successful payment.
@@ -94,6 +98,7 @@ This project follows a professional **Controller-Service-Repository** pattern to
 | **Inventory Management** | Real-time stock tracking with low-stock alerts and automated status management. |
 | **Slug Optimization** | Automated unique slug generation to prevent URL conflicts and improve SEO. |
 | **Search Engine** | Fast, indexed search powered by Scout for instant product discovery. |
+| **Performance** | **Redis** integration (via Predis) for advanced caching and session speed. |
 | **Media Handling** | Optimized image processing and storage for high-quality product displays. |
 
 ---

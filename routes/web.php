@@ -93,3 +93,26 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('notifications/{id}/read', [\App\Http\Controllers\Admin\DashboardController::class, 'markNotificationAsRead'])->name('notifications.read');
     Route::post('notifications/read-all', [\App\Http\Controllers\Admin\DashboardController::class, 'markAllNotificationsAsRead'])->name('notifications.read-all');
 });
+
+Route::get('/redis-test', function () {
+    try {
+        // Store value in Redis cache
+        \Illuminate\Support\Facades\Cache::put('redis_test_key', 'Redis via Predis is working!', 60);
+
+        // Retrieve value from cache
+        $value = \Illuminate\Support\Facades\Cache::get('redis_test_key');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $value,
+            'client' => config('database.redis.client')
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], 500);
+    }
+});
+
+
