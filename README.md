@@ -15,6 +15,30 @@ This project is a comprehensive eCommerce system built to demonstrate advanced *
 
 ## 🛠️ Technical Highlights & Architecture
 
+```mermaid
+graph TD
+    subgraph Client_Side [Frontend Experience]
+        A[User Browser] -- Request --> B[Vite / Vanilla JS]
+        B -- Interactions --> C[RTL/LTR Layouts]
+    end
+
+    subgraph Laravel_Core [Backend Architecture]
+        D[Routing] -- Request Flow --> E[Controllers]
+        E -- Orchestrates --> F[Service Layer]
+        F -- Business Logic --> G[Eloquent Models]
+        G -- Queries --> H[(MySQL Database)]
+    end
+
+    subgraph Business_Intelligence [Reporting & Logic]
+        F -- Price Snapshot --> I[Order Management]
+        F -- Data Analysis --> J[Chart.js / Analytics]
+        F -- Export --> K[DomPDF / CSV]
+    end
+
+    style Laravel_Core fill:#fff5f5,stroke:#ff2d20,stroke-width:2px
+    style Business_Intelligence fill:#f5faff,stroke:#3498db,stroke-width:2px
+```
+
 ### 🛡️ Robust Backend (Laravel 12 & PHP 8.2)
 - **MVC & Service Pattern**: Organized business logic into dedicated Service Layers to ensure controllers remain thin, testable, and maintainable.
 - **Advanced Eloquent ORM**: Implementation of complex relationships (One-to-Many, Belongs-To-Many) and custom Accessors/Mutators for dynamic data calculation.
