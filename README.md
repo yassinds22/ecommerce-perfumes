@@ -13,51 +13,89 @@ This project is a comprehensive eCommerce system built to demonstrate advanced *
 
 ---
 
-## 🛠️ Technical Highlights & Architecture
+## 🛠️ System Architecture & Engineering
 
+### 🛰️ High-Level System Design
 ```mermaid
 graph TD
-    subgraph Client_Side [Frontend Experience]
-        A[User Browser] -- Request --> B[Vite / Vanilla JS]
-        B -- Interactions --> C[RTL/LTR Layouts]
+    %% Client Side
+    subgraph Client_Layer ["Client Layer (Frontend)"]
+        UI["UI/UX (Vanilla CSS / Blade)"]
+        JS["Interactive Components (JS / Vite)"]
     end
 
-    subgraph Laravel_Core [Backend Architecture]
-        D[Routing] -- Request Flow --> E[Controllers]
-        E -- Orchestrates --> F[Service Layer]
-        F -- Business Logic --> G[Eloquent Models]
-        G -- Queries --> H[(MySQL Database)]
+    %% Application Layer
+    subgraph App_Layer ["Application Layer (Laravel 12 Framework)"]
+        direction TB
+        Route["Router"]
+        Ctrl["Controllers (Thin)"]
+        Serv["Service Layer (Business Logic)"]
+        Event["Events & Listeners"]
+        Job["Background Jobs (Queue)"]
     end
 
-    subgraph Business_Intelligence [Reporting & Logic]
-        F -- Price Snapshot --> I[Order Management]
-        F -- Data Analysis --> J[Chart.js / Analytics]
-        F -- Export --> K[DomPDF / CSV]
-        I -- Processing --> L[Stripe API]
+    %% Data & Infrastructure
+    subgraph Infra_Layer ["Data & Infrastructure"]
+        DB[("MySQL Database")]
+        Redis[("Redis / Cache")]
+        S3[("File Storage / Local")]
     end
 
-    style Laravel_Core fill:#fff5f5,stroke:#ff2d20,stroke-width:2px
-    style Business_Intelligence fill:#f5faff,stroke:#3498db,stroke-width:2px
+    %% External Systems
+    subgraph External_APIs ["External Integrations"]
+        Stripe["Stripe Payment Gateway"]
+        Meili["Meilisearch (Indexing)"]
+    end
+
+    %% Connections
+    UI --> Route
+    Route --> Ctrl
+    Ctrl --> Serv
+    Serv --> DB
+    Serv --> Redis
+    Serv --> S3
+    Serv --> Event
+    Event -- Dispatches --> Job
+    Job -- Async Processing --> DB
+    Serv -- API Request --> Stripe
+    Serv -- Indexing --> Meili
+
+    %% Styling
+    style Client_Layer fill:#f9f9f9,stroke:#ddd
+    style App_Layer fill:#fff5f5,stroke:#ff2d20,stroke-width:2px
+    style Infra_Layer fill:#f5faff,stroke:#3498db
+    style External_APIs fill:#fdfaf2,stroke:#f1c40f
 ```
 
-### 🛡️ Robust Backend (Laravel 12 & PHP 8.2)
-- **MVC & Service Pattern**: Organized business logic into dedicated Service Layers to ensure controllers remain thin, testable, and maintainable.
-- **Advanced Eloquent ORM**: Implementation of complex relationships (One-to-Many, Belongs-To-Many) and custom Accessors/Mutators for dynamic data calculation.
-- **Secure Authentication**: Utilizing Laravel's built-in security features, including CSRF protection, salted password hashing, and role-based access control.
+---
 
-### 📊 Business Intelligence (BI) Engine
-- **Historical Price Snapshots**: A custom-built mechanism that captures `purchase_price` and `sale_price` at the moment of order creation. This ensures that profit reports remain accurate even if product prices are updated in the future.
-- **Real-time Profit Analytics**: Dynamic calculation of Net Profit and Profit Margins (%) using optimized database queries and indexing.
-- **Professional Reporting**: Integrated PDF and CSV export system with full support for Arabic/English terminology.
+### 🛡️ Pattern-Driven Development
+The project adheres to modern design patterns to ensure scalability and maintainability:
 
-### 🎨 Premium UI/UX (RTL & LTR Support)
-- **Glassmorphism Design**: A modern, sleek interface built with Vanilla CSS and modern JavaScript animations.
-- **Full Localization**: Seamless switching between Arabic (RTL) and English (LTR) layouts without layout breaking.
-- **Interactive Visualizations**: Real-time sales trends and payment distribution charts using **Chart.js**.
+- **MVC Pattern**: Strict separation of concerns between Model, View, and Controller.
+- **Service Pattern**: Business logic is decoupled from Controllers into dedicated `Service` classes (e.g., `StripeService`, `ReportExportService`), facilitating reusability and unit testing.
+- **Observer Pattern**: Leveraging Laravel's Event system to handle side effects (like generating invoices or awarding points) asynchronously without blocking the main request flow.
+- **Price Snapshot Pattern**: A critical business pattern where order item costs are "frozen" during checkout to preserve audit integrity against future product price fluctuations.
 
-### 💳 Secure Payment Gateway (Stripe)
-- **End-to-End Encryption**: Professional integration of Stripe for secure, encrypted credit card transactions.
-- **Automated Lifecycle**: Handling of payment intents, webhooks, and automated order status transitions upon successful payment.
+### ⚙️ Core Infrastructure Components
+
+#### 💳 Payment Gateway (Stripe)
+- Integrated using a dedicated `StripeService`.
+- Handles secure tokenization, webhooks for asynchronous payment confirmation, and automated order status reconciliation.
+
+#### ⚡ High-Performance Caching
+- **Implementation**: Utilizes Laravel's Cache wrapper (supporting Redis/File drivers).
+- **Usage**: Caches complex report results and frequent inventory queries to reduce database load and improve response times for the dashboard.
+
+#### 📂 File & Media Storage
+- **Abstraction**: Uses the Storage facade to abstract file system interactions.
+- **Features**: Supports Local or S3-compatible storage for PDF invoices and high-resolution product media, ensuring the system is cloud-ready.
+
+#### 🏗️ Asynchronous Queues
+- **Driver**: Configured for `database` or `redis` processing.
+- **Examples**: Heavy tasks like **PDF Generation** and **Email Notifications** are dispatched to background jobs, providing a snappy, instant-response UI for the user.
+
+---
 
 ---
 
