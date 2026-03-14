@@ -13,89 +13,76 @@ This project is a comprehensive eCommerce system built to demonstrate advanced *
 
 ---
 
-## 🛠️ System Architecture & Engineering
+## 🛠️ System Architecture & Design Patterns
 
-### 🛰️ High-Level System Design
+### 🛰️ Technical Workflow Diagram
 ```mermaid
 graph TD
-    %% Client Side
-    subgraph Client_Layer ["Client Layer (Frontend)"]
-        UI["UI/UX (Vanilla CSS / Blade)"]
-        JS["Interactive Components (JS / Vite)"]
+    subgraph Client_Layer [Frontend Experience]
+        A[User Browser] -- Request --> B[Vite / Vanilla JS]
+        B -- Interactions --> C[RTL/LTR Blade Templates]
     end
 
-    %% Application Layer
-    subgraph App_Layer ["Application Layer (Laravel 12 Framework)"]
-        direction TB
-        Route["Router"]
-        Ctrl["Controllers (Thin)"]
-        Serv["Service Layer (Business Logic)"]
-        Event["Events & Listeners"]
-        Job["Background Jobs (Queue)"]
+    subgraph App_Layer [Laravel 12 Architecture]
+        D[Routing] -- Request Flow --> E[Controllers]
+        E -- Orchestrates --> F[Service Layer]
+        F -- Business Logic --> G[Repository Pattern]
+        G -- Data Fetching --> H[(Eloquent Models)]
     end
 
-    %% Data & Infrastructure
-    subgraph Infra_Layer ["Data & Infrastructure"]
-        DB[("MySQL Database")]
-        Redis[("Redis / Cache")]
-        S3[("File Storage / Local")]
+    subgraph Infrastructure_Layer [Core Services]
+        F -- Async Tasks --> I[Job Queues]
+        F -- Performance --> J[Redis / Caching]
+        F -- Persistence --> K[Storage / S3]
+        F -- Payments --> L[Stripe API]
     end
 
-    %% External Systems
-    subgraph External_APIs ["External Integrations"]
-        Stripe["Stripe Payment Gateway"]
-        Meili["Meilisearch (Indexing)"]
-    end
-
-    %% Connections
-    UI --> Route
-    Route --> Ctrl
-    Ctrl --> Serv
-    Serv --> DB
-    Serv --> Redis
-    Serv --> S3
-    Serv --> Event
-    Event -- Dispatches --> Job
-    Job -- Async Processing --> DB
-    Serv -- API Request --> Stripe
-    Serv -- Indexing --> Meili
-
-    %% Styling
-    style Client_Layer fill:#f9f9f9,stroke:#ddd
     style App_Layer fill:#fff5f5,stroke:#ff2d20,stroke-width:2px
-    style Infra_Layer fill:#f5faff,stroke:#3498db
-    style External_APIs fill:#fdfaf2,stroke:#f1c40f
+    style Infrastructure_Layer fill:#f5faff,stroke:#3498db,stroke-width:2px
 ```
 
+### 🛡️ Clean Architecture Implementation
+This project follows a professional **Controller-Service-Repository** pattern to ensure a strict separation of concerns:
+
+1. **Controllers**: Act as entry points, handling request validation and returning responses. They remain "thin" by delegating all logic to services.
+2. **Service Layer**: The "Brain" of the application. It contains the business logic (e.g., calculating profits, processing discounts) and interacts with multiple repositories or external APIs.
+3. **Repository Pattern**: Abstracting the data layer. It handles all Eloquent queries and data persistence, ensuring that the business logic is decoupled from the database structure.
+
 ---
-
-### 🛡️ Pattern-Driven Development
-The project adheres to modern design patterns to ensure scalability and maintainability:
-
-- **MVC Pattern**: Strict separation of concerns between Model, View, and Controller.
-- **Service Pattern**: Business logic is decoupled from Controllers into dedicated `Service` classes (e.g., `StripeService`, `ReportExportService`), facilitating reusability and unit testing.
-- **Observer Pattern**: Leveraging Laravel's Event system to handle side effects (like generating invoices or awarding points) asynchronously without blocking the main request flow.
-- **Price Snapshot Pattern**: A critical business pattern where order item costs are "frozen" during checkout to preserve audit integrity against future product price fluctuations.
 
 ### ⚙️ Core Infrastructure Components
 
 #### 💳 Payment Gateway (Stripe)
-- Integrated using a dedicated `StripeService`.
-- Handles secure tokenization, webhooks for asynchronous payment confirmation, and automated order status reconciliation.
+- **Secure Integration**: Full implementation of Stripe API for professional credit card processing.
+- **Webhook Handling**: Automated order status updates and synchronization even if the user closes the browser during payment.
 
 #### ⚡ High-Performance Caching
-- **Implementation**: Utilizes Laravel's Cache wrapper (supporting Redis/File drivers).
-- **Usage**: Caches complex report results and frequent inventory queries to reduce database load and improve response times for the dashboard.
+- **Implementation**: Leveraging Laravel's Cache facade with Redis/File support.
+- **Optimization**: Frequently accessed data like total sales, popular products, and dashboard KPIs are cached to ensure sub-second response times.
 
-#### 📂 File & Media Storage
-- **Abstraction**: Uses the Storage facade to abstract file system interactions.
-- **Features**: Supports Local or S3-compatible storage for PDF invoices and high-resolution product media, ensuring the system is cloud-ready.
+#### 📂 Unified Storage System
+- **Abstraction**: Uses Laravel's Storage disk abstraction for easy switching between `Local` for development and `Amazon S3` for production.
+- **Media Management**: Automated handling of product images, fragrance notes icons, and dynamically generated PDF invoices.
 
-#### 🏗️ Asynchronous Queues
-- **Driver**: Configured for `database` or `redis` processing.
-- **Examples**: Heavy tasks like **PDF Generation** and **Email Notifications** are dispatched to background jobs, providing a snappy, instant-response UI for the user.
+#### 🏗️ Scalable Job Queues
+- **Background Processing**: Heavy operations such as **PDF Generation**, **Invoice Emails**, and **Search Indexing** are dispatched to queues.
+- **Reliability**: Ensures that the user never experiences a delay while waiting for a heavy backend process to complete.
 
 ---
+
+### 📊 Business Intelligence (BI) Engine
+- **Historical Price Snapshots**: A custom-built mechanism that captures `purchase_price` and `sale_price` at the moment of order creation. This ensures that profit reports remain accurate even if product prices are updated in the future.
+- **Real-time Profit Analytics**: Dynamic calculation of Net Profit and Profit Margins (%) using optimized database queries and indexing.
+- **Professional Reporting**: Integrated PDF and CSV export system with full support for Arabic/English terminology.
+
+### 🎨 Premium UI/UX (RTL & LTR Support)
+- **Glassmorphism Design**: A modern, sleek interface built with Vanilla CSS and modern JavaScript animations.
+- **Full Localization**: Seamless switching between Arabic (RTL) and English (LTR) layouts without layout breaking.
+- **Interactive Visualizations**: Real-time sales trends and payment distribution charts using **Chart.js**.
+
+### 💳 Secure Payment Gateway (Stripe)
+- **End-to-End Encryption**: Professional integration of Stripe for secure, encrypted credit card transactions.
+- **Automated Lifecycle**: Handling of payment intents, webhooks, and automated order status transitions upon successful payment.
 
 ---
 
