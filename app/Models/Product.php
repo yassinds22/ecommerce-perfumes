@@ -11,10 +11,11 @@ use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Laravel\Scout\Searchable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model implements HasMedia
 {
-    use HasTranslations, InteractsWithMedia, Searchable;
+    use HasTranslations, InteractsWithMedia, Searchable, SoftDeletes;
 
     public function registerMediaConversions(Media $media = null): void
     {

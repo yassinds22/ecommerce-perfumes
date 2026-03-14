@@ -80,6 +80,10 @@ This project follows a professional **Controller-Service-Repository** pattern to
 - **Full Localization**: Seamless switching between Arabic (RTL) and English (LTR) layouts without layout breaking.
 - **Interactive Visualizations**: Real-time sales trends and payment distribution charts using **Chart.js**.
 
+### 🛡️ Data Integrity & Soft Deletes
+- **Protection Against Data Loss**: Implementation of **Soft Deletes** across 13 core tables, ensuring historical data is preserved and recoverable.
+- **Audit Preparedness**: Maintains a complete audit trail of deleted records (users, products, orders) for business intelligence and administrative recovery.
+
 ### ⚡ High-Performance Caching (Redis)
 - **Infrastructure Readiness**: Implementation of Redis support using the **Predis** library, enabling sub-second data retrieval for high-traffic scenarios.
 - **Scalable Architecture**: Configured to handle Caching, Session management, and Queue processing through Redis, significantly reducing database load.
@@ -99,6 +103,7 @@ This project follows a professional **Controller-Service-Repository** pattern to
 | **Slug Optimization** | Automated unique slug generation to prevent URL conflicts and improve SEO. |
 | **Search Engine** | Fast, indexed search powered by Scout for instant product discovery. |
 | **Performance** | **Redis** integration (via Predis) for advanced caching and session speed. |
+| **Data Security** | **Soft Deletes** implemented across all tables to prevent accidental data loss. |
 | **Media Handling** | Optimized image processing and storage for high-quality product displays. |
 
 ---

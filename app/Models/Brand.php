@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Brand extends Model implements HasMedia
 {
-    use HasTranslations, InteractsWithMedia;
+    use HasTranslations, InteractsWithMedia, SoftDeletes;
 
     protected $fillable = ['name', 'slug'];
 
