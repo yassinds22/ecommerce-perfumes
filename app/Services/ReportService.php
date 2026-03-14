@@ -17,28 +17,46 @@ use Carbon\Carbon;
 class ReportService
 {
     /**
+     * Dispatcher for advanced dynamic reports.
+     */
+    public function getReportData($type, $filters = [])
+    {
+        $filters['start_date'] = $filters['start_date'] ?? Carbon::now()->subDays(30);
+        $filters['end_date'] = $filters['end_date'] ?? Carbon::now();
+
+        $hash = md5(serialize($filters));
+        $cacheKey = "report_{$type}_{$hash}";
+
+        return Cache::remember($cacheKey, 3600, function () use ($type, $filters) {
+            return match ($type) {
+                'daily_sales' => app(\App\Reports\DailySalesReport::class)->handle($filters),
+                'orders_status' => app(\App\Reports\OrdersStatusReport::class)->handle($filters),
+                'inventory' => app(\App\Reports\InventoryReport::class)->handle($filters),
+                'top_products' => app(\App\Reports\TopProductsReport::class)->handle($filters),
+                'profit' => app(\App\Reports\ProfitReport::class)->handle($filters),
+                default => throw new \Exception("Invalid report type: {$type}"),
+            };
+        });
+    }
+
+    /**
      * Get Sales & Revenue Metrics with Comparative Data.
      */
     public function getSalesMetrics($startDate = null, $endDate = null, $filters = [])
     {
-        $startDate = $startDate ?: Carbon::now()->startOfMonth();
-        $endDate = $endDate ?: Carbon::now()->endOfDay();
+        $startDate = $startDate ?: Carbon::now()->subDays(30);
+        $endDate = $endDate ?: Carbon::now();
         
-        // Calculate previous period
         $daysDiff = $startDate->diffInDays($endDate);
         $prevStartDate = (clone $startDate)->subDays($daysDiff + 1);
         $prevEndDate = (clone $endDate)->subDays($daysDiff + 1);
 
-        $cacheKey = "sales_metrics_v2_" . md5(serialize([$startDate, $endDate, $filters]));
+        $cacheKey = "sales_metrics_v3_" . md5(serialize([$startDate, $endDate, $filters]));
 
         return Cache::remember($cacheKey, 3600, function () use ($startDate, $endDate, $prevStartDate, $prevEndDate, $filters) {
-            // Current Period
             $currentData = $this->fetchSalesData($startDate, $endDate, $filters);
-            
-            // Previous Period
             $prevData = $this->fetchSalesData($prevStartDate, $prevEndDate, $filters);
 
-            // Calculate Growth/Trends
             $revenueGrowth = $prevData['total_revenue'] > 0 
                 ? (($currentData['total_revenue'] - $prevData['total_revenue']) / $prevData['total_revenue']) * 100 
                 : 100;
@@ -53,34 +71,39 @@ class ReportService
 
     private function fetchSalesData($start, $end, $filters = [])
     {
-        $query = Order::where('payment_status', 'paid')
+        $query = Order::query()
+            ->where('payment_status', 'Paid')
             ->whereBetween('created_at', [$start, $end]);
 
-        // Apply Advanced Filters (Simplified example - assuming relationships exist)
-        if (!empty($filters['category_id'])) {
-            $query->whereHas('items.product', function($q) use ($filters) {
-                $q->where('category_id', $filters['category_id']);
-            });
-        }
-        
-        if (!empty($filters['brand_id'])) {
-            $query->whereHas('items.product', function($q) use ($filters) {
-                $q->where('brand_id', $filters['brand_id']);
-            });
+        if (!empty($filters['category_id']) || !empty($filters['brand_id'])) {
+            $query->join('order_items', 'orders.id', '=', 'order_items.order_id');
+            
+            if (!empty($filters['category_id'])) {
+                $query->whereHas('items.product', function($q) use ($filters) {
+                    $q->where('category_id', $filters['category_id']);
+                });
+            }
+            
+            if (!empty($filters['brand_id'])) {
+                $query->whereHas('items.product', function($q) use ($filters) {
+                    $q->where('brand_id', $filters['brand_id']);
+                });
+            }
         }
 
-        $totalRevenue = (float) $query->sum('total');
-        $ordersCount = $query->count();
+        $totalRevenue = (float) $query->distinct('orders.id')->sum('orders.total');
+        $ordersCount = $query->distinct('orders.id')->count('orders.id');
         $avgOrderValue = $ordersCount > 0 ? $totalRevenue / $ordersCount : 0;
-        $totalTax = (float) $query->sum('tax');
-        $totalShipping = (float) $query->sum('shipping_cost');
+        $totalTax = (float) $query->distinct('orders.id')->sum('orders.tax');
+        $totalShipping = (float) $query->distinct('orders.id')->sum('orders.shipping_cost');
+        $itemsSold = (int) $query->sum('order_items.quantity');
+        $totalProfit = (float) $query->sum('order_items.profit');
 
-        // Revenue Trends
-        $trends = Order::where('payment_status', 'paid')
+        $trends = Order::where('payment_status', 'Paid')
             ->whereBetween('created_at', [$start, $end])
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as revenue'))
-            ->groupBy('date')
-            ->orderBy('date')
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(total) as revenue'), DB::raw('COUNT(id) as orders_count'))
+            ->groupBy(DB::raw('DATE(created_at)'))
+            ->orderBy(DB::raw('DATE(created_at)'))
             ->get();
 
         // Payment Method Distribution
@@ -92,9 +115,11 @@ class ReportService
         return [
             'total_revenue' => $totalRevenue,
             'orders_count' => $ordersCount,
+            'items_sold' => $itemsSold,
             'avg_order_value' => $avgOrderValue,
             'total_tax' => $totalTax,
             'total_shipping' => $totalShipping,
+            'total_profit' => $totalProfit,
             'trends' => $trends,
             'payment_methods' => $paymentMethods
         ];
@@ -105,7 +130,7 @@ class ReportService
      */
     public function getInventoryMetrics($filters = [])
     {
-        return Cache::remember('inventory_metrics_v2_' . md5(serialize($filters)), 3600, function () use ($filters) {
+        return Cache::remember('inventory_metrics_v3_' . md5(serialize($filters)), 3600, function () use ($filters) {
             $query = Product::query();
 
             if (!empty($filters['category_id'])) $query->where('category_id', $filters['category_id']);
@@ -114,35 +139,11 @@ class ReportService
             $totalProducts = $query->count();
             $lowStockProducts = (clone $query)->where('stock_quantity', '<=', DB::raw('low_stock_threshold'))->count();
             $outOfStockProducts = (clone $query)->where('stock_quantity', '<=', 0)->count();
-            
-            $topProducts = OrderItem::select('product_id', DB::raw('SUM(quantity) as total_sold'), DB::raw('SUM(quantity * price) as revenue'))
-                ->whereHas('product', function($q) use ($filters) {
-                    if (!empty($filters['category_id'])) $q->where('category_id', $filters['category_id']);
-                    if (!empty($filters['brand_id'])) $q->where('brand_id', $filters['brand_id']);
-                })
-                ->groupBy('product_id')
-                ->orderByDesc('total_sold')
-                ->with('product.category', 'product.brand')
-                ->take(10)
-                ->get();
-
-            $categoryPerformance = Category::withCount(['products as orders_count' => function($query) {
-                    $query->join('order_items', 'products.id', '=', 'order_items.product_id');
-                }])
-                ->get()
-                ->map(function($cat) {
-                    return [
-                        'name' => $cat->getTranslation('name', 'ar'),
-                        'count' => $cat->orders_count
-                    ];
-                });
 
             return [
                 'total_products' => $totalProducts,
                 'low_stock_count' => $lowStockProducts,
                 'out_of_stock_count' => $outOfStockProducts,
-                'top_products' => $topProducts,
-                'category_performance' => $categoryPerformance
             ];
         });
     }
@@ -153,21 +154,19 @@ class ReportService
     public function getCustomerMetrics($startDate = null, $endDate = null)
     {
         $startDate = $startDate ?: Carbon::now()->subDays(30);
-        $endDate = $endDate ?: Carbon::now()->endOfDay();
+        $endDate = $endDate ?: Carbon::now();
 
-        return Cache::remember("customer_metrics_v2_{$startDate->toDateString()}", 3600, function () use ($startDate, $endDate) {
-            $totalCustomers = User::where('role', 'Customer')->count();
+        return Cache::remember("customer_metrics_v3_" . md5(serialize([$startDate, $endDate])), 3600, function () use ($startDate, $endDate) {
             $newCustomers = User::where('role', 'Customer')
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->count();
 
-            // Simplified returning customers: those with at least one order before the current period
             $returningCustomers = Order::where('created_at', '<', $startDate)
                 ->distinct('user_id')
                 ->count();
 
             $topSpenders = Order::select('user_id', DB::raw('SUM(total) as lifetime_value'))
-                ->where('payment_status', 'paid')
+                ->where('payment_status', 'Paid')
                 ->whereNotNull('user_id')
                 ->groupBy('user_id')
                 ->orderByDesc('lifetime_value')
@@ -175,70 +174,15 @@ class ReportService
                 ->take(10)
                 ->get();
 
-            // Loyalty placeholder - checking column names would be better
-            $pointsEarned = 0; // Assume logic based on order totals if table exists
-            $pointsRedeemed = 0;
-
             return [
-                'total_customers' => $totalCustomers,
                 'new_customers' => $newCustomers,
                 'returning_customers' => $returningCustomers,
                 'top_spenders' => $topSpenders,
                 'loyalty_points' => [
-                    'earned' => $pointsEarned,
-                    'redeemed' => $pointsRedeemed
+                    'earned' => 0,
+                    'redeemed' => 0
                 ]
             ];
-        });
-    }
-
-    /**
-     * Get Marketing & Growth Metrics.
-     */
-    public function getMarketingMetrics()
-    {
-        return Cache::remember('marketing_metrics', 3600, function () {
-            $couponUsage = DB::table('order_items')
-                ->join('orders', 'order_items.order_id', '=', 'orders.id')
-                ->where('orders.payment_status', 'paid')
-                ->select(DB::raw('count(*) as usage_count'))
-                // This is a simplified check, usually coupons are applied at order level
-                ->count(); 
-
-            $newsletterSubscribers = Newsletter::count();
-
-            return [
-                'coupon_usage' => $couponUsage,
-                'newsletter_subscribers' => $newsletterSubscribers,
-            ];
-        });
-    }
-
-    /**
-     * Get Detailed Inventory List.
-     */
-    public function getFullInventory($filters = [])
-    {
-        $cacheKey = 'full_inventory_list_' . md5(serialize($filters));
-
-        return Cache::remember($cacheKey, 3600, function () use ($filters) {
-            $query = Product::with('category');
-
-            if (!empty($filters['category_id'])) $query->where('category_id', $filters['category_id']);
-            if (!empty($filters['brand_id'])) $query->where('brand_id', $filters['brand_id']);
-
-            return $query->select('sku', 'name', 'category_id', 'stock_quantity', 'price', 'status')
-                ->get()
-                ->map(function($product) {
-                    return [
-                        'sku' => $product->sku,
-                        'name' => $product->getTranslation('name', 'ar'),
-                        'category' => $product->category ? $product->category->getTranslation('name', 'ar') : 'N/A',
-                        'stock' => $product->stock_quantity,
-                        'price' => $product->price,
-                        'status' => $product->status ? 'Active' : 'Inactive'
-                    ];
-                });
         });
     }
 
@@ -247,8 +191,6 @@ class ReportService
      */
     public function clearCache()
     {
-        Cache::forget('inventory_metrics');
-        Cache::forget('marketing_metrics');
-        // Add logic to flush dynamic keys if needed
+        Cache::flush(); // Simple for now, can be optimized to use tags if supported
     }
 }

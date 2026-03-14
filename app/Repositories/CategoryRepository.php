@@ -42,6 +42,11 @@ class CategoryRepository extends BaseRepository
      *
      * @return Collection
      */
+    public function getCategoryDistribution(): Collection
+    {
+        return $this->model->withCount('products')->orderByDesc('products_count')->get();
+    }
+
     /**
      * Get paginated categories with product counts.
      *

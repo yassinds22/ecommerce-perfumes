@@ -36,6 +36,7 @@ class Product extends Model implements HasMedia
         'description',
         'short_description',
         'price',
+        'purchase_price',
         'sale_price',
         'sku',
         'stock',
@@ -56,6 +57,7 @@ class Product extends Model implements HasMedia
         'status' => 'boolean',
         'is_out_of_stock' => 'boolean',
         'price' => 'decimal:2',
+        'purchase_price' => 'decimal:2',
         'sale_price' => 'decimal:2',
     ];
 
@@ -94,6 +96,11 @@ class Product extends Model implements HasMedia
     public function heartNotes()
     {
         return $this->fragranceNotes()->wherePivot('type', 'middle');
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
     }
 
     public function baseNotes()
@@ -214,11 +221,24 @@ class Product extends Model implements HasMedia
             'fragrance_notes' => $this->fragranceNotes->map(function ($note) {
                 return $note->getTranslations('name');
             })->flatten()->toArray(),
+            'purchase_price' => (float) $this->purchase_price,
             'price' => (float) ($this->sale_price ?: $this->price),
             'status' => (bool) $this->status,
             'is_out_of_stock' => (bool) $this->is_out_of_stock,
             'gender' => $this->gender,
         ];
+    }
+
+    public function getProfitMarginAttribute()
+    {
+        $salePrice = $this->sale_price ?: $this->price;
+        $purchasePrice = $this->purchase_price;
+
+        if (!$salePrice || !$purchasePrice || $salePrice == 0) {
+            return 0;
+        }
+
+        return (($salePrice - $purchasePrice) / $salePrice) * 100;
     }
 }
 

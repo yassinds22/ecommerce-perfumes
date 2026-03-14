@@ -72,7 +72,14 @@ class ProductService
     public function createProduct(array $data): Product
     {
         if (isset($data['name']['en'])) {
-            $data['slug'] = \Illuminate\Support\Str::slug($data['name']['en']);
+            $slug = \Illuminate\Support\Str::slug($data['name']['en']);
+            $originalSlug = $slug;
+            $count = 1;
+            
+            while (Product::where('slug', $slug)->exists()) {
+                $slug = $originalSlug . '-' . $count++;
+            }
+            $data['slug'] = $slug;
         }
 
         $product = $this->productRepository->create($data);
@@ -112,7 +119,14 @@ class ProductService
     public function updateProduct(int $id, array $data): Product
     {
         if (isset($data['name']['en'])) {
-            $data['slug'] = \Illuminate\Support\Str::slug($data['name']['en']);
+            $slug = \Illuminate\Support\Str::slug($data['name']['en']);
+            $originalSlug = $slug;
+            $count = 1;
+            
+            while (Product::where('slug', $slug)->where('id', '!=', $id)->exists()) {
+                $slug = $originalSlug . '-' . $count++;
+            }
+            $data['slug'] = $slug;
         }
 
         $this->productRepository->update($id, $data);

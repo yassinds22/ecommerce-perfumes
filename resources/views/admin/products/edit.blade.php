@@ -57,12 +57,19 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>السعر الأساسي ($)</label>
-                    <input type="number" step="0.01" name="price" value="{{ old('price', $product->price) }}" required>
+                    <label>سعر الشراء ($)</label>
+                    <input type="number" step="0.01" name="purchase_price" value="{{ old('purchase_price', $product->purchase_price) }}" required>
+                    @error('purchase_price') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">
-                    <label>سعر العرض ($)</label>
+                    <label>سعر البيع ($)</label>
+                    <input type="number" step="0.01" name="price" value="{{ old('price', $product->price) }}" required>
+                    @error('price') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
+                </div>
+                <div class="form-group">
+                    <label>سعر العرض ($) - اختياري</label>
                     <input type="number" step="0.01" name="sale_price" value="{{ old('sale_price', $product->sale_price) }}">
+                    @error('sale_price') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
                 </div>
             </div>
 

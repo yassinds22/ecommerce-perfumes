@@ -35,6 +35,7 @@
 
     <script src="{{ asset('assets/admin/js/dashboard.js') }}"></script>
     @yield('scripts')
+    @stack('scripts')
 </body>
 
 </html>

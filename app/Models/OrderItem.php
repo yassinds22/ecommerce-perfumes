@@ -6,10 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderItem extends Model
 {
-    protected $fillable = ['order_id', 'product_id', 'quantity', 'price'];
+    protected $fillable = ['order_id', 'product_id', 'quantity', 'price', 'purchase_price', 'sale_price', 'profit'];
 
     protected $casts = [
         'price' => 'decimal:2',
+        'purchase_price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
+        'profit' => 'decimal:2',
     ];
 
     public function order()

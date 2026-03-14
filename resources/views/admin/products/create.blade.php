@@ -60,8 +60,13 @@
 
             <div class="form-row">
                 <div class="form-group">
-                    <label>السعر الأساسي ($)</label>
-                    <input type="number" step="0.01" name="price" value="{{ old('price') }}" placeholder="0.00" required>
+                    <label>سعر الشراء ($)</label>
+                    <input type="number" step="0.01" name="purchase_price" id="purchase_price" value="{{ old('purchase_price') }}" placeholder="0.00" required>
+                    @error('purchase_price') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
+                </div>
+                <div class="form-group">
+                    <label>سعر البيع ($)</label>
+                    <input type="number" step="0.01" name="price" id="price" value="{{ old('price') }}" placeholder="0.00" required>
                     @error('price') <span style="color:var(--color-danger); font-size: 0.8rem">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group">

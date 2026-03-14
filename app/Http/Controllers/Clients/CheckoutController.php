@@ -48,14 +48,22 @@ class CheckoutController extends Controller
                 if ($request->has('items')) {
                     $stockService = app(\App\Services\StockService::class);
                     foreach ($request->items as $item) {
+                        $product = \App\Models\Product::find($item['id']);
+                        
+                        $purchasePrice = $product ? $product->purchase_price : 0;
+                        $salePrice = $item['price']; // The price at which it was added to cart
+                        $profit = ($salePrice - $purchasePrice) * $item['qty'];
+
                         \App\Models\OrderItem::create([
                             'order_id' => $order->id,
                             'product_id' => $item['id'],
                             'quantity' => $item['qty'],
-                            'price' => $item['price'], // Fixed field name
+                            'price' => $salePrice,
+                            'purchase_price' => $purchasePrice,
+                            'sale_price' => $salePrice,
+                            'profit' => $profit,
                         ]);
 
-                        $product = \App\Models\Product::find($item['id']);
                         if ($product) {
                             $stockService->decrease($product, $item['qty'], "طلب رقم #{$order->order_number}");
                         }

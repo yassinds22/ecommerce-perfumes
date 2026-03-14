@@ -63,8 +63,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('index');
     Route::get('analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics.index');
     Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
-    Route::get('reports/export/sales', [\App\Http\Controllers\Admin\ReportController::class, 'exportSales'])->name('reports.export.sales');
-    Route::get('reports/export/inventory', [\App\Http\Controllers\Admin\ReportController::class, 'exportInventory'])->name('reports.export.inventory');
+    Route::get('reports/export', [\App\Http\Controllers\Admin\ReportController::class, 'export'])->name('reports.export');
     
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
