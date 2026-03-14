@@ -33,6 +33,7 @@ graph TD
         F -- Price Snapshot --> I[Order Management]
         F -- Data Analysis --> J[Chart.js / Analytics]
         F -- Export --> K[DomPDF / CSV]
+        I -- Processing --> L[Stripe API]
     end
 
     style Laravel_Core fill:#fff5f5,stroke:#ff2d20,stroke-width:2px
@@ -54,12 +55,17 @@ graph TD
 - **Full Localization**: Seamless switching between Arabic (RTL) and English (LTR) layouts without layout breaking.
 - **Interactive Visualizations**: Real-time sales trends and payment distribution charts using **Chart.js**.
 
+### 💳 Secure Payment Gateway (Stripe)
+- **End-to-End Encryption**: Professional integration of Stripe for secure, encrypted credit card transactions.
+- **Automated Lifecycle**: Handling of payment intents, webhooks, and automated order status transitions upon successful payment.
+
 ---
 
 ## 🚀 Key Features
 
 | Feature | Description |
 | :--- | :--- |
+| **Payment Gateway** | Professional **Stripe** integration for secure credit card transactions. |
 | **Inventory Management** | Real-time stock tracking with low-stock alerts and automated status management. |
 | **Slug Optimization** | Automated unique slug generation to prevent URL conflicts and improve SEO. |
 | **Search Engine** | Fast, indexed search powered by Scout for instant product discovery. |
