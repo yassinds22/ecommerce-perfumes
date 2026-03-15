@@ -63,6 +63,7 @@ class OrderInvoiceNotification extends Notification
             'title' => 'فاتورة جاهزة #' . $this->order->invoice_number,
             'message' => 'تم إصدار فاتورة طلبك رقم ' . $this->order->invoice_number,
             'order_id' => $this->order->id,
+            'action_url' => route('orders.invoice.view', $this->order),
             'icon' => 'fas fa-file-invoice-dollar',
             'color' => 'gold'
         ];

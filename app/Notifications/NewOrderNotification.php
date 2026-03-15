@@ -29,6 +29,7 @@ class NewOrderNotification extends Notification implements ShouldQueue
             'title' => 'طلب جديد #ORD-' . $this->order->id,
             'message' => "تم استلام طلب جديد بقيمة " . number_format($this->order->total) . " ر.س من " . ($this->order->user->name ?? 'عميل'),
             'order_id' => $this->order->id,
+            'action_url' => route('admin.orders.show', $this->order->id),
             'icon' => 'fas fa-shopping-cart',
             'color' => 'success'
         ];

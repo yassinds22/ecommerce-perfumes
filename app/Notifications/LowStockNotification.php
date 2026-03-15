@@ -29,6 +29,7 @@ class LowStockNotification extends Notification implements ShouldQueue
             'title' => 'تنبيه مخزون منخفض',
             'message' => "المنتج '{$this->product->name}' وصل إلى الحد الأدنى ({$this->product->stock_quantity} متبقي)",
             'product_id' => $this->product->id,
+            'action_url' => route('admin.products.index'),
             'icon' => 'fas fa-exclamation-triangle',
             'color' => 'warning'
         ];

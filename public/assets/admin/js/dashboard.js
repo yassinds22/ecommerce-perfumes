@@ -569,17 +569,24 @@ function fetchNotifications() {
                         <span class="notif-time">${formatTime(notif.created_at)}</span>
                     </div>
                 `;
+        if (notif.data.action_url) {
+          item.style.cursor = 'pointer';
+        }
+
         item.onclick = (e) => {
           e.stopPropagation();
-          markAsRead(notif.id, item);
+          markAsRead(notif.id, item, notif.data.action_url);
         };
         notifList.appendChild(item);
       });
     });
 }
 
-function markAsRead(id, element) {
-  if (!element.classList.contains('unread')) return;
+function markAsRead(id, element, redirectUrl = null) {
+  if (!element.classList.contains('unread')) {
+    if (redirectUrl) window.location.href = redirectUrl;
+    return;
+  }
 
   fetch(`/admin/notifications/${id}/read`, {
     method: 'POST',
@@ -590,6 +597,7 @@ function markAsRead(id, element) {
   }).then(() => {
     element.classList.remove('unread');
     updateNotifBadge();
+    if (redirectUrl) window.location.href = redirectUrl;
   });
 }
 
@@ -607,10 +615,17 @@ function markAllAsRead(e) {
 }
 
 function updateNotifBadge() {
-  const dot = document.getElementById('notifDot');
-  const hasUnread = document.querySelector('.notif-item.unread');
-  if (dot && !hasUnread) {
-    dot.style.display = 'none';
+  const badge = document.getElementById('notifCount');
+  if (badge) {
+    let count = parseInt(badge.textContent);
+    if (!isNaN(count) && count > 0) {
+      count--;
+      if (count <= 0) {
+        badge.style.display = 'none';
+      } else {
+        badge.textContent = count;
+      }
+    }
   }
 }
 

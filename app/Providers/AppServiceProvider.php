@@ -37,5 +37,12 @@ class AppServiceProvider extends ServiceProvider
         View::composer(['clints.layout.nav', 'clints.index', 'clints.shop'], function ($view) {
             $view->with('parentCategories', Category::whereNull('parent_id')->get());
         });
+
+        // Share unread notification count with admin layout and notifications page
+        View::composer(['admin.layout.header', 'admin.notifications'], function ($view) {
+            if (auth()->check()) {
+                $view->with('unreadNotificationsCount', auth()->user()->unreadNotifications->count());
+            }
+        });
     }
 }

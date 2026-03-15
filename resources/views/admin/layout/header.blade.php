@@ -18,7 +18,7 @@
             <button class="header__btn" title="الإشعارات" id="notifBtn">
                 <i class="fas fa-bell"></i>
                 @if(isset($unreadNotificationsCount) && $unreadNotificationsCount > 0)
-                <span class="dot" id="notifDot"></span>
+                <span class="count-badge" id="notifCount">{{ $unreadNotificationsCount }}</span>
                 @endif
             </button>
             <div class="dropdown-menu" id="notifMenu">
@@ -30,7 +30,7 @@
                     <div class="notif-loading">جاري التحميل...</div>
                 </div>
                 <div class="dropdown-footer">
-                    <a href="#">عرض جميع التنبيهات</a>
+                    <a href="{{ route('admin.notifications.all') }}">عرض جميع التنبيهات</a>
                 </div>
             </div>
         </div>

@@ -29,6 +29,7 @@ class NewReviewNotification extends Notification implements ShouldQueue
             'title' => 'تقييم جديد بانتظار المراجعة',
             'message' => "قام " . ($this->review->user->name ?? 'عميل') . " بإضافة تقييم على " . ($this->review->product->name ?? 'منتج'),
             'review_id' => $this->review->id,
+            'action_url' => route('admin.reviews.index'),
             'icon' => 'fas fa-star',
             'color' => 'info'
         ];

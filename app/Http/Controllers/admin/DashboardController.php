@@ -65,14 +65,11 @@ class DashboardController extends Controller
         // Additional data
         $settings = \App\Models\Setting::all()->groupBy('group');
         $recentActivities = \App\Models\ActivityLog::with('user')->latest()->take(10)->get();
-        $unreadNotificationsCount = auth()->user() ? auth()->user()->unreadNotifications->count() : 0;
-
         return view('admin.index', compact(
             'stats', 'trends', 'recentOrders', 'orders', 'orderStats', 
             'customers', 'reviews', 'allProducts', 'salesData', 
             'categoriesStats', 'offers', 'categories', 'settings', 
-            'topProducts', 'customerStats', 'recentActivities', 
-            'unreadNotificationsCount'
+            'topProducts', 'customerStats', 'recentActivities'
         ));
     }
 
@@ -86,6 +83,13 @@ class DashboardController extends Controller
         $notification = auth()->user()->notifications()->findOrFail($id);
         $notification->markAsRead();
         return response()->json(['success' => true]);
+    }
+
+    public function allNotifications()
+    {
+        $notifications = auth()->user()->notifications()->paginate(15);
+
+        return view('admin.notifications', compact('notifications'));
     }
 
     public function markAllNotificationsAsRead()
