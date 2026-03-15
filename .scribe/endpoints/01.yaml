@@ -1,0 +1,433 @@
+name: 'Product Catalog'
+description: |-
+
+  API endpoints for browsing products, categories, and brands.
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/products
+    metadata:
+      custom: []
+      groupName: 'Product Catalog'
+      groupDescription: |-
+
+        API endpoints for browsing products, categories, and brands.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List all products.'
+      description: |-
+        **Use Case**: Main discovery engine for customers. Supports deep filtering and sorting to help users find the perfect scent.
+
+        Retrieve a paginated list of perfumes with optional filtering by category, brand, or search query.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters:
+      category_id:
+        custom: []
+        name: category_id
+        description: 'Filter by category ID.'
+        required: false
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      brand_id:
+        custom: []
+        name: brand_id
+        description: 'Filter by brand ID.'
+        required: false
+        example: 2
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      search:
+        custom: []
+        name: search
+        description: 'Search in product names.'
+        required: false
+        example: Rose
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      min_price:
+        custom: []
+        name: min_price
+        description: 'Filter by minimum price.'
+        required: false
+        example: 100.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      max_price:
+        custom: []
+        name: max_price
+        description: 'Filter by maximum price.'
+        required: false
+        example: 500.0
+        type: number
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      sort_by:
+        custom: []
+        name: sort_by
+        description: 'Sort field (`price`, `created_at`, `name`).'
+        required: false
+        example: price
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      order:
+        custom: []
+        name: order
+        description: 'Sort order (`asc` or `desc`).'
+        required: false
+        example: asc
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Results per page.'
+        required: false
+        example: 15
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanQueryParameters:
+      category_id: 1
+      brand_id: 2
+      search: Rose
+      min_price: 100.0
+      max_price: 500.0
+      sort_by: price
+      order: asc
+      per_page: 15
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "status": "success",
+           "message": "Success",
+           "data": [
+             {
+               "id": 1,
+               "name": {"en": "Signature Oud", "ar": "عود التوقيع"},
+               "slug": "signature-oud",
+               "description": {"en": "A luxurious oud fragrance...", "ar": "عطر عود فاخر..."},
+               "price": 250.0,
+               "sale_price": 220.0,
+               "quantity": 50,
+               "sku": "LP-OUD-001",
+               "category": {"id": 1, "name": {"en": "Oriental", "ar": "شرقي"}},
+               "brand": {"id": 1, "name": "Luxe Parfum"},
+               "images": [{"id": 1, "url": "http://localhost:8000/storage/1/perfume.jpg", "thumb": "http://localhost:8000/storage/1/conversions/perfume-thumb.jpg"}],
+               "rating": 4.5,
+               "reviews_count": 12,
+               "created_at": "2026-03-14 12:00:00"
+             }
+           ],
+           "links": {"first": "...", "last": "...", "prev": null, "next": null},
+           "meta": {"current_page": 1, "from": 1, "last_page": 1, "path": "...", "per_page": 15, "to": 1, "total": 1}
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/products/{slug}'
+    metadata:
+      custom: []
+      groupName: 'Product Catalog'
+      groupDescription: |-
+
+        API endpoints for browsing products, categories, and brands.
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'View product details.'
+      description: |-
+        **Use Case**: Detailed product showcase for informed decision-making. Essential for conversion optimization.
+
+        Retrieve comprehensive information about a specific perfume including sizes and notes.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      slug:
+        custom: []
+        name: slug
+        description: 'The unique SEO slug of the product.'
+        required: true
+        example: midnight-rose
+        type: string
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      slug: midnight-rose
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+           "status": "success",
+           "message": "Success",
+           "data": {
+               "id": 1,
+               "name": {"en": "Signature Oud", "ar": "عود التوقيع"},
+               "slug": "signature-oud",
+               "description": {"en": "A luxurious oud fragrance...", "ar": "عطر عود فاخر..."},
+               "price": 250.0,
+               "sale_price": 220.0,
+               "quantity": 50,
+               "sku": "LP-OUD-001",
+               "category": {"id": 1, "name": {"en": "Oriental", "ar": "شرقي"}},
+               "brand": {"id": 1, "name": "Luxe Parfum"},
+               "images": [{"id": 1, "url": "http://localhost:8000/storage/1/perfume.jpg", "thumb": "http://localhost:8000/storage/1/conversions/perfume-thumb.jpg"}],
+               "sizes": [{"id": 1, "size": "100ml", "price": 250.0}],
+               "fragrance_notes": [{"id": 1, "name": {"en": "Agarwood", "ar": "عود"}, "type": "top"}],
+               "rating": 4.5,
+               "reviews_count": 12,
+               "created_at": "2026-03-14 12:00:00"
+           }
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/categories
+    metadata:
+      custom: []
+      groupName: 'Product Catalog'
+      groupDescription: ''
+      subgroup: Categories
+      subgroupDescription: ''
+      title: 'List all categories.'
+      description: |-
+        **Use Case**: Enables users to explore perfumes by fragrance family (e.g., Woody, Fresh, Floral).
+
+        Retrieve a collection of perfume categories (e.g., Floral, Oriental).
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"status":"success","message":"Success","data":[{"id":1,"name":{"en":"Man","ar":"\u0639\u0637\u0648\u0631 \u0631\u062c\u0627\u0644\u064a"},"slug":"man","parent_id":null,"image_url":"http:\/\/localhost:8000\/storage\/2\/brand-story.png","created_at":"2026-03-08 09:07:56"},{"id":2,"name":{"ar":"\u0639\u0637\u0648\u0631 \u0631\u062c\u0627\u0644\u064a\u0629","en":"Men Perfumes"},"slug":"men-perfumes","parent_id":null,"image_url":"http:\/\/localhost:8000\/storage\/3\/mens-perfume.png","created_at":"2026-03-08 09:15:53"},{"id":3,"name":{"ar":"\u0639\u0637\u0648\u0631 \u0646\u0633\u0627\u0626\u064a\u0629","en":"Women Perfumes"},"slug":"women-perfumes","parent_id":null,"image_url":"http:\/\/localhost:8000\/storage\/4\/gift-set.png","created_at":"2026-03-08 09:15:53"}]}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/categories/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product Catalog'
+      groupDescription: ''
+      subgroup: Categories
+      subgroupDescription: ''
+      title: 'View category details.'
+      description: 'Retrieve information for a single category.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The category ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"status":"success","message":"Success","data":{"id":1,"name":{"en":"Man","ar":"\u0639\u0637\u0648\u0631 \u0631\u062c\u0627\u0644\u064a"},"slug":"man","parent_id":null,"image_url":"http:\/\/localhost:8000\/storage\/2\/brand-story.png","created_at":"2026-03-08 09:07:56"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/brands
+    metadata:
+      custom: []
+      groupName: 'Product Catalog'
+      groupDescription: ''
+      subgroup: Brands
+      subgroupDescription: ''
+      title: 'List all brands.'
+      description: |-
+        **Use Case**: Allows users to filter their search by perfume houses and independent distillers.
+
+        Retrieve a collection of perfume brands.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"status":"success","message":"Success","data":[{"id":1,"name":[],"slug":"1luxe-parfum","logo_url":"","created_at":"2026-03-08 09:21:37"},{"id":2,"name":[],"slug":"oud-elite","logo_url":"","created_at":"2026-03-08 09:21:37"},{"id":3,"name":[],"slug":"arabian-oud","logo_url":"","created_at":"2026-03-08 09:21:37"},{"id":4,"name":[],"slug":"amouage","logo_url":"","created_at":"2026-03-08 09:21:37"},{"id":5,"name":[],"slug":"dior-perfumes","logo_url":"","created_at":"2026-03-08 09:21:37"},{"id":6,"name":[],"slug":"tom-ford","logo_url":"","created_at":"2026-03-08 09:21:37"}]}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/brands/{id}'
+    metadata:
+      custom: []
+      groupName: 'Product Catalog'
+      groupDescription: ''
+      subgroup: Brands
+      subgroupDescription: ''
+      title: 'View brand details.'
+      description: 'Retrieve information for a single perfume brand.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The brand ID.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: true
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"status":"success","message":"Success","data":{"id":1,"name":[],"slug":"1luxe-parfum","logo_url":"","created_at":"2026-03-08 09:21:37"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null

@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Http\Resources\Api;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class CategoryResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->getTranslations('name'),
+            'slug' => $this->slug,
+            'parent_id' => $this->parent_id,
+            'image_url' => $this->getFirstMediaUrl('images'),
+            'created_at' => $this->created_at->toDateTimeString(),
+        ];
+    }
+}
