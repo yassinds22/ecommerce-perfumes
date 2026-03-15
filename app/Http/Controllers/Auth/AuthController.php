@@ -21,6 +21,15 @@ class AuthController extends Controller
                 ? redirect()->route('admin.index') 
                 : redirect()->route('home');
         }
+
+        // Store the intended URL if it's coming from a different page
+        if (!session()->has('url.intended')) {
+            $previousUrl = url()->previous();
+            if ($previousUrl && $previousUrl !== route('login') && $previousUrl !== route('register')) {
+                session(['url.intended' => $previousUrl]);
+            }
+        }
+
         return view('auth.login');
     }
 

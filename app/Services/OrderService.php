@@ -27,6 +27,29 @@ class OrderService
     }
 
     /**
+     * Get paginated orders for admin.
+     */
+    public function getPaginatedOrders(int $perPage = 10): LengthAwarePaginator
+    {
+        return Order::with(['user', 'items.product'])->latest()->paginate($perPage);
+    }
+
+    /**
+     * Get order statistics for dashboard.
+     */
+    public function getOrderStats(): array
+    {
+        return [
+            'total_orders' => Order::count(),
+            'pending' => Order::where('status', 'pending')->count(),
+            'shipped' => Order::where('status', 'shipped')->count(),
+            'completed' => Order::where('status', 'completed')->count(),
+            'cancelled' => Order::whereIn('status', ['cancelled', 'canceled'])->count(),
+            'total_revenue' => Order::where('status', 'completed')->sum('total'),
+        ];
+    }
+
+    /**
      * Get single order details.
      */
     public function getOrderDetails(User $user, Order $order): Order
