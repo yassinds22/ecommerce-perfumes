@@ -208,12 +208,24 @@ class Product extends Model implements HasMedia
      */
     public function toSearchableArray(): array
     {
-        // Load relationships if not loaded
+        // For the Scout 'database' engine, we must only return keys that correspond to real columns.
+        if (config('scout.driver') === 'database') {
+            return [
+                'id' => (int) $this->id,
+                'name' => $this->getTranslations('name'),
+                'description' => $this->getTranslations('description'),
+                'short_description' => $this->getTranslations('short_description'),
+                'sku' => $this->sku,
+                'gender' => $this->gender,
+            ];
+        }
+
+        // For rich engines like Algolia/Meilisearch, we include all data.
         $this->loadMissing(['category', 'brand', 'fragranceNotes']);
 
         return [
             'id' => (int) $this->id,
-            'name' => $this->getTranslations('name'), // Index all translations
+            'name' => $this->getTranslations('name'), 
             'brand' => $this->brand ? $this->brand->name : null,
             'category' => $this->category ? $this->category->getTranslations('name') : null,
             'description' => $this->getTranslations('description'),
