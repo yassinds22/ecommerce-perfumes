@@ -22,6 +22,7 @@
               @if(auth()->user()->role === 'Admin')
                 <a href="{{ route('admin.index') }}"><i class="fas fa-cog"></i> لوحة التحكم</a>
               @endif
+              <a href="{{ route('account.index') }}"><i class="fas fa-user-circle"></i> حسابي</a>
               <a href="{{ route('loyalty.index') }}"><i class="fas fa-crown"></i> نقاط الولاء</a>
               <a href="#" onclick="event.preventDefault(); document.getElementById('nav-logout-form').submit();">
                 <i class="fas fa-sign-out-alt"></i> تسجيل الخروج

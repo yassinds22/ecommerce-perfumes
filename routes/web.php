@@ -56,6 +56,38 @@ Route::middleware('auth')->group(function () {
 });
 
 // Stripe Webhook (Publicly accessible)
+// User Account Dashboard
+Route::middleware(['auth'])->prefix('account')->name('account.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Clients\Account\AccountController::class, 'index'])->name('index');
+    
+    // Profile
+    Route::get('/profile', [\App\Http\Controllers\Clients\Account\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [\App\Http\Controllers\Clients\Account\ProfileController::class, 'update'])->name('profile.update');
+    
+    // Orders
+    Route::get('/orders', [\App\Http\Controllers\Clients\Account\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{id}', [\App\Http\Controllers\Clients\Account\OrderController::class, 'show'])->name('orders.show');
+    
+    // Wishlist
+    Route::get('/wishlist', [\App\Http\Controllers\Clients\Account\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::delete('/wishlist/{id}', [\App\Http\Controllers\Clients\Account\WishlistController::class, 'destroy'])->name('wishlist.destroy');
+    
+    // Addresses
+    Route::resource('addresses', \App\Http\Controllers\Clients\Account\AddressController::class);
+    Route::post('/addresses/{address}/set-default', [\App\Http\Controllers\Clients\Account\AddressController::class, 'setDefault'])->name('addresses.set-default');
+    
+    // Security
+    Route::get('/security', [\App\Http\Controllers\Clients\Account\SecurityController::class, 'index'])->name('security.index');
+    Route::put('/security/password', [\App\Http\Controllers\Clients\Account\SecurityController::class, 'updatePassword'])->name('security.password');
+    Route::put('/security/email', [\App\Http\Controllers\Clients\Account\SecurityController::class, 'updateEmail'])->name('security.email');
+});
+
+// Guest Account View (if not authenticated)
+Route::get('/account-guest', function () {
+    if (auth()->check()) return redirect()->route('account.index');
+    return view('clints.account.guest');
+})->name('account.guest');
+
 Route::post('/stripe/webhook', [\App\Http\Controllers\PaymentController::class, 'webhook'])->name('payment.webhook');
 
 

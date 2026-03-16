@@ -105,6 +105,19 @@ This project follows a professional **Controller-Service-Repository** pattern to
 | **Performance** | **Redis** integration (via Predis) for advanced caching and session speed. |
 | **Data Security** | **Soft Deletes** implemented across all tables to prevent accidental data loss. |
 | **Media Handling** | Optimized image processing and storage for high-quality product displays. |
+| **User Dashboard** | Enterprise-grade account management for orders, wishlist, addresses, and security. |
+
+---
+
+## 👤 User Account Ecosystem
+A professional, centralized hub designed for the modern customer experience, featuring:
+
+- **Interactive Overview**: Real-time business intelligence for the user, showing loyalty points, order counts, and wishlist highlights.
+- **Dynamic Order Tracking**: Comprehensive order list and detail views with real-time status updates and tracking numbers.
+- **Smart Wishlist Manager**: Integrated favorites system with real-time sidebar badges and direct product restoration links.
+- **Address Management (CRUD)**: Advanced address book supporting multiple locations with a "Default" primary address selector.
+- **Hardened Security**: Dedicated security panel for encrypted password updates and authenticated email changes.
+- **Premium UX Integration**: Modern dark-themed interface utilizing glassmorphism, dynamic counters, and full Arabic (RTL) support.
 
 ---
 
