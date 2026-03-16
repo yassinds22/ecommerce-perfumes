@@ -120,6 +120,16 @@ A premium, interactive frontend designed for conversion and user delight, featur
 - **Secure Checkout Flow**: Hardened multi-step process with real-time address validation, stock verification, and Stripe-powered secure payments.
 - **Intelligence-Driven Search**: Real-time suggestion portal with sub-second indexing for brands, scents, and categories.
 
+### ✨ Advanced Wishlist Ecosystem
+A complete, high-performance wishlist portal redesigned for viral sharing and conversion:
+- **Instant AJAX Actions**: Real-time product removal/addition with smooth fade-out animations and zero-page reloads.
+- **Smart Loading (Skeleton Screens)**: High-speed perceived performance using shimmering placeholder layouts during initial load.
+- **Wishlist Sharing**: Unique public sharing links (read-only) encoded for easy list distribution.
+- **Price Drop Intelligence**: Automated pulsated badges notifying users when a saved item's price has decreased.
+- **Move-to-Cart Logic**: One-click transition from wishlist to cart with automatic cleanup and rich visual feedback.
+- **Empty State Discovery**: Intelligent product recommendations displayed when the wishlist is empty to keep users engaged.
+- **Rich Visual Feedback**: Toasts and notifications enhanced with product thumbnail previews and semantic status icons.
+
 ---
 
 ## 👤 User Account Ecosystem

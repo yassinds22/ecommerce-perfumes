@@ -12,14 +12,10 @@
     <div class="wishlist-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px;">
         @forelse($wishlistItems as $item)
             @if($item->product)
-                <div class="wishlist-item-card" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 15px; overflow: hidden; transition: 0.3s; position: relative;">
-                    <form action="{{ route('account.wishlist.destroy', $item->id) }}" method="POST" style="position: absolute; top: 10px; left: 10px; z-index: 10;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" style="width: 35px; height: 35px; border-radius: 50%; background: rgba(0,0,0,0.5); border: none; color: #ff4d4d; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </form>
+                <div class="wishlist-item-card" data-id="{{ $item->product->id }}" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 15px; overflow: hidden; transition: 0.3s; position: relative;">
+                    <button class="remove-wishlist-ajax" data-id="{{ $item->product->id }}" style="position: absolute; top: 10px; left: 10px; z-index: 10; width: 35px; height: 35px; border-radius: 50%; background: rgba(0,0,0,0.5); border: none; color: #ff4d4d; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
 
                     <div class="item-img" style="height: 250px; background: rgba(255,255,255,0.02); display: flex; align-items: center; justify-content: center; padding: 20px;">
                         <img src="{{ $item->product->getFirstMediaUrl('images') ?: asset('assets/clints/images/mens-perfume.png') }}" alt="{{ $item->product->name }}" style="max-width: 100%; max-height: 100%; object-fit: contain;">

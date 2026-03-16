@@ -115,8 +115,37 @@ const CartManager = {
 };
 
 // ===== WISHLIST MANAGER =====
+// ===== UI UTILITIES =====
+const BtnUtils = {
+    setLoading(btn, isLoading) {
+        if (!btn) return;
+        if (isLoading) {
+            btn.dataset.originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.classList.add('btn-loading');
+            btn.innerHTML = `<span class="spinner"></span> ${btn.textContent}`;
+        } else {
+            btn.innerHTML = btn.dataset.originalHtml || btn.innerHTML;
+            btn.disabled = false;
+            btn.classList.remove('btn-loading');
+        }
+    },
+
+    copyToClipboard(text) {
+        const temp = document.createElement('input');
+        temp.value = text;
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+        showToast({ message: 'تم نسخ الرابط إلى الحافظة!', type: 'success' });
+    }
+};
+
+// ... (Rest of Managers as refactored previously, but ensuring consistency) ...
 const WishlistManager = {
   async toggle(productId, btn) {
+    BtnUtils.setLoading(btn, true);
     try {
       const response = await fetch('/wishlist/toggle', {
         method: 'POST',
@@ -128,7 +157,7 @@ const WishlistManager = {
       });
 
       if (response.status === 401) {
-        showToast('يرجى تسجيل الدخول أولاً');
+        showToast({ message: 'يرجى تسجيل الدخول أولاً', type: 'error' });
         setTimeout(() => window.location.href = '/login', 1500);
         return;
       }
@@ -151,18 +180,47 @@ const WishlistManager = {
 
       document.querySelectorAll('#wishlistCount').forEach(el => {
         el.textContent = data.count;
-        if (data.count > 0) {
-          el.classList.remove('hide-badge');
-        } else {
-          el.classList.add('hide-badge');
-        }
+        if (data.count > 0) el.classList.remove('hide-badge');
+        else el.classList.add('hide-badge');
       });
 
-      showToast(data.message);
+      showToast({ message: data.message, type: 'success' });
+      return data;
     } catch (error) {
       console.error('Wishlist error:', error);
-      showToast('حدث خطأ ما، يرجى المحاولة لاحقاً');
+      showToast({ message: 'حدث خطأ ما، يرجى المحاولة لاحقاً', type: 'error' });
+    } finally {
+        BtnUtils.setLoading(btn, false);
     }
+  },
+
+  async moveToCart(productId, btn) {
+      const card = btn.closest('.product-card');
+      const product = {
+          id: card.dataset.id,
+          name: card.dataset.name,
+          price: parseFloat(card.dataset.price),
+          img: card.dataset.img
+      };
+
+      BtnUtils.setLoading(btn, true);
+      CartManager.addItem(product, false); 
+
+      const result = await this.toggle(productId, btn);
+      if (result && result.status === 'removed') {
+          showToast({ message: `تم نقل ${product.name} إلى السلة بنجاح`, type: 'success', image: product.img });
+          if (card) {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9)';
+                card.style.transition = '0.4s ease';
+                setTimeout(() => {
+                    card.remove();
+                    const grid = document.querySelector('.wishlist-grid');
+                    if (grid && grid.querySelectorAll('.product-card').length === 0) location.reload();
+                }, 400);
+          }
+      }
+      BtnUtils.setLoading(btn, false);
   }
 };
 
@@ -264,6 +322,28 @@ document.addEventListener('DOMContentLoaded', () => {
       userDropdown.classList.toggle('active');
     } else if (userDropdown && !userDropdown.contains(e.target)) {
       userDropdown.classList.remove('active');
+    }
+
+    // AJAX Wishlist Removal (from wishlist page)
+    const removeBtn = e.target.closest('.remove-wishlist-ajax');
+    if (removeBtn) {
+        const productId = removeBtn.dataset.id;
+        const card = removeBtn.closest('.wishlist-item-card, .product-card');
+        
+        if (productId && card) {
+            WishlistManager.toggle(productId, removeBtn).then(() => {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.8)';
+                card.style.transition = '0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                setTimeout(() => {
+                    card.remove();
+                    const grid = document.querySelector('.wishlist-grid');
+                    if (grid && grid.querySelectorAll('.wishlist-item-card').length === 0) {
+                        location.reload(); 
+                    }
+                }, 400);
+            });
+        }
     }
   });
 

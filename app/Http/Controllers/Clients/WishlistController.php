@@ -12,7 +12,15 @@ class WishlistController extends Controller
     public function index()
     {
         $wishlistItems = auth()->user()->wishlist()->with('product.media')->latest()->get();
-        return view('clints.wishlist', compact('wishlistItems'));
+        
+        // Recommendations for empty state or to show at the bottom
+        $recommendedProducts = Product::where('status', true)
+            ->where('is_featured', true)
+            ->with(['category', 'brand'])
+            ->take(4)
+            ->get();
+
+        return view('clints.wishlist', compact('wishlistItems', 'recommendedProducts'));
     }
 
     public function toggle(Request $request)
@@ -50,5 +58,24 @@ class WishlistController extends Controller
         $wishlistItem->delete();
 
         return back()->with('success', 'تمت إزالة المنتج من قائمة الأمنيات');
+    }
+
+    /**
+     * Display a shared wishlist.
+     */
+    public function shared($code)
+    {
+        try {
+            $userId = base64_decode($code);
+            $user = \App\Models\User::findOrFail($userId);
+            
+            $wishlistItems = $user->wishlist()->with('product.media')->latest()->get();
+            $isSharedView = true;
+            $ownerName = $user->name;
+
+            return view('clints.wishlist', compact('wishlistItems', 'isSharedView', 'ownerName'));
+        } catch (\Exception $e) {
+            return redirect()->route('home')->with('error', 'رابط المشاركة غير صالح');
+        }
     }
 }

@@ -63,6 +63,61 @@
             </div>
         </div>
     </div>
+    
+    <!-- Order Timeline -->
+    <div class="timeline-container" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 40px 25px; margin-bottom: 30px;">
+        <div class="timeline" style="position: relative; display: flex; justify-content: space-between; align-items: center; max-width: 800px; margin: 0 auto;">
+            
+            <div class="timeline-line" style="position: absolute; top: 15px; left: 0; right: 0; height: 3px; background: rgba(255,255,255,0.05); z-index: 1;"></div>
+            
+            @php
+                $statusOrder = ['pending', 'processing', 'shipped', 'delivered'];
+                $currentIndex = array_search($order->status, $statusOrder);
+                if ($currentIndex === false && $order->status !== 'cancelled') $currentIndex = 0;
+            @endphp
+            
+            <div class="timeline-line-active" style="position: absolute; top: 15px; right: 0; height: 3px; background: var(--color-gold); z-index: 2; width: {{ $order->status == 'cancelled' ? '0' : ($currentIndex * 33.33) }}%; transition: 0.5s;"></div>
+
+            <!-- Step 1: Pending -->
+            <div class="timeline-step" style="position: relative; z-index: 3; text-align: center;">
+                <div class="step-icon" style="width: 35px; height: 35px; border-radius: 50%; background: {{ $currentIndex >= 0 && $order->status != 'cancelled' ? 'var(--color-gold)' : '#1a1a1a' }}; border: 2px solid {{ $currentIndex >= 0 && $order->status != 'cancelled' ? 'var(--color-gold)' : 'rgba(255,255,255,0.1)' }}; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: {{ $currentIndex >= 0 && $order->status != 'cancelled' ? '#000' : 'var(--color-text-dim)' }}; transition: 0.3s;">
+                    <i class="fas fa-receipt" style="font-size: 0.9rem;"></i>
+                </div>
+                <div class="step-label" style="color: {{ $currentIndex >= 0 && $order->status != 'cancelled' ? '#fff' : 'var(--color-text-dim)' }}; font-size: 0.85rem; font-weight: 600;">تم الاستلام</div>
+            </div>
+
+            <!-- Step 2: Processing -->
+            <div class="timeline-step" style="position: relative; z-index: 3; text-align: center;">
+                <div class="step-icon" style="width: 35px; height: 35px; border-radius: 50%; background: {{ $currentIndex >= 1 && $order->status != 'cancelled' ? 'var(--color-gold)' : '#1a1a1a' }}; border: 2px solid {{ $currentIndex >= 1 && $order->status != 'cancelled' ? 'var(--color-gold)' : 'rgba(255,255,255,0.1)' }}; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: {{ $currentIndex >= 1 && $order->status != 'cancelled' ? '#000' : 'var(--color-text-dim)' }}; transition: 0.3s;">
+                    <i class="fas fa-box-open" style="font-size: 0.9rem;"></i>
+                </div>
+                <div class="step-label" style="color: {{ $currentIndex >= 1 && $order->status != 'cancelled' ? '#fff' : 'var(--color-text-dim)' }}; font-size: 0.85rem; font-weight: 600;">قيد التجهيز</div>
+            </div>
+
+            <!-- Step 3: Shipped -->
+            <div class="timeline-step" style="position: relative; z-index: 3; text-align: center;">
+                <div class="step-icon" style="width: 35px; height: 35px; border-radius: 50%; background: {{ $currentIndex >= 2 && $order->status != 'cancelled' ? 'var(--color-gold)' : '#1a1a1a' }}; border: 2px solid {{ $currentIndex >= 2 && $order->status != 'cancelled' ? 'var(--color-gold)' : 'rgba(255,255,255,0.1)' }}; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: {{ $currentIndex >= 2 && $order->status != 'cancelled' ? '#000' : 'var(--color-text-dim)' }}; transition: 0.3s;">
+                    <i class="fas fa-truck" style="font-size: 0.9rem;"></i>
+                </div>
+                <div class="step-label" style="color: {{ $currentIndex >= 2 && $order->status != 'cancelled' ? '#fff' : 'var(--color-text-dim)' }}; font-size: 0.85rem; font-weight: 600;">تم الشحن</div>
+            </div>
+
+            <!-- Step 4: Delivered -->
+            <div class="timeline-step" style="position: relative; z-index: 3; text-align: center;">
+                <div class="step-icon" style="width: 35px; height: 35px; border-radius: 50%; background: {{ $currentIndex >= 3 && $order->status != 'cancelled' ? 'var(--color-gold)' : '#1a1a1a' }}; border: 2px solid {{ $currentIndex >= 3 && $order->status != 'cancelled' ? 'var(--color-gold)' : 'rgba(255,255,255,0.1)' }}; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; color: {{ $currentIndex >= 3 && $order->status != 'cancelled' ? '#000' : 'var(--color-text-dim)' }}; transition: 0.3s;">
+                    <i class="fas fa-check-double" style="font-size: 0.9rem;"></i>
+                </div>
+                <div class="step-label" style="color: {{ $currentIndex >= 3 && $order->status != 'cancelled' ? '#fff' : 'var(--color-text-dim)' }}; font-size: 0.85rem; font-weight: 600;">تم التوصيل</div>
+            </div>
+
+        </div>
+        
+        @if($order->status == 'cancelled')
+            <div style="margin-top: 30px; text-align: center; color: #ff4d4d;">
+                <i class="fas fa-exclamation-circle"></i> تم إلغاء هذا الطلب. للأسف لا يمكن تتبعه حالياً.
+            </div>
+        @endif
+    </div>
 
     <!-- Status & Info Grid -->
     <div class="info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">

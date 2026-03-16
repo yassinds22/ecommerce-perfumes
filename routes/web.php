@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
 
     // Wishlist Routes
     Route::get('/wishlist', [\App\Http\Controllers\Clients\WishlistController::class, 'index'])->name('wishlist.index');
+Route::get('/wishlist/shared/{code}', [\App\Http\Controllers\Clients\WishlistController::class, 'shared'])->name('wishlist.shared');
     Route::post('/wishlist/toggle', [\App\Http\Controllers\Clients\WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::delete('/wishlist/{id}', [\App\Http\Controllers\Clients\WishlistController::class, 'destroy'])->name('wishlist.destroy');
 
