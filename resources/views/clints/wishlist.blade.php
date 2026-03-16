@@ -6,6 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>قائمة الأمنيات — لوكس بارفيوم</title>
+    @php
+        $sharedTitle = isset($isSharedView) ? "قائمة أمنيات $ownerName — لوكس بارفيوم" : "قائمتي المفضلة على لوكس بارفيوم";
+        $sharedDesc = "اكتشفوا أرقى العطور العالمية المختارة بعناية. شاهد قائمة الأمنيات وشاركنا ذوقك الرفيع.";
+        $sharedImage = (isset($wishlistItems) && $wishlistItems->count() > 0) ? $wishlistItems->first()->product->getFirstMediaUrl('images') : asset('assets/clints/images/mens-perfume.png');
+    @endphp
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $sharedTitle }}">
+    <meta property="og:description" content="{{ $sharedDesc }}">
+    <meta property="og:image" content="{{ $sharedImage }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="{{ $sharedTitle }}">
+    <meta property="twitter:description" content="{{ $sharedDesc }}">
+    <meta property="twitter:image" content="{{ $sharedImage }}">
+
     <link rel="stylesheet" href="{{ asset('assets/clints/css/style.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/clints/css/shop.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
