@@ -47,6 +47,25 @@ const CartManager = {
     document.querySelectorAll('#cartCount').forEach(el => {
       el.textContent = this.getCount();
     });
+    
+    // Update product card buttons
+    document.querySelectorAll('.product-card').forEach(card => {
+        const productId = card.dataset.id;
+        const btn = card.querySelector('.add-to-cart-btn');
+        if (btn && this.items.find(i => i.id == productId)) {
+            btn.innerHTML = 'تم إضافة المنتج — عرض السلة';
+            btn.classList.add('in-cart');
+            btn.style.background = '#1a1a1a'; // Darker theme color
+            btn.style.border = '1px solid var(--color-gold)';
+            btn.style.color = 'var(--color-gold)';
+        } else if (btn) {
+            btn.innerHTML = 'أضف للسلة';
+            btn.classList.remove('in-cart');
+            btn.style.background = ''; // Revert to CSS default
+            btn.style.color = '';
+        }
+    });
+
     this.renderMiniCart();
   },
 
@@ -210,6 +229,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Add to cart
     const cartBtn = e.target.closest('.add-to-cart-btn');
     if (cartBtn) {
+      if (cartBtn.classList.contains('in-cart')) {
+          window.location.href = '/cart';
+          return;
+      }
       const card = cartBtn.closest('.product-card');
       if (card) {
         const product = {
