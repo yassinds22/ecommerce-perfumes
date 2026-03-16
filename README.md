@@ -109,6 +109,19 @@ This project follows a professional **Controller-Service-Repository** pattern to
 
 ---
 
+## 🛍️ Client-Side Experience Ecosystem
+A premium, interactive frontend designed for conversion and user delight, featuring:
+
+- **Immersive Homepage**: Multi-layered Hero experience, curated bestseller sliders, and localized brand storytelling.
+- **Intelligent Shop Engine**: Advanced attribute-based filtering (Category, Brand, Gender, Price) and dynamic sorting (Popularity, Price, Rating).
+- **High-Fidelity Product Discovery**: Rich attribute displays (Fragrance Notes: Top/Heart/Base), visual image galleries, and automated cross-sell recommendations.
+- **Persistent Shopping Bag**: Modern cart architecture with LocalStorage-based persistence, subtotal/tax auto-calculation, and "Fly-to-Cart" micro-interactions.
+- **Smart Wishlist Portal**: One-tap product saving with real-time UI synchronization and dynamic sidebar counters.
+- **Secure Checkout Flow**: Hardened multi-step process with real-time address validation, stock verification, and Stripe-powered secure payments.
+- **Intelligence-Driven Search**: Real-time suggestion portal with sub-second indexing for brands, scents, and categories.
+
+---
+
 ## 👤 User Account Ecosystem
 A professional, centralized hub designed for the modern customer experience, featuring:
 
