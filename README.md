@@ -14,15 +14,15 @@ This project showcases modern Laravel engineering practices including **clean ar
 
 ## Homepage
 
-![Homepage](./screenshots/home.png)
+![Homepage](screenshots/home.png)
 
 ## Product Page
 
-![Product](./screenshots/product.png)
+![Product](screenshots/product.png)
 
 ## Admin Dashboard
 
-![Dashboard](./screenshots/dashboard.png)
+![Dashboard](screenshots/dashboard.png)
 
 ---
 
