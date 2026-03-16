@@ -14,15 +14,15 @@ This project showcases modern Laravel engineering practices including **clean ar
 
 ## Homepage
 
-![Homepage](screenshots/home.png)
+<img src="https://github.com/yassinds22/ecommerce-perfumes/blob/main/screenshots/home.png?raw=true" alt="Homepage" style="max-width: 100%;">
 
 ## Product Page
 
-![Product](screenshots/product.png)
+<img src="https://github.com/yassinds22/ecommerce-perfumes/blob/main/screenshots/product.png?raw=true" alt="Product Page" style="max-width: 100%;">
 
 ## Admin Dashboard
 
-![Dashboard](screenshots/dashboard.png)
+<img src="https://github.com/yassinds22/ecommerce-perfumes/blob/main/screenshots/dashboard.png?raw=true" alt="Admin Dashboard" style="max-width: 100%;">
 
 ---
 
