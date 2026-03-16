@@ -11,6 +11,7 @@ use App\Models\OrderItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Carbon\Carbon;
+use PHPUnit\Framework\Attributes\Test;
 
 class ReportTest extends TestCase
 {
@@ -61,11 +62,14 @@ class ReportTest extends TestCase
             'order_id' => $order->id,
             'product_id' => $product->id,
             'quantity' => 2,
-            'price' => 100
+            'price' => 100,
+            'purchase_price' => 60,
+            'sale_price' => 100,
+            'profit' => 80, // (100-60)*2
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_access_reports_page()
     {
         $response = $this->actingAs($this->admin)->get(route('admin.reports.index'));
@@ -73,7 +77,7 @@ class ReportTest extends TestCase
         $response->assertViewIs('admin.reports.index');
     }
 
-    /** @test */
+    #[Test]
     public function reports_ajax_request_returns_json()
     {
         $response = $this->actingAs($this->admin)->get(route('admin.reports.index', [
@@ -88,7 +92,7 @@ class ReportTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function admin_can_export_reports()
     {
         $response = $this->actingAs($this->admin)->get(route('admin.reports.export', [
@@ -101,7 +105,7 @@ class ReportTest extends TestCase
         $response->assertHeader('Content-Disposition', 'attachment; filename="daily_sales_report_' . now()->format('Ymd') . '.csv"');
     }
 
-    /** @test */
+    #[Test]
     public function profit_report_calculates_correctly()
     {
         $response = $this->actingAs($this->admin)->get(route('admin.reports.index', [

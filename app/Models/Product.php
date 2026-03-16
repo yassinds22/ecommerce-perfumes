@@ -13,9 +13,11 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Product extends Model implements HasMedia
 {
-    use HasTranslations, InteractsWithMedia, Searchable, SoftDeletes;
+    use HasTranslations, InteractsWithMedia, Searchable, SoftDeletes, HasFactory;
 
     public function registerMediaConversions(Media $media = null): void
     {

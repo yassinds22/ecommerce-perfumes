@@ -12,10 +12,12 @@ use Illuminate\Support\Str;
 class OrderService
 {
     protected $stripeService;
+    protected $stockService;
 
-    public function __construct(StripeService $stripeService)
+    public function __construct(StripeService $stripeService, StockService $stockService)
     {
         $this->stripeService = $stripeService;
+        $this->stockService = $stockService;
     }
 
     /**
@@ -83,6 +85,8 @@ class OrderService
                     'sale_price' => $product->sale_price,
                     'profit' => ($product->price - $product->purchase_price) * $itemData['quantity'],
                 ];
+
+                $this->stockService->decrease($product, $itemData['quantity'], "API Order: " . ($order->order_number ?? 'Pending'));
             }
 
             $order = Order::create([

@@ -1,317 +1,332 @@
-# ⚜️ Luxe Parfum - Professional eCommerce Portfolio Project
+# ⚜️ Luxe Parfum — Enterprise eCommerce Platform
 
-<p align="center">
-  <img src="https://laravel.com/img/logomark.min.svg" width="100" alt="Laravel Logo">
-  <br>
-  <strong>A high-performance Perfume eCommerce Solution developed with Laravel 12.</strong>
-</p>
+![Laravel](https://img.shields.io/badge/Laravel-12-red)
+![PHP](https://img.shields.io/badge/PHP-8.2-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
----
+A **high-performance perfume eCommerce platform** built with **Laravel 12**, designed to demonstrate professional backend architecture, scalable business logic, and enterprise-level API development.
 
-## 💎 Project Overview
-This project is a comprehensive eCommerce system built to demonstrate advanced **Laravel 12** expertise, clean architecture, and data-driven business logic. It solves real-world retail challenges like accurate historical profit tracking, bilingual user experiences, and high-performance data reporting.
+This project showcases modern Laravel engineering practices including **clean architecture, Redis caching, Stripe payments, and automated testing**.
 
 ---
 
-## 🛠️ System Architecture & Design Patterns
+# 📸 Screenshots
 
-### 🛰️ Technical Workflow Diagram
-```mermaid
-graph TD
-    subgraph Client_Layer [Frontend Experience]
-        A[User Browser] -- Request --> B[Vite / Vanilla JS]
-        B -- Interactions --> C[RTL/LTR Blade Templates]
-    end
+## Homepage
 
-    subgraph App_Layer [Laravel 12 Architecture]
-        D[Routing] -- Request Flow --> E[Controllers]
-        E -- Orchestrates --> F[Service Layer]
-        F -- Business Logic --> G[Repository Pattern]
-        G -- Data Fetching --> H[(Eloquent Models)]
-    end
+![Homepage](screenshots/home.png)
 
-    subgraph Infrastructure_Layer [Core Services]
-        F -- Async Tasks --> I[Job Queues]
-        F -- Performance --> J[Redis / Caching]
-        F -- Persistence --> K[Storage / S3]
-        F -- Payments --> L[Stripe API]
-    end
+## Product Page
 
-    style App_Layer fill:#fff5f5,stroke:#ff2d20,stroke-width:2px
-    style Infrastructure_Layer fill:#f5faff,stroke:#3498db,stroke-width:2px
+![Product](screenshots/product.png)
+
+## Admin Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+---
+
+# 💎 Project Overview
+
+Luxe Parfum is a full-featured **eCommerce system for premium fragrance retail**.
+
+The platform solves real-world retail challenges including:
+
+* Accurate **historical profit tracking**
+* **High-performance product discovery**
+* **Secure online payments**
+* **Bilingual user experience (Arabic / English)**
+* **Enterprise-grade reporting**
+
+The system is designed to simulate a **real production-ready retail platform**.
+
+---
+
+# 🧠 System Architecture
+
+The application follows a **Layered Clean Architecture** approach to ensure maintainability and scalability.
+
+```
+Client (Browser / Mobile)
+        ↓
+Controllers (HTTP Layer)
+        ↓
+Service Layer (Business Logic)
+        ↓
+Repositories (Data Access)
+        ↓
+Models (Eloquent ORM)
+        ↓
+MySQL Database
+        ↓
+Redis Cache & Queues
 ```
 
-### 🛡️ Clean Architecture Implementation
-This project follows a professional **Controller-Service-Repository** pattern to ensure a strict separation of concerns:
+### Key Principles
 
-1. **Controllers**: Act as entry points, handling request validation and returning responses. They remain "thin" by delegating all logic to services.
-2. **Service Layer**: The "Brain" of the application. It contains the business logic (e.g., calculating profits, processing discounts) and interacts with multiple repositories or external APIs.
-3. **Repository Pattern**: Abstracting the data layer. It handles all Eloquent queries and data persistence, ensuring that the business logic is decoupled from the database structure.
-
----
-
-### ⚙️ Core Infrastructure Components
-
-#### 💳 Payment Gateway (Stripe)
-- **Secure Integration**: Full implementation of Stripe API for professional credit card processing.
-- **Webhook Handling**: Automated order status updates and synchronization even if the user closes the browser during payment.
-
-#### ⚡ High-Performance Caching
-- **Implementation**: Leveraging Laravel's Cache facade with Redis/File support.
-- **Optimization**: Frequently accessed data like total sales, popular products, and dashboard KPIs are cached to ensure sub-second response times.
-
-#### 📂 Unified Storage System
-- **Abstraction**: Uses Laravel's Storage disk abstraction for easy switching between `Local` for development and `Amazon S3` for production.
-- **Media Management**: Automated handling of product images, fragrance notes icons, and dynamically generated PDF invoices.
-
-#### 🏗️ Scalable Job Queues
-- **Background Processing**: Heavy operations such as **PDF Generation**, **Invoice Emails**, and **Search Indexing** are dispatched to queues.
-- **Reliability**: Ensures that the user never experiences a delay while waiting for a heavy backend process to complete.
+* Thin Controllers
+* Business logic isolated in Services
+* Decoupled Data Access using Repositories
+* API Resources for structured JSON responses
 
 ---
 
-### 📊 Business Intelligence (BI) Engine
-- **Historical Price Snapshots**: A custom-built mechanism that captures `purchase_price` and `sale_price` at the moment of order creation. This ensures that profit reports remain accurate even if product prices are updated in the future.
-- **Real-time Profit Analytics**: Dynamic calculation of Net Profit and Profit Margins (%) using optimized database queries and indexing.
-- **Professional Reporting**: Integrated PDF and CSV export system with full support for Arabic/English terminology.
+# 🚀 Key Features
 
-### 🎨 Premium UI/UX (RTL & LTR Support)
-- **Glassmorphism Design**: A modern, sleek interface built with Vanilla CSS and modern JavaScript animations.
-- **Full Localization**: Seamless switching between Arabic (RTL) and English (LTR) layouts without layout breaking.
-- **Interactive Visualizations**: Real-time sales trends and payment distribution charts using **Chart.js**.
+### 💳 Secure Payment Gateway
 
-### 🛡️ Data Integrity & Soft Deletes
-- **Protection Against Data Loss**: Implementation of **Soft Deletes** across 13 core tables, ensuring historical data is preserved and recoverable.
-- **Audit Preparedness**: Maintains a complete audit trail of deleted records (users, products, orders) for business intelligence and administrative recovery.
+* Full **Stripe API integration**
+* Payment Intents workflow
+* Webhook-based order synchronization
 
-### ⚡ High-Performance Caching (Redis)
-- **Infrastructure Readiness**: Implementation of Redis support using the **Predis** library, enabling sub-second data retrieval for high-traffic scenarios.
-- **Scalable Architecture**: Configured to handle Caching, Session management, and Queue processing through Redis, significantly reducing database load.
+### 📦 Inventory Management
 
-### 💳 Secure Payment Gateway (Stripe)
-- **End-to-End Encryption**: Professional integration of Stripe for secure, encrypted credit card transactions.
-- **Automated Lifecycle**: Handling of payment intents, webhooks, and automated order status transitions upon successful payment.
+* Real-time stock tracking
+* Low stock detection
+* Automatic out-of-stock status
 
----
+### ⚡ High Performance
 
-## 🚀 Key Features
+* Redis caching
+* Optimized database queries
+* Background job queues
 
-| Feature | Description |
-| :--- | :--- |
-| **Payment Gateway** | Professional **Stripe** integration for secure credit card transactions. |
-| **Inventory Management** | Real-time stock tracking with low-stock alerts and automated status management. |
-| **Slug Optimization** | Automated unique slug generation to prevent URL conflicts and improve SEO. |
-| **Search Engine** | Fast, indexed search powered by Scout for instant product discovery. |
-| **Performance** | **Redis** integration (via Predis) for advanced caching and session speed. |
-| **Data Security** | **Soft Deletes** implemented across all tables to prevent accidental data loss. |
-| **Media Handling** | Optimized image processing and storage for high-quality product displays. |
-| **User Dashboard** | Enterprise-grade account management for orders, wishlist, addresses, and security. |
+### 📊 Business Intelligence Engine
+
+* Historical **purchase & sale price snapshots**
+* Profit margin analytics
+* Exportable reports (PDF & CSV)
+
+### 🌍 Localization
+
+* Full **Arabic (RTL)** and **English (LTR)** support
+* Language-aware UI rendering
 
 ---
 
-## 🛍️ Client-Side Experience Ecosystem
-A premium, interactive frontend designed for conversion and user delight, featuring:
+# 🛍️ Client Experience
 
-- **Immersive Homepage**: Multi-layered Hero experience, curated bestseller sliders, and localized brand storytelling.
-- **Intelligent Shop Engine**: Advanced attribute-based filtering (Category, Brand, Gender, Price) and dynamic sorting (Popularity, Price, Rating).
-- **High-Fidelity Product Discovery**: Rich attribute displays (Fragrance Notes: Top/Heart/Base), visual image galleries, and automated cross-sell recommendations.
-- **Persistent Shopping Bag**: Modern cart architecture with LocalStorage-based persistence, subtotal/tax auto-calculation, and "Fly-to-Cart" micro-interactions.
-- **Smart Wishlist Portal**: One-tap product saving with real-time UI synchronization and dynamic sidebar counters.
-- **Secure Checkout Flow**: Hardened multi-step process with real-time address validation, stock verification, and Stripe-powered secure payments.
-- **Intelligence-Driven Search**: Real-time suggestion portal with sub-second indexing for brands, scents, and categories.
+The platform provides a modern shopping experience with:
 
-### ✨ Advanced Wishlist Ecosystem (UX Reform)
-A mission-critical conversion tool redesigned with high-fidelity interactions and viral loops:
-- **Instant AJAX Orchestration**: High-performance product lifecycle management (Add/Remove/Move) with 60fps fade animations and zero-latency UI updates.
-- **Perceived Performance (Skeleton Screens)**: Implementation of shimmering structural placeholders to eliminate layout shifts and reduce "Boredom Threshold" during data fetching.
-- **One-Tap Viral Sharing**: Secure, base64-encoded public sharing links allowing users to distribute their curated collections seamlessly.
-- **Conversion Badges (Price Drop Intelligence)**: Real-time price delta detection that triggers pulsated urgency indicators for discounted saved items.
-- **Hybrid Cart Integration**: Seamless "Move-to-Cart" sequence with automated wishlist cleanup and intelligent toast synchronization.
-- **engagement-First Empty States**: Dynamic product discovery engine that surfaces featured recommendations when the wishlist is cleared.
-
-### 📱 Enterprise PWA & Next-Gen SEO
-Engineered for "App-Like" fluidity and social platform dominance:
-- **Progressive Web App (PWA) Core**: Fully compliant `manifest.json` and background Service Worker (`sw.js`) architecture, enabling standalone installation and offline asset resilience.
-- **Smarter Social Previews (OpenGraph/Twitter)**: Dynamic metadata engine that generates high-res rich cards for shared links, boosting CTR across WhatsApp, Telegram, and Facebook.
-- **Luxury-Themed UI Feedback**: Enhanced Notification System with image-rich toasts, semantic color coding, and premium micro-animations.
+* Advanced product filtering
+* Real-time search suggestions
+* Persistent shopping cart
+* Interactive wishlist system
+* Multi-step secure checkout
+* Stripe-powered payments
 
 ---
 
-## 👤 User Account Ecosystem
-A professional, centralized hub designed for the modern customer experience, featuring:
+# ❤️ Advanced Wishlist System
 
-- **Interactive Overview**: Real-time business intelligence for the user, showing loyalty points, order counts, and wishlist highlights.
-- **Dynamic Order Tracking**: Comprehensive order list and detail views with real-time status updates and tracking numbers.
-- **Smart Wishlist Manager**: Integrated favorites system with real-time sidebar badges and direct product restoration links.
-- **Address Management (CRUD)**: Advanced address book supporting multiple locations with a "Default" primary address selector.
-- **Hardened Security**: Dedicated security panel for encrypted password updates and authenticated email changes.
-- **Premium UX Integration**: Modern dark-themed interface utilizing glassmorphism, dynamic counters, and full Arabic (RTL) support.
+The wishlist system was engineered as a **high-conversion user engagement tool**.
 
----
+Features include:
 
-## 🔧 Modern Workflow & Tooling
-
-To ensure project scalability and reliability, I implemented a modern development workflow:
-
-- **Composer**: Managing PHP dependencies and ensuring a streamlined back-end setup.
-- **NPM & Node.js**: Leveraged for front-end asset compilation through **Vite**, enabling fast HMR (Hot Module Replacement) and optimized production builds.
-- **Database Migrations**: Version-controlled database schema management for easy deployment and collaboration.
+* AJAX wishlist toggling
+* Public shareable wishlists
+* Move-to-cart functionality
+* Real-time UI updates
+* Dynamic recommendation system
 
 ---
 
-## 📦 Installation & Setup
+# 📱 PWA & SEO Enhancements
 
-1. **Clone & Install Dependencies**
-   ```bash
-   git clone https://github.com/your-username/ecomm-perfumes.git
-   composer install
-   npm install
-   ```
+The platform includes modern web optimizations:
 
-2. **Environment & Key**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-
-3. **Database Setup**
-   Create a database and update `.env`, then run:
-   ```bash
-   php artisan migrate --seed
-   ```
-
-4. **Build Assets & Launch**
-   ```bash
-   npm run dev
-   php artisan serve
-   ```
+* Progressive Web App (PWA) support
+* Service Worker offline caching
+* OpenGraph & Twitter metadata
+* SEO-friendly product URLs
 
 ---
 
-## 👨‍💻 Professional Focus
-As a developer, my focus during this project was on **Data Integrity**, **System Scalability**, and **User Conversion**. By implementing a robust profit-tracking engine and a luxury-themed UI, I've demonstrated the ability to bridge the gap between technical code and business requirements.
+# 👤 User Account Dashboard
 
----
-<p align="center">Developed as a technical showcase for modern Laravel development.</p>
+Users have access to a complete account management center:
 
----
-
-# ⚜️ Luxe Parfum: Enterprise-Grade eCommerce API
-
-<p align="center">
-  <img src="https://laravel.com/img/logomark.min.svg" width="60" alt="Laravel Logo">
-  <img src="https://img.shields.io/badge/Laravel-v12.0-red?style=flat-square&logo=laravel" alt="Laravel Version">
-  <img src="https://img.shields.io/badge/PHP-v8.2+-blue?style=flat-square&logo=php" alt="PHP Version">
-  <img src="https://img.shields.io/badge/Redis-Enabled-red?style=flat-square&logo=redis" alt="Redis">
-  <img src="https://img.shields.io/badge/License-MIT-green?style=flat-square" alt="License">
-</p>
-
-Luxe Parfum is a high-performance, secure RESTful API architected for premium perfume retail. Designed with a **Mobile-First** and **SPA-Ready** mindset, it demonstrates senior-level proficiency in Laravel 12, clean architecture, and enterprise security protocols.
+* Order history and tracking
+* Wishlist management
+* Address book (CRUD)
+* Password and security controls
+* Personalized dashboard insights
 
 ---
 
-## 🏛️ 1. Professional Architecture & SoC
-The project strictly follows a **Hexagonal-inspired Layered Architecture**, ensuring zero business logic leakage into the transport layer.
+# 🧰 Tech Stack
 
-### 🧩 Logic Separation
-- **Controllers**: Thin traffic managers handling request orchestration and delegation.
-- **Service Layer**: The core business engine. Encapsulates complex logic (Stripe payments, inventory snapshots, profit analytics).
-- **Form Requests**: Dedicated validation layer ensuring 100% data integrity before processing.
-- **Eloquent Resources**: Decoupled presentation layer converting internal models into versioned, mobile-optimized JSON.
-- **Redis Caching**: Sub-second performance for high-traffic endpoints (Catalog, Search).
+### Backend
 
-### 🗺️ Infrastructure Overview
-```mermaid
-graph TD
-    Client[iOS/Android/Web] --> Gate[Laravel Sanitization/Throttle]
-    Gate --> Auth[Sanctum Auth Layer]
-    Auth --> Service[Domain Service Layer]
-    Service --> Persistence[(MySQL / PostgreSQL)]
-    Service -- High Speed --> Redis[(Redis Cache/Queue)]
-    Service -- Storage --> S3[AWS S3 / Spatie Media]
-    Service -- Payments --> Stripe[Stripe API Engine]
+* Laravel 12
+* PHP 8.2
+* MySQL
+
+### Performance
+
+* Redis
+* Laravel Queues
+
+### Payments
+
+* Stripe API
+
+### Search
+
+* Laravel Scout
+
+### Documentation
+
+* Scribe API Documentation
+
+### Testing
+
+* PHPUnit
+
+### Frontend
+
+* Blade
+* Vanilla JavaScript
+* Chart.js
+
+---
+
+# 🧪 Automated Testing
+
+The project includes a comprehensive testing suite.
+
+✔ **31 automated tests**
+✔ **155 assertions**
+✔ Feature tests
+✔ Unit tests
+✔ API tests
+
+Run the tests:
+
+```
+php artisan test
+```
+
+Example:
+
+```
+php artisan test tests/Feature/Api/OrderApiTest.php
 ```
 
 ---
 
-## 🔐 2. Security & Data Integrity
-- **Authentication**: Stateless token-based security via **Laravel Sanctum**.
-- **Granular Throttling**: Intelligent rate limiting differentiated by user role and endpoint sensitivity.
-- **Enterprise Security Headers**: Implementation of HSTS, CSP, and X-Frame protection at the middleware level.
-- **Data Protection**: 100% implementation of **Soft Deletes** for business audit accuracy and database integrity.
+# 🔐 Security Features
+
+The platform includes multiple layers of security:
+
+* Laravel Sanctum authentication
+* Role-based access control
+* Security headers (HSTS, CSP)
+* Rate limiting
+* Soft delete protection
 
 ---
 
-## 🚀 3. Key Technical Features
-- **Payment Orchestration**: Full Stripe integration with Webhook synchronization for secure checkouts.
-- **Dynamic Localized Discovery**: Advanced searching (Scout) and filtering supporting English & Arabic.
-- **Optimized Media Engine**: Auto-optimization and thumbnail generation via Spatie Media Library.
-- **Async Processing**: Heavy tasks (Invoices, Emails, Job Exports) handled via background workers.
+# 📖 API Documentation
 
----
+The project includes a **developer-friendly API documentation portal** powered by Scribe.
 
-## 📖 4. Developer Experience (DX)
-The project is built to lead with transparency and ease of integration.
+Access the documentation:
 
-### 🌐 Live Documentation Portal
-The API features an interactive **Scribe-powered Developer Portal** accessible at `/docs`.
-- **Interactive Console**: "Try it out" feature for all 18+ endpoints.
-- **SDK Exports**: Automated generation of **Postman Collections** and **OpenAPI/Swagger** specs.
-- **Code Samples**: Ready-to-use snippets in Bash and JavaScript.
-
----
-
-## 🧪 5. Testing & Quality Assurance
-Quality is maintained through a rigorous automated testing suite.
-
-```bash
-# Run all API Feature Tests
-php artisan test --testsuite=Feature
+```
+/docs
 ```
 
-### Example Contract Test:
-The system ensures that the product list contract remains immutable through deep JSON structure assertions.
+Features:
+
+* Interactive request testing
+* OpenAPI export
+* Postman collection generation
 
 ---
 
-## ⚙️ 6. Quick Start & Installation
+# ⚙️ Installation
 
-1. **Clone & Environment Setup**
-   ```bash
-   git clone https://github.com/your-username/luxe-parfum-api.git
-   cp .env.example .env
-   composer install && npm install
-   ```
+### Clone the repository
 
-2. **Backend Initialization**
-   ```bash
-   php artisan key:generate
-   php artisan migrate --seed
-   php artisan scribe:generate # Generate documentation
-   ```
+```
+git clone https://github.com/your-username/ecomm-perfumes.git
+```
 
-3. **Performance Ready**
-   Ensure your Redis server is running for a sub-second caching experience.
+### Install dependencies
 
----
+```
+composer install
+npm install
+```
 
-## 📊 7. Folder Structure Highlights
-```text
-vendor/
-app/
-├── Http/
-│   ├── Controllers/Clients/Api # Versioned REST Controllers
-│   ├── Requests/Api            # Strict Validation Logic
-│   └── Resources/Api           # JSON Presentation Layer
-├── Services/                   # Core Business Logic (Brain)
-└── Models/                     # Data Structures & Relationships
-tests/
-└── Feature/Api                 # Automated Contract & Logic Tests
+### Configure environment
+
+```
+cp .env.example .env
+php artisan key:generate
+```
+
+### Database setup
+
+```
+php artisan migrate --seed
+```
+
+### Run the application
+
+```
+npm run dev
+php artisan serve
 ```
 
 ---
 
-<p align="center">
-  <b>Built for Performance. Hardened for Enterprise. Portfolio-Ready.</b><br>
-  <i>Luxe Parfum: A Senior Backend Engineering Project</i>
-</p>
+# 🧑💻 Development Workflow
+
+Modern tooling was used to maintain code quality:
+
+* Composer dependency management
+* Vite asset bundling
+* Database migrations
+* Environment configuration
+
+---
+
+# 🎯 Engineering Focus
+
+During development, the primary focus areas were:
+
+* **Data integrity**
+* **System scalability**
+* **Performance optimization**
+* **Clean architecture**
+* **Developer experience**
+
+---
+
+# 📊 Portfolio Value
+
+This project was developed as a **technical portfolio project** to demonstrate:
+
+* Advanced Laravel architecture
+* REST API engineering
+* Scalable backend design
+* Real-world business logic implementation
+* **Security-first engineering mindset (Cybersecurity focus)**
+
+---
+
+# 👨💻 Author
+
+**Yassin Ali Afifi**
+
+**Cybersecurity Specialist & Backend Developer** — Laravel & API Engineering
+
+*Specialized in web protection, secure code auditing, and building resilient production environments.*
+
+---
+
+# ⭐ Support
+
+If you find this project useful, consider giving it a **star** on GitHub.

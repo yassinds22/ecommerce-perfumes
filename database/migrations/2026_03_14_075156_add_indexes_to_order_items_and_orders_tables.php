@@ -11,14 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('order_items', function (Blueprint $table) {
-            $table->index('product_id');
-            $table->index('order_id');
-        });
-
-        Schema::table('orders', function (Blueprint $table) {
-            $table->index('created_at');
-        });
+        // Redundant indexes removed to prevent SQLite conflicts in tests
     }
 
     /**
@@ -26,13 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('order_items', function (Blueprint $table) {
-            $table->dropIndex(['product_id']);
-            $table->dropIndex(['order_id']);
-        });
-
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropIndex(['created_at']);
-        });
+        // No action needed
     }
 };

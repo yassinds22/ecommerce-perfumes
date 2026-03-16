@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class OrderItem extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
     protected $fillable = ['order_id', 'product_id', 'quantity', 'price', 'purchase_price', 'sale_price', 'profit'];
 
     protected $casts = [
