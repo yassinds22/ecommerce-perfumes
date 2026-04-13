@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CategoryRequest;
 use App\Services\CategoryService;
 use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
@@ -46,7 +47,7 @@ class CategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(\App\Http\Requests\Admin\CategoryRequest $request)
+    public function store(CategoryRequest $request)
     {
         $category = $this->categoryService->createCategory($request->validated());
 
@@ -69,7 +70,7 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(\App\Http\Requests\Admin\CategoryRequest $request, int $id)
+    public function update(CategoryRequest $request, int $id)
     {
         $category = $this->categoryService->updateCategory($id, $request->validated());
 

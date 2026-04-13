@@ -31,7 +31,7 @@ class BrandService
      *
      * @return Collection
      */
-    public function getAllBrands(): Collection
+    public function getAllBrands()
     {
         return $this->brandRepository->all();
     }
@@ -42,7 +42,7 @@ class BrandService
      * @param int $id
      * @return Brand
      */
-    public function getBrandById(int $id): Brand
+    public function getBrandById(int $id)
     {
         return $this->brandRepository->findOrFail($id);
     }
@@ -53,7 +53,7 @@ class BrandService
      * @param array $data
      * @return Brand
      */
-    public function createBrand(array $data): Brand
+    public function createBrand(array $data)
     {
         if (isset($data['name'])) {
             $data['slug'] = Str::slug($data['name']);

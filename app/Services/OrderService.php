@@ -5,6 +5,10 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
+use App\Repositories\OrderRepository;
+use App\Repositories\ProductRepository;
+use App\Services\StripeService;
+use App\Services\StockService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -13,11 +17,14 @@ class OrderService
 {
     protected $stripeService;
     protected $stockService;
+    protected $orderRepository ,$productRepository;
 
-    public function __construct(StripeService $stripeService, StockService $stockService)
+    public function __construct(StripeService $stripeService, StockService $stockService, OrderRepository $orderRepository ,ProductRepository $productRepository)
     {
         $this->stripeService = $stripeService;
         $this->stockService = $stockService;
+        $this->orderRepository = $orderRepository;
+        $this->productRepository=$productRepository;
     }
 
     /**
@@ -25,7 +32,7 @@ class OrderService
      */
     public function getUserOrders(User $user, int $perPage = 10): LengthAwarePaginator
     {
-        return $user->orders()->with('items.product')->latest()->paginate($perPage);
+        return $this->orderRepository->getPaginatedOrdersForUser($user->id, $perPage);
     }
 
     /**
@@ -33,7 +40,7 @@ class OrderService
      */
     public function getPaginatedOrders(int $perPage = 10): LengthAwarePaginator
     {
-        return Order::with(['user', 'items.product'])->latest()->paginate($perPage);
+        return $this->orderRepository->getPaginatedOrders($perPage);
     }
 
     /**
@@ -42,12 +49,12 @@ class OrderService
     public function getOrderStats(): array
     {
         return [
-            'total_orders' => Order::count(),
-            'pending' => Order::where('status', 'pending')->count(),
-            'shipped' => Order::where('status', 'shipped')->count(),
-            'completed' => Order::where('status', 'completed')->count(),
-            'cancelled' => Order::whereIn('status', ['cancelled', 'canceled'])->count(),
-            'total_revenue' => Order::where('status', 'completed')->sum('total'),
+            'total_orders' => $this->orderRepository->count(),
+            'pending' => $this->orderRepository->countByStatus('pending'),
+            'shipped' => $this->orderRepository->countByStatus('shipped'),
+            'completed' => $this->orderRepository->countByStatus('completed'),
+            'cancelled' => $this->orderRepository->countInStatuses(['cancelled', 'canceled']),
+            'total_revenue' => $this->orderRepository->getTotalRevenue(),
         ];
     }
 
@@ -60,7 +67,7 @@ class OrderService
             throw new \Exception('Unauthorized', 403);
         }
 
-        return $order->load('items.product');
+        return $this->orderRepository->getOrderWithDetails($order->id);
     }
 
     /**
@@ -70,14 +77,14 @@ class OrderService
     {
         return DB::transaction(function () use ($user, $data) {
             $total = 0;
-            $orderItems = [];
+            $itemsData = [];
 
             foreach ($data['items'] as $itemData) {
-                $product = Product::findOrFail($itemData['product_id']);
+                $product=$this->productRepository->findOrFail($itemData['product_id']);
                 $itemTotal = $product->price * $itemData['quantity'];
                 $total += $itemTotal;
 
-                $orderItems[] = [
+                $itemsData[] = [
                     'product_id' => $product->id,
                     'quantity' => $itemData['quantity'],
                     'price' => $product->price,
@@ -85,11 +92,9 @@ class OrderService
                     'sale_price' => $product->sale_price,
                     'profit' => ($product->price - $product->purchase_price) * $itemData['quantity'],
                 ];
-
-                $this->stockService->decrease($product, $itemData['quantity'], "API Order: " . ($order->order_number ?? 'Pending'));
             }
 
-            $order = Order::create([
+            $order = $this->orderRepository->create([
                 'user_id' => $user->id,
                 'order_number' => 'ORD-' . strtoupper(Str::random(10)),
                 'total' => $total,
@@ -99,8 +104,12 @@ class OrderService
                 'address_details' => $data['address_details'],
             ]);
 
-            foreach ($orderItems as $item) {
+            foreach ($itemsData as $item) {
                 $order->items()->create($item);
+                
+                // Now decrease stock after order creation
+                $product =  $product=$this->productRepository->findOrFail($itemData['product_id']);
+                $this->stockService->decrease($product, $item['quantity'], "API Order: " . $order->order_number);
             }
 
             $result = ['order' => $order];

@@ -8,6 +8,7 @@ use App\Services\CategoryService;
 use App\Services\NoteService;
 use App\Models\Brand;
 use App\Traits\LogsActivity;
+use App\Http\Requests\Admin\ProductRequest;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -45,7 +46,7 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(\Illuminate\Http\Request $request)
+    public function index(Request $request)
     {
         $products = $this->productService->getPaginatedProducts(12);
         
@@ -71,9 +72,9 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(\App\Http\Requests\Admin\ProductRequest $request)
+    public function store(ProductRequest $productRequest)
     {
-        $product = $this->productService->createProduct($request->validated());
+        $product = $this->productService->createProduct($productRequest->validated());
 
         $this->logActivity('إضافة منتج جديد', "تم إضافة المنتج: {$product->name}", $product);
 
@@ -101,9 +102,9 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(\App\Http\Requests\Admin\ProductRequest $request, int $id)
+    public function update(ProductRequest $productRequest, int $id)
     {
-        $product = $this->productService->updateProduct($id, $request->validated());
+        $product = $this->productService->updateProduct($id, $productRequest->validated());
 
         $this->logActivity('تعديل منتج', "تم تعديل بيانات المنتج: {$product->name}", $product);
 

@@ -4,23 +4,19 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\CouponService;
+use App\Http\Requests\Admin\CouponRequest;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
 
 class CouponController extends Controller
 {
-    /**
-     * @var CouponService
-     */
     protected $couponService;
+    protected $productService;
 
-    /**
-     * CouponController constructor.
-     *
-     * @param CouponService $couponService
-     */
-    public function __construct(CouponService $couponService)
+    public function __construct(CouponService $couponService, ProductService $productService)
     {
         $this->couponService = $couponService;
+        $this->productService = $productService;
     }
 
     /**
@@ -37,27 +33,16 @@ class CouponController extends Controller
      */
     public function create()
     {
-        $products = \App\Models\Product::all();
+        $products = $this->productService->getAllProducts();
         return view('admin.coupons.create', compact('products'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CouponRequest $request)
     {
-        $data = $request->validate([
-            'code' => 'required|string|unique:coupons,code',
-            'type' => 'required|in:fixed,percent',
-            'value' => 'required|numeric|min:0',
-            'starts_at' => 'nullable|date',
-            'expires_at' => 'nullable|date|after_or_equal:starts_at',
-            'usage_limit' => 'nullable|integer|min:1',
-            'is_global' => 'required|boolean',
-            'products' => 'required_if:is_global,0|array',
-            'products.*' => 'exists:products,id',
-        ]);
-
+        $data = $request->validated();
         $data['is_active'] = $request->has('is_active');
         $productIds = $request->input('products', []);
 
@@ -72,7 +57,7 @@ class CouponController extends Controller
     public function edit(int $id)
     {
         $coupon = $this->couponService->getCouponById($id);
-        $products = \App\Models\Product::all();
+        $products = $this->productService->getAllProducts();
         $selectedProducts = $coupon->products->pluck('id')->toArray();
         return view('admin.coupons.edit', compact('coupon', 'products', 'selectedProducts'));
     }
@@ -80,20 +65,9 @@ class CouponController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(CouponRequest $request, int $id)
     {
-        $data = $request->validate([
-            'code' => 'required|string|unique:coupons,code,' . $id,
-            'type' => 'required|in:fixed,percent',
-            'value' => 'required|numeric|min:0',
-            'starts_at' => 'nullable|date',
-            'expires_at' => 'nullable|date|after_or_equal:starts_at',
-            'usage_limit' => 'nullable|integer|min:1',
-            'is_global' => 'required|boolean',
-            'products' => 'required_if:is_global,0|array',
-            'products.*' => 'exists:products,id',
-        ]);
-
+        $data = $request->validated();
         $data['is_active'] = $request->has('is_active');
         $productIds = $request->input('products', []);
 

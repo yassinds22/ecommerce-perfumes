@@ -5,16 +5,17 @@ namespace App\Repositories;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Collection;
 
-class CategoryRepository extends BaseRepository
+class CategoryRepository 
 {
+    public $category;
     /**
      * CategoryRepository constructor.
      *
      * @param Category $model
      */
-    public function __construct(Category $model)
+    public function __construct(Category $category)
     {
-        parent::__construct($model);
+        $this->category=$category;
     }
 
     /**
@@ -22,9 +23,51 @@ class CategoryRepository extends BaseRepository
      *
      * @return Collection
      */
+      public function all(): Collection
+    {
+        return $this->category->all();
+    }
+   public function create(array $data):category{
+    return $this->category->create($data);
+
+   }
+
+    public function update(int $id, array $data): bool
+    {
+        $record = $this->category->findOrFail($id);
+        return $record->update($data);
+    }
+
+   
+    public function delete(int $id): bool
+    {
+        return $this->category->destroy($id);
+    }
+
+  
+    public function find(int $id):category
+    {
+        return $this->category->find($id);
+    }
+
+   
+    public function findOrFail(int $id):category
+    {
+        return $this->category->findOrFail($id);
+    }
+
+    /**
+     * Get the total count of records.
+     *
+     * @return int
+     */
+    public function count(): int
+    {
+        return $this->category->count();
+    }
     public function getRoots(): Collection
     {
-        return $this->model->whereNull('parent_id')->with('children')->get();
+        return $this->category->whereNull('parent_id')->with('children')->get();
     }
 
     /**
@@ -34,7 +77,7 @@ class CategoryRepository extends BaseRepository
      */
     public function getAllWithChildren(): Collection
     {
-        return $this->model->with('children')->get();
+        return $this->category->with('children')->get();
     }
 
     /**
@@ -44,7 +87,7 @@ class CategoryRepository extends BaseRepository
      */
     public function getCategoryDistribution(): Collection
     {
-        return $this->model->withCount('products')->orderByDesc('products_count')->get();
+        return $this->category->withCount('products')->orderByDesc('products_count')->get();
     }
 
     /**
@@ -55,6 +98,6 @@ class CategoryRepository extends BaseRepository
      */
     public function getPaginatedCategories(int $perPage = 10)
     {
-        return $this->model->withCount('products')->latest()->paginate($perPage);
+        return $this->category->withCount('products')->latest()->paginate($perPage);
     }
 }

@@ -5,26 +5,27 @@ namespace App\Repositories;
 use App\Models\Setting;
 use Illuminate\Database\Eloquent\Collection;
 
-class SettingRepository extends BaseRepository
+class SettingRepository 
 {
+    protected $setting;
     /**
      * SettingRepository constructor.
      *
-     * @param Setting $model
+     * @param Setting $setting
      */
-    public function __construct(Setting $model)
+    public function __construct(Setting $setting)
     {
-        parent::__construct($model);
+      $this->setting=$setting;
     }
 
     /**
      * Get all settings grouped by their group name.
      *
-     * @return Collection
+     * @return 
      */
-    public function getAllGrouped(): Collection
+    public function getAllGrouped()
     {
-        return $this->model->all()->groupBy('group');
+        return $this->setting->all()->groupBy('group');
     }
 
     /**
@@ -34,8 +35,8 @@ class SettingRepository extends BaseRepository
      * @param mixed $value
      * @return bool
      */
-    public function updateByKey(string $key, $value): bool
+    public function updateByKey(string $key, $value)
     {
-        return $this->model->where('key', $key)->update(['value' => $value]);
+        return $this->setting->where('key', $key)->update(['value' => $value]);
     }
 }

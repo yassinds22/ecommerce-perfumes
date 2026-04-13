@@ -60,7 +60,7 @@ class CategoryService
      * @param array $data
      * @return Category
      */
-    public function createCategory(array $data): Category
+    public function createCategory(array $data)
     {
         if (isset($data['name']['en'])) {
             $data['slug'] = \Illuminate\Support\Str::slug($data['name']['en']);
@@ -68,12 +68,11 @@ class CategoryService
         
         $category = $this->categoryRepository->create($data);
 
-        if (request()->hasFile('image')) {
-            $category->addMediaFromRequest('image')->toMediaCollection('images');
-        }
+        $this->uploadImage($category, 'image');
 
         return $category;
     }
+
 
 
 
@@ -104,10 +103,7 @@ class CategoryService
         $this->categoryRepository->update($id, $data);
         $category = $this->getCategoryById($id);
 
-        if ($category && request()->hasFile('image')) {
-            $category->clearMediaCollection('images');
-            $category->addMediaFromRequest('image')->toMediaCollection('images');
-        }
+        $this->uploadImage($category, 'image');
 
         return $category;
     }
@@ -123,5 +119,14 @@ class CategoryService
     public function deleteCategory(int $id): bool
     {
         return $this->categoryRepository->delete($id);
+    }
+
+
+    public function uploadImage(Category $category,$image)
+    {
+        if (request()->hasFile($image)) {
+            $category->clearMediaCollection('images');
+            $category->addMediaFromRequest($image)->toMediaCollection('images');
+        }
     }
 }

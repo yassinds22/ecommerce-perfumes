@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\BrandRequest;
 use App\Services\BrandService;
 use Illuminate\Http\Request;
 
@@ -43,7 +44,7 @@ class BrandController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(\App\Http\Requests\Admin\BrandRequest $request)
+    public function store(BrandRequest $request)
     {
         $this->brandService->createBrand($request->validated());
 
@@ -62,7 +63,7 @@ class BrandController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(\App\Http\Requests\Admin\BrandRequest $request, int $id)
+    public function update(BrandRequest $request, int $id)
     {
         $this->brandService->updateBrand($id, $request->validated());
 

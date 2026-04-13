@@ -69,7 +69,7 @@ class ProductService
      * @param array $data
      * @return Product
      */
-    public function createProduct(array $data): Product
+    public function createProduct(array $data)
     {
         if (isset($data['name']['en'])) {
             $slug = \Illuminate\Support\Str::slug($data['name']['en']);
@@ -95,16 +95,8 @@ class ProductService
 
         $this->syncFragranceNotes($product, $data);
 
-        if (request()->hasFile('image')) {
-            $product->addMediaFromRequest('image')->toMediaCollection('images');
-        }
-
-        // Handle gallery images if any
-        if (request()->hasFile('gallery')) {
-            foreach (request()->file('gallery') as $file) {
-                $product->addMedia($file)->toMediaCollection('gallery');
-            }
-        }
+        $this->uploadImage($product, 'image');
+        $this->uploadGallery($product);
 
         return $product;
     }
@@ -140,16 +132,8 @@ class ProductService
 
             $this->syncFragranceNotes($product, $data);
 
-            if (request()->hasFile('image')) {
-                $product->clearMediaCollection('images');
-                $product->addMediaFromRequest('image')->toMediaCollection('images');
-            }
-
-            if (request()->hasFile('gallery')) {
-                foreach (request()->file('gallery') as $file) {
-                    $product->addMedia($file)->toMediaCollection('gallery');
-                }
-            }
+            $this->uploadImage($product, 'image');
+            $this->uploadGallery($product);
         }
 
         return $product;
@@ -197,5 +181,23 @@ class ProductService
     public function deleteProduct(int $id): bool
     {
         return $this->productRepository->delete($id);
+    }
+
+
+    public function uploadImage(Product $product, $image)
+    {
+        if (request()->hasFile($image)) {
+            $product->clearMediaCollection('images');
+            $product->addMediaFromRequest($image)->toMediaCollection('images');
+        }
+    }
+
+    public function uploadGallery(Product $product, $collection = 'gallery')
+    {
+        if (request()->hasFile($collection)) {
+            foreach (request()->file($collection) as $file) {
+                $product->addMedia($file)->toMediaCollection($collection);
+            }
+        }
     }
 }

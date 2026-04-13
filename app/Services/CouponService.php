@@ -64,7 +64,7 @@ class CouponService
      * @param array $productIds
      * @return Coupon
      */
-    public function createCoupon(array $data, array $productIds = []): Coupon
+    public function createCoupon(array $data, array $productIds = [])
     {
         $coupon = $this->couponRepository->create($data);
         
